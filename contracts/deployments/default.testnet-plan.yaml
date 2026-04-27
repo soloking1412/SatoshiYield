@@ -1,0 +1,18 @@
+---
+id: 0
+name: Testnet deployment - vault-v2 only
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: vault-v2
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/vault-v2.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

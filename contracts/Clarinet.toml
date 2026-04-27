@@ -1,0 +1,60 @@
+[project]
+name = "satoshi-yield"
+description = "Non-custodial sBTC yield optimizer on Stacks"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[contracts.mock-sbtc]
+path = "contracts/token/mock-sbtc.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source]
+path = "contracts/traits/yield-source.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.bitflow-adapter]
+path = "contracts/adapters/bitflow-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.alex-adapter]
+path = "contracts/adapters/alex-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-adapter]
+path = "contracts/adapters/zest-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.velar-adapter]
+path = "contracts/adapters/velar-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault]
+path = "contracts/vault.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault-v2]
+path = "contracts/vault-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-tracker]
+path = "contracts/yield-tracker.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.rebalancer]
+path = "contracts/rebalancer.clar"
+clarity_version = 3
+epoch = "latest"
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = true, trusted_caller = true, callee_filter = false }
