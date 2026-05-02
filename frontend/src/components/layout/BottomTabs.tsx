@@ -21,6 +21,7 @@ export function BottomTabs() {
         borderTop: "1px solid var(--border)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
         display: "flex",
       }}
     >

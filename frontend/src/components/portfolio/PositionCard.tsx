@@ -130,18 +130,15 @@ export function PositionCard({ position }: { position: UserPosition }) {
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4">
           {[
-            ["APY", apy ? `${apy.toFixed(1)}%` : "—", "var(--green)"],
-            ["EARNED", `+${earned.toFixed(6)} sBTC`, "var(--green)"],
-            ["RISK", riskLabel, riskColor],
-            ["TVL", formatTvl(tvl), "var(--text)"],
-          ].map(([label, value, color], i) => (
+            ["APY",    apy ? `${apy.toFixed(1)}%` : "—",  "var(--green)", "border-r border-b sm:border-b-0 [border-color:var(--border)]"],
+            ["EARNED", `+${earned.toFixed(6)} sBTC`,       "var(--green)", "border-b sm:border-r sm:border-b-0 [border-color:var(--border)]"],
+            ["RISK",   riskLabel,                          riskColor,      "border-r [border-color:var(--border)]"],
+            ["TVL",    formatTvl(tvl),                     "var(--text)",  ""],
+          ].map(([label, value, color, borderCls], i) => (
             <div
               key={label}
-              style={{
-                padding: "14px 18px",
-                borderRight: i % 2 === 0 ? "1px solid var(--border)" : "none",
-                borderBottom: i < 2 ? "1px solid var(--border)" : "none",
-              }}
+              className={borderCls as string}
+              style={{ padding: "14px 18px" }}
             >
               <div
                 style={{

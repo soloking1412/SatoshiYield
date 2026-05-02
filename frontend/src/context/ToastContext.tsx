@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       const id = `${Date.now()}-${Math.random()}`;
       setToasts((prev) => [...prev, { ...opts, id }]);
 
-      // auto-dismiss: longer for success/error, shorter for pending
+      // auto-dismiss: longer for pending (user may want to act), shorter for success/error
       const ms = opts.variant === "pending" ? 8_000 : 6_000;
       const timer = setTimeout(() => dismiss(id), ms);
       timers.current.set(id, timer);
@@ -76,7 +76,7 @@ function ToastList({
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+    <div className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 z-[120] flex flex-col gap-3 sm:max-w-sm pointer-events-none">
       {toasts.map((t) => (
         <ToastItem key={t.id} toast={t} dismiss={dismiss} />
       ))}

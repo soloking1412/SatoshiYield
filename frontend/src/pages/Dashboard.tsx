@@ -41,7 +41,8 @@ export function Dashboard() {
 
   return (
     <main
-      style={{ maxWidth: 900, margin: "0 auto", padding: "44px 24px 80px" }}
+      className="pb-20 sm:pb-10"
+      style={{ maxWidth: 900, margin: "0 auto", paddingTop: 44, paddingLeft: 24, paddingRight: 24 }}
     >
       <div
         style={{

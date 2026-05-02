@@ -3,10 +3,10 @@ import { MarkSC } from "../shared/MarkSC.js";
 export function Footer() {
   return (
     <footer
+      className="hidden sm:flex"
       style={{
         borderTop: "1px solid var(--border)",
         padding: "16px 24px",
-        display: "flex",
         alignItems: "center",
         marginTop: "auto",
         flexWrap: "wrap",
