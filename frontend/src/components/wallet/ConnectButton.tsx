@@ -1,21 +1,38 @@
 import { useWallet } from "../../context/WalletContext.js";
+import { useConnectModal } from "../../context/ConnectModalContext.js";
 
 function truncate(address: string): string {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
 export function ConnectButton() {
-  const { address, isConnected, connect, disconnect } = useWallet();
+  const { address, isConnected, disconnect } = useWallet();
+  const { openConnectModal } = useConnectModal();
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-sm font-mono text-text-secondary">
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span
+          style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: 12,
+            color: "var(--muted)",
+          }}
+        >
           {truncate(address)}
         </span>
         <button
           onClick={disconnect}
-          className="px-4 py-2 text-sm rounded-lg border border-surface-border text-text-secondary hover:text-text-primary hover:border-text-muted transition-colors"
+          style={{
+            background: "var(--bg3)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            color: "var(--muted)",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 12,
+            padding: "6px 12px",
+            cursor: "pointer",
+          }}
         >
           Disconnect
         </button>
@@ -25,8 +42,19 @@ export function ConnectButton() {
 
   return (
     <button
-      onClick={() => void connect()}
-      className="px-5 py-2.5 rounded-lg bg-brand-orange text-white text-sm font-medium hover:bg-brand-orange-dim active:scale-95 transition-all"
+      onClick={openConnectModal}
+      style={{
+        background: "var(--amber)",
+        color: "#000",
+        border: "none",
+        borderRadius: 10,
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: 13,
+        fontWeight: 700,
+        padding: "8px 16px",
+        cursor: "pointer",
+        transition: "opacity .15s",
+      }}
     >
       Connect Wallet
     </button>

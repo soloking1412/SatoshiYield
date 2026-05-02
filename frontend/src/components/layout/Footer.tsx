@@ -1,28 +1,55 @@
+import { MarkSC } from "../shared/MarkSC.js";
+
 export function Footer() {
   return (
-    <footer className="border-t border-surface-border mt-auto">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 h-14 flex items-center justify-between">
-        <span className="text-xs text-text-muted font-mono">
-          SatoshiYield &mdash; non-custodial sBTC yield on Stacks
+    <footer
+      style={{
+        borderTop: "1px solid var(--border)",
+        padding: "16px 24px",
+        display: "flex",
+        alignItems: "center",
+        marginTop: "auto",
+        flexWrap: "wrap",
+        gap: 12,
+        transition: "border-color .25s",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <MarkSC size={15} />
+        <span
+          style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: 11,
+            color: "var(--lo)",
+          }}
+        >
+          SatoshiYields -- non-custodial sBTC yield on Stacks
         </span>
-        <div className="flex items-center gap-4 text-xs text-text-muted">
+      </div>
+      <div style={{ flex: 1 }} />
+      <div style={{ display: "flex", gap: 18 }}>
+        {[
+          { label: "GitHub", href: "https://github.com/soloking1412/SatoshiYield" },
+          { label: "Stacks Docs", href: "https://docs.stacks.co" },
+        ].map(({ label, href }) => (
           <a
-            href="https://github.com/soloking/SatoshiYield"
+            key={label}
+            href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-text-secondary transition-colors"
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 11,
+              color: "var(--lo)",
+              textDecoration: "none",
+              transition: "color .15s",
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.color = "var(--muted)")}
+            onMouseOut={(e) => (e.currentTarget.style.color = "var(--lo)")}
           >
-            GitHub
+            {label}
           </a>
-          <a
-            href="https://docs.stacks.co"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-text-secondary transition-colors"
-          >
-            Stacks Docs
-          </a>
-        </div>
+        ))}
       </div>
     </footer>
   );

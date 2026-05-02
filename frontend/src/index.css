@@ -1,27 +1,82 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+[data-theme="dark"] {
+  --bg:      oklch(11% 0.015 50);
+  --bg2:     oklch(15.5% 0.015 50);
+  --bg3:     oklch(20% 0.014 50);
+  --bg4:     oklch(26% 0.013 50);
+  --border:  oklch(28% 0.012 50);
+  --amber:   oklch(68% 0.19 52);
+  --amberB:  oklch(52% 0.19 52);
+  --green:   oklch(68% 0.18 145);
+  --red:     oklch(65% 0.19 22);
+  --yellow:  oklch(76% 0.16 82);
+  --text:    oklch(95% 0.007 50);
+  --muted:   oklch(58% 0.008 50);
+  --lo:      oklch(38% 0.008 50);
+  --navBg:   oklch(12% 0.015 50/0.94);
+  --cardBg:  oklch(15.5% 0.015 50);
+  --shadow:  0 8px 32px oklch(5% 0 0/0.5);
+  --modalBg: oklch(8% 0.012 50/0.82);
+}
+
+[data-theme="light"] {
+  --bg:      oklch(97% 0.007 55);
+  --bg2:     oklch(92% 0.008 55);
+  --bg3:     oklch(87% 0.009 55);
+  --bg4:     oklch(82% 0.009 55);
+  --border:  oklch(76% 0.01 55);
+  --amber:   oklch(54% 0.19 52);
+  --amberB:  oklch(40% 0.19 52);
+  --green:   oklch(48% 0.18 145);
+  --red:     oklch(50% 0.19 22);
+  --yellow:  oklch(52% 0.16 60);
+  --text:    oklch(16% 0.015 50);
+  --muted:   oklch(46% 0.01 50);
+  --lo:      oklch(60% 0.008 50);
+  --navBg:   oklch(97% 0.007 55/0.94);
+  --cardBg:  oklch(92% 0.008 55);
+  --shadow:  0 8px 32px oklch(20% 0 0/0.1);
+  --modalBg: oklch(20% 0.01 50/0.6);
+}
+
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
   body {
     margin: 0;
-    background-color: #0d0d0d;
-    color: #fafafa;
-    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background 0.25s, color 0.25s;
   }
 
   :focus-visible {
-    outline: 2px solid #f7931a;
+    outline: 2px solid var(--amber);
     outline-offset: 2px;
   }
+
+  input[type=number] { -moz-appearance: textfield; }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  * { scrollbar-width: thin; scrollbar-color: var(--bg4) var(--bg); }
 }
+
+@keyframes fadeUp    { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn    { from{opacity:0} to{opacity:1} }
+@keyframes modalUp   { from{opacity:0;transform:translateY(22px) scale(.98)} to{opacity:1;transform:none} }
+@keyframes pulseDot  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.2;transform:scale(.6)} }
+@keyframes glowRow   { 0%,100%{box-shadow:0 0 0 0 oklch(68% .19 52/0)} 50%{box-shadow:0 0 20px 3px oklch(68% .19 52/.12)} }
+@keyframes breathe   { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes spin      { to{transform:rotate(360deg)} }
+@keyframes shimmer   { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+@keyframes checkIn   { from{transform:scale(0) rotate(-15deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+@keyframes slideUp   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }

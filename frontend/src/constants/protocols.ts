@@ -2,13 +2,14 @@ import type { ProtocolId } from "../types/yield.js";
 
 export interface ProtocolMeta {
   id: ProtocolId;
+  abbr: string;
   name: string;
   color: string;
 }
 
 export const PROTOCOLS: Record<ProtocolId, ProtocolMeta> = {
-  bitflow: { id: "bitflow", name: "Bitflow", color: "#6366F1" },
-  alex: { id: "alex", name: "ALEX Lab", color: "#F59E0B" },
-  zest: { id: "zest", name: "Zest", color: "#22C55E" },
-  velar: { id: "velar", name: "Velar", color: "#EC4899" },
+  bitflow: { id: "bitflow", abbr: "BI", name: "Bitflow",  color: "oklch(64% .19 278)" },
+  alex:    { id: "alex",    abbr: "AL", name: "ALEX Lab", color: "oklch(68% .19 52)"  },
+  zest:    { id: "zest",    abbr: "ZE", name: "Zest",     color: "oklch(64% .19 150)" },
+  velar:   { id: "velar",   abbr: "VE", name: "Velar",    color: "oklch(64% .19 340)" },
 };

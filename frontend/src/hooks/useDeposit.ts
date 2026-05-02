@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pc, uintCV, contractPrincipalCV } from "@stacks/transactions";
 import { useWallet } from "../context/WalletContext.js";
+import { useToast } from "../context/ToastContext.js";
 import { CONTRACTS } from "../constants/contracts.js";
 import type { ProtocolId } from "../types/yield.js";
 
@@ -9,6 +10,7 @@ const SBTC_ASSET_NAME = isMainnet ? "sbtc" : "mock-sbtc";
 
 export function useDeposit() {
   const { callContract, address } = useWallet();
+  const { show } = useToast();
   const qc = useQueryClient();
 
   return useMutation({
@@ -27,7 +29,7 @@ export function useDeposit() {
 
       const postCondition = Pc.principal(address)
         .willSendEq(amountSats)
-        .ft(CONTRACTS.SBTC_TOKEN, SBTC_ASSET_NAME);
+        .ft(CONTRACTS.SBTC_TOKEN as `${string}.${string}`, SBTC_ASSET_NAME);
 
       return callContract({
         contractAddress: vaultAddr!,
@@ -40,8 +42,18 @@ export function useDeposit() {
         postConditions: [postCondition],
       });
     },
-    onSuccess: () => {
+    onSuccess: (txid) => {
+      show({
+        variant: "success",
+        message: "Deposit sent! Confirming on-chain…",
+        txid,
+      });
       void qc.invalidateQueries({ queryKey: ["position"] });
+    },
+    onError: (err: unknown) => {
+      const msg =
+        err instanceof Error ? err.message : "Deposit failed. Please try again.";
+      show({ variant: "error", message: msg });
     },
   });
 }

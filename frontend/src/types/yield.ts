@@ -10,4 +10,6 @@ export interface NormalizedYield {
   reward_token: string;
   tvl_usd: number;
   fetched_at: number;
+  last_updated_block: number;
+  apy_stale: boolean;
 }

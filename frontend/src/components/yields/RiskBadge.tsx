@@ -1,27 +1,29 @@
-import { clsx } from "clsx";
 import type { RiskLevel } from "../../types/yield.js";
 
-const LABELS: Record<RiskLevel, string> = {
-  low: "Low",
-  medium: "Med",
-  high: "High",
-};
-
-const STYLES: Record<RiskLevel, string> = {
-  low: "bg-risk-low/10 text-risk-low",
-  medium: "bg-risk-medium/10 text-risk-medium",
-  high: "bg-risk-high/10 text-risk-high",
+const MAP: Record<RiskLevel, [string, string, string, string]> = {
+  low:    ["oklch(64% .19 150/.14)", "oklch(68% .18 150)", "oklch(64% .19 150/.3)", "Low"],
+  medium: ["oklch(76% .16 82/.12)",  "oklch(72% .16 82)",  "oklch(76% .16 82/.28)", "Med"],
+  high:   ["oklch(64% .19 22/.14)",  "oklch(68% .19 22)",  "oklch(64% .19 22/.3)",  "High"],
 };
 
 export function RiskBadge({ level }: { level: RiskLevel }) {
+  const [bg, color, border, label] = MAP[level] ?? MAP.medium;
   return (
     <span
-      className={clsx(
-        "px-2 py-0.5 rounded text-xs font-medium",
-        STYLES[level]
-      )}
+      style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: ".06em",
+        background: bg,
+        color,
+        border: `1px solid ${border}`,
+        padding: "2px 8px",
+        borderRadius: 5,
+        whiteSpace: "nowrap",
+      }}
     >
-      {LABELS[level]}
+      {label}
     </span>
   );
 }

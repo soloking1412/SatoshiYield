@@ -2,15 +2,64 @@ export function ApySkeleton() {
   return (
     <div
       data-testid="apy-skeleton"
-      className="animate-pulse bg-surface-card rounded-xl p-4 flex items-center gap-4"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "18px 22px",
+        borderRadius: 13,
+        background: "var(--bg2)",
+        border: "1px solid var(--border)",
+      }}
     >
-      <div className="w-8 h-8 rounded-full bg-surface-hover" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-surface-hover rounded w-1/4" />
-        <div className="h-3 bg-surface-hover rounded w-1/2" />
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          background: "var(--bg3)",
+          flexShrink: 0,
+          animation: "breathe 1.5s ease-in-out infinite",
+        }}
+      />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+        <div
+          style={{
+            height: 14,
+            width: "30%",
+            borderRadius: 6,
+            background: "var(--bg3)",
+            animation: "breathe 1.5s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            height: 10,
+            width: "20%",
+            borderRadius: 6,
+            background: "var(--bg3)",
+            animation: "breathe 1.5s 0.2s ease-in-out infinite",
+          }}
+        />
       </div>
-      <div className="h-6 bg-surface-hover rounded w-20" />
-      <div className="h-8 bg-surface-hover rounded w-24" />
+      <div
+        style={{
+          width: 60,
+          height: 28,
+          borderRadius: 6,
+          background: "var(--bg3)",
+          animation: "breathe 1.5s 0.1s ease-in-out infinite",
+        }}
+      />
+      <div
+        style={{
+          width: 80,
+          height: 36,
+          borderRadius: 9,
+          background: "var(--bg3)",
+          animation: "breathe 1.5s 0.15s ease-in-out infinite",
+        }}
+      />
     </div>
   );
 }

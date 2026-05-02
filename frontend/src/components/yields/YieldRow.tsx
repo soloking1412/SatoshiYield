@@ -3,7 +3,9 @@ import type { NormalizedYield } from "../../types/yield.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { RiskBadge } from "./RiskBadge.js";
 import { useWallet } from "../../context/WalletContext.js";
-import { useDeposit } from "../../hooks/useDeposit.js";
+import { useConnectModal } from "../../context/ConnectModalContext.js";
+import { DepositModal } from "../wallet/DepositModal.js";
+import { useCountUp } from "../../hooks/useCountUp.js";
 
 function formatTvl(usd: number): string {
   if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
@@ -11,109 +13,246 @@ function formatTvl(usd: number): string {
   return `$${usd}`;
 }
 
-function satsToBtc(sats: bigint): string {
-  return (Number(sats) / 1e8).toFixed(6);
+function StaleBadge() {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        background: "oklch(65% .19 22/.12)",
+        border: "1px solid oklch(65% .19 22/.3)",
+        borderRadius: 5,
+        padding: "2px 7px",
+        fontFamily: "'Space Mono', monospace",
+        fontSize: 8,
+        fontWeight: 700,
+        letterSpacing: ".08em",
+        color: "var(--red)",
+        marginTop: 4,
+      }}
+    >
+      STALE
+    </div>
+  );
 }
 
-export function YieldRow({ data }: { data: NormalizedYield }) {
-  const meta = PROTOCOLS[data.protocol];
-  const { isConnected } = useWallet();
-  const deposit = useDeposit();
-  const [amountBtc, setAmountBtc] = useState("");
-  const [showInput, setShowInput] = useState(false);
+function isApyStale(data: NormalizedYield): boolean {
+  if (data.apy_stale) return true;
+  return Date.now() - data.fetched_at > 60 * 60 * 1000;
+}
 
-  function handleDeposit() {
-    const parsed = parseFloat(amountBtc);
-    if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 1.5) return; // max 1.5 sBTC = TVL cap
-    const sats = BigInt(Math.round(parsed * 1e8));
-    if (sats <= 0n) return;
-    deposit.mutate(
-      { protocol: data.protocol, amountSats: sats },
-      {
-        onSuccess: () => {
-          setShowInput(false);
-          setAmountBtc("");
-        },
-      }
-    );
-  }
-
+function ApyNum({ apy, delay = 0 }: { apy: number; delay?: number }) {
+  const val = useCountUp(apy, 900, delay);
   return (
-    <div className="bg-surface-card rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-surface-hover transition-colors">
-      <div className="flex items-center gap-3 sm:w-40">
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-          style={{ backgroundColor: meta.color }}
-        >
-          {meta.name.slice(0, 2).toUpperCase()}
-        </div>
-        <span className="font-medium text-text-primary">{meta.name}</span>
+    <div style={{ minWidth: 76 }}>
+      <div
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          color: "var(--green)",
+          letterSpacing: "-0.03em",
+          lineHeight: 1,
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        {val.toFixed(1)}%
       </div>
-
-      <div className="flex items-center gap-6 flex-1">
-        <div>
-          <p className="text-xl font-bold text-yield-green">
-            {data.apy_percent.toFixed(1)}%
-          </p>
-          <p className="text-xs text-text-secondary">APY</p>
-        </div>
-
-        <RiskBadge level={data.risk_level} />
-
-        <div className="hidden md:block">
-          <p className="text-sm text-text-primary">{formatTvl(data.tvl_usd)}</p>
-          <p className="text-xs text-text-secondary">TVL</p>
-        </div>
-
-        <div className="hidden lg:block">
-          <p className="text-sm text-text-primary">{data.reward_token}</p>
-          <p className="text-xs text-text-secondary">Reward</p>
-        </div>
-
-        {data.lock_period_days > 0 && (
-          <div className="hidden md:block">
-            <p className="text-sm text-text-primary">{data.lock_period_days}d</p>
-            <p className="text-xs text-text-secondary">Lock</p>
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2">
-        {isConnected && showInput ? (
-          <>
-            <input
-              type="number"
-              placeholder="0.001"
-              value={amountBtc}
-              onChange={(e) => setAmountBtc(e.target.value)}
-              className="w-28 px-3 py-2 rounded-lg bg-surface-base border border-surface-border text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-brand-orange"
-              min="0"
-              step="0.001"
-            />
-            <button
-              onClick={handleDeposit}
-              disabled={deposit.isPending || !amountBtc}
-              className="px-4 py-2 rounded-lg bg-brand-orange text-white text-sm font-medium hover:bg-brand-orange-dim disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {deposit.isPending ? "..." : "Deposit"}
-            </button>
-            <button
-              onClick={() => setShowInput(false)}
-              className="px-3 py-2 rounded-lg text-text-secondary hover:text-text-primary text-sm transition-colors"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={() => (isConnected ? setShowInput(true) : undefined)}
-            disabled={!isConnected}
-            className="px-5 py-2 rounded-lg bg-brand-orange text-white text-sm font-medium hover:bg-brand-orange-dim disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 min-w-[90px]"
-          >
-            Deposit
-          </button>
-        )}
+      <div
+        style={{
+          fontFamily: "'Space Mono', monospace",
+          fontSize: 9,
+          color: "var(--muted)",
+          letterSpacing: ".08em",
+          marginTop: 3,
+        }}
+      >
+        APY
       </div>
     </div>
+  );
+}
+
+interface Props {
+  data: NormalizedYield;
+  index: number;
+  isBest: boolean;
+}
+
+export function YieldRow({ data, index, isBest }: Props) {
+  const meta = PROTOCOLS[data.protocol];
+  const { isConnected } = useWallet();
+  const { openConnectModal } = useConnectModal();
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [hover, setHover] = useState(false);
+
+  const stale = isApyStale(data);
+
+  const handleDeposit = () => {
+    if (stale) return;
+    if (!isConnected) {
+      openConnectModal();
+      return;
+    }
+    setDepositOpen(true);
+  };
+
+  return (
+    <>
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          padding: "18px 22px",
+          borderRadius: 13,
+          background: hover ? "var(--bg3)" : "var(--bg2)",
+          border: isBest
+            ? "1px solid oklch(68% .19 52/.28)"
+            : "1px solid var(--border)",
+          transition: "background .18s, border-color .18s",
+          position: "relative",
+          overflow: "hidden",
+          animation: isBest ? "glowRow 3.5s 0.5s ease-in-out infinite" : undefined,
+        }}
+      >
+        {isBest && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              background: "oklch(68% .19 52/.1)",
+              borderBottom: "1px solid oklch(68% .19 52/.2)",
+              borderRight: "1px solid oklch(68% .19 52/.2)",
+              borderRadius: "0 0 7px 0",
+              padding: "2px 8px",
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 8,
+              fontWeight: 700,
+              letterSpacing: ".1em",
+              color: "var(--amber)",
+            }}
+          >
+            BEST RATE
+          </div>
+        )}
+
+        {/* Rank — hidden on mobile */}
+        <div
+          className="hidden md:block"
+          style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: 11,
+            color: "var(--lo)",
+            minWidth: 18,
+            textAlign: "center",
+            marginTop: isBest ? 10 : 0,
+          }}
+        >
+          #{index + 1}
+        </div>
+
+        {/* Protocol icon */}
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: meta.color,
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: 700,
+            color: "#fff",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {meta.abbr}
+        </div>
+
+        {/* Protocol name */}
+        <div style={{ minWidth: 88, flex: 0 }}>
+          <div style={{ fontWeight: 600, fontSize: 15 }}>{meta.name}</div>
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>
+            sBTC · Reward
+          </div>
+        </div>
+
+        <div>
+          <ApyNum apy={data.apy_percent} delay={index * 90} />
+          {isApyStale(data) && <StaleBadge />}
+        </div>
+
+        <div style={{ minWidth: 50 }}>
+          <RiskBadge level={data.risk_level} />
+        </div>
+
+        {/* TVL — hidden on small screens */}
+        <div className="hidden sm:block" style={{ minWidth: 70 }}>
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 500,
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {formatTvl(data.tvl_usd)}
+          </div>
+          <div
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9,
+              color: "var(--muted)",
+              marginTop: 2,
+              letterSpacing: ".05em",
+            }}
+          >
+            TVL
+          </div>
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <button
+          onClick={handleDeposit}
+          disabled={stale}
+          title={stale ? "APY data is stale — deposits paused" : undefined}
+          style={{
+            background: stale ? "transparent" : isBest ? "var(--amber)" : "transparent",
+            color: stale ? "var(--lo)" : isBest ? "#000" : "var(--amber)",
+            border: `1.5px solid ${stale ? "var(--border)" : "var(--amber)"}`,
+            borderRadius: 9,
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 13,
+            fontWeight: 700,
+            padding: "9px 20px",
+            cursor: stale ? "not-allowed" : "pointer",
+            flexShrink: 0,
+            opacity: stale ? 0.45 : 1,
+            transition: "background .15s, color .15s, opacity .15s",
+          }}
+          onMouseOver={(e) => {
+            if (stale) return;
+            e.currentTarget.style.background = "var(--amber)";
+            e.currentTarget.style.color = "#000";
+          }}
+          onMouseOut={(e) => {
+            if (stale) return;
+            e.currentTarget.style.background = isBest ? "var(--amber)" : "transparent";
+            e.currentTarget.style.color = isBest ? "#000" : "var(--amber)";
+          }}
+        >
+          {isConnected ? "Deposit" : "Connect"}
+        </button>
+      </div>
+
+      {depositOpen && (
+        <DepositModal data={data} onClose={() => setDepositOpen(false)} />
+      )}
+    </>
   );
 }

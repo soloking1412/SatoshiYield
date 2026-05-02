@@ -7,4 +7,4 @@
 (define-public (rebalance
     (from-adapter <yield-source-trait>)
     (to-adapter   <yield-source-trait>))
-  (contract-call? .vault rebalance from-adapter to-adapter))
+  (contract-call? .vault-v2 rebalance from-adapter to-adapter))

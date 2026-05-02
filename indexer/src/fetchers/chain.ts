@@ -94,3 +94,46 @@ export async function getBtcPriceUsd(): Promise<number> {
 export function satsToUsd(sats: number, btcPrice: number): number {
   return (sats / 1e8) * btcPrice;
 }
+
+export interface AdapterOracleState {
+  apyBps: number;
+  lastUpdatedBlock: number;
+  isStale: boolean;
+}
+
+/**
+ * Reads APY and last-updated-block from an adapter.
+ * If get-apy returns an error (stale oracle), isStale is set to true.
+ */
+export async function readAdapterOracleState(
+  contractName: string
+): Promise<AdapterOracleState> {
+  assertSafeName(contractName, "contractName");
+
+  const [lastBlockResult, apyResult] = await Promise.allSettled([
+    readUint(contractName, "get-last-updated-block"),
+    readUint(contractName, "get-apy"),
+  ]);
+
+  const lastUpdatedBlock =
+    lastBlockResult.status === "fulfilled" ? lastBlockResult.value : 0;
+
+  if (apyResult.status === "rejected") {
+    return { apyBps: 0, lastUpdatedBlock, isStale: true };
+  }
+
+  return { apyBps: apyResult.value, lastUpdatedBlock, isStale: false };
+}
+
+/**
+ * Returns true if newBps deviates more than maxPct% from currentBps.
+ * Used as a pre-flight check before pushing APY on-chain.
+ */
+export function exceedsDeviation(
+  newBps: number,
+  currentBps: number,
+  maxPct = 50
+): boolean {
+  if (currentBps === 0) return false;
+  return (Math.abs(newBps - currentBps) / currentBps) * 100 > maxPct;
+}

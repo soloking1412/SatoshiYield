@@ -83,9 +83,9 @@ plan:
             path: contracts/token/mock-sbtc.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: vault
+            contract-name: vault-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/vault.clar
+            path: contracts/vault-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: rebalancer
@@ -93,9 +93,9 @@ plan:
             path: contracts/rebalancer.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: vault-v2
+            contract-name: vault
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/vault-v2.clar
+            path: contracts/vault.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: velar-adapter

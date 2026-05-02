@@ -1,21 +1,50 @@
 import { Link } from "react-router-dom";
+import { MarkSC } from "../shared/MarkSC.js";
 
 export function EmptyPortfolio() {
   return (
-    <div className="rounded-xl border border-surface-border p-12 flex flex-col items-center gap-4 text-center">
-      <div className="w-16 h-16 rounded-full bg-surface-card flex items-center justify-center">
-        <span className="text-2xl text-brand-orange">&#8383;</span>
-      </div>
-      <h2 className="text-lg font-semibold text-text-primary">
-        No active position
-      </h2>
-      <p className="text-text-secondary text-sm max-w-xs">
-        You don't have any sBTC deposited yet. Go to Yields to find the best
-        rate and start earning.
+    <div
+      style={{
+        borderRadius: 16,
+        border: "1px solid var(--border)",
+        padding: "64px 24px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        textAlign: "center",
+      }}
+    >
+      <MarkSC size={52} pulse />
+      <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>No active position</h2>
+      <p
+        style={{
+          color: "var(--muted)",
+          fontSize: 14,
+          lineHeight: 1.7,
+          maxWidth: 320,
+          margin: 0,
+        }}
+      >
+        You don't have any sBTC deposited yet. Go to Yields to find the best rate and start
+        earning.
       </p>
       <Link
         to="/"
-        className="px-5 py-2.5 rounded-lg bg-brand-orange text-white text-sm font-medium hover:bg-brand-orange-dim transition-colors"
+        style={{
+          background: "var(--amber)",
+          color: "#000",
+          border: "none",
+          borderRadius: 10,
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 14,
+          fontWeight: 700,
+          padding: "13px 28px",
+          cursor: "pointer",
+          textDecoration: "none",
+          display: "inline-block",
+          marginTop: 8,
+        }}
       >
         View Yields
       </Link>
