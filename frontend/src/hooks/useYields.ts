@@ -23,6 +23,8 @@ function validateYield(raw: unknown): NormalizedYield | null {
   const token = obj["reward_token"];
   const tvl = obj["tvl_usd"];
   const fetched = obj["fetched_at"];
+  const lastBlock = obj["last_updated_block"];
+  const apyStale = obj["apy_stale"];
 
   if (
     typeof protocol !== "string" || !VALID_PROTOCOLS.has(protocol) ||
@@ -44,6 +46,8 @@ function validateYield(raw: unknown): NormalizedYield | null {
     reward_token: token,
     tvl_usd: tvl,
     fetched_at: fetched,
+    last_updated_block: typeof lastBlock === "number" ? lastBlock : 0,
+    apy_stale: typeof apyStale === "boolean" ? apyStale : false,
   };
 }
 
