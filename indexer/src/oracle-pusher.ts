@@ -10,16 +10,11 @@
  *   ORACLE_PRIVATE_KEY    — secp256k1 private key (hex) for this instance
  *   STACKS_API_URL        — Stacks node RPC base URL
  *   STACKS_NETWORK        — "testnet" | "mainnet"
+ *
+ * Install before running:
+ *   npm install @stacks/transactions
  */
 
-import {
-  makeContractCall,
-  broadcastTransaction,
-  uintCV,
-  AnchorMode,
-  StacksTestnet,
-  StacksMainnet,
-} from "@stacks/transactions";
 import { readUint, exceedsDeviation } from "./fetchers/chain.js";
 
 const DEPLOYER = process.env["DEPLOYER_ADDRESS"] ?? "";
@@ -44,6 +39,8 @@ export interface PushResult {
 /**
  * Push a new APY value to one adapter.
  * Pre-flight: reads current on-chain APY and rejects if deviation >50%.
+ * Dynamically imports @stacks/transactions so the indexer server itself
+ * does not need that package installed.
  */
 export async function pushApy(
   contractName: string,
@@ -57,7 +54,6 @@ export async function pushApy(
   try {
     currentBps = await readUint(contractName, "get-apy");
   } catch {
-    // Stale oracle — get-apy returned an error. Still safe to push.
     currentBps = 0;
   }
 
@@ -68,6 +64,10 @@ export async function pushApy(
     );
     return { adapter: contractName, pushed: false, reason: "deviation_exceeded" };
   }
+
+  // Dynamic import so @stacks/transactions is optional at build time
+  const { makeContractCall, broadcastTransaction, uintCV, AnchorMode, StacksTestnet, StacksMainnet } =
+    await import("@stacks/transactions" as string);
 
   const network = IS_MAINNET ? new StacksMainnet() : new StacksTestnet();
 
