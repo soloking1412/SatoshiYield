@@ -134,7 +134,7 @@ export function PositionCard({ position }: { position: UserPosition }) {
             ["EARNED", `+${earned.toFixed(6)} sBTC`,       "var(--green)", "border-b sm:border-r sm:border-b-0 [border-color:var(--border)]"],
             ["RISK",   riskLabel,                          riskColor,      "border-r [border-color:var(--border)]"],
             ["TVL",    formatTvl(tvl),                     "var(--text)",  ""],
-          ].map(([label, value, color, borderCls], i) => (
+          ].map(([label, value, color, borderCls]) => (
             <div
               key={label}
               className={borderCls as string}
