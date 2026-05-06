@@ -25,6 +25,7 @@ function validateYield(raw: unknown): NormalizedYield | null {
   const fetched = obj["fetched_at"];
   const lastBlock = obj["last_updated_block"];
   const apyStale = obj["apy_stale"];
+  const isLive = obj["is_live_integration"];
 
   if (
     typeof protocol !== "string" || !VALID_PROTOCOLS.has(protocol) ||
@@ -48,6 +49,7 @@ function validateYield(raw: unknown): NormalizedYield | null {
     fetched_at: fetched,
     last_updated_block: typeof lastBlock === "number" ? lastBlock : 0,
     apy_stale: typeof apyStale === "boolean" ? apyStale : false,
+    is_live_integration: typeof isLive === "boolean" ? isLive : false,
   };
 }
 

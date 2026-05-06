@@ -6,6 +6,7 @@ import {
   satsToUsd,
   exceedsDeviation,
 } from "./chain.js";
+import { fetchVelarNativeApy } from "./native-apy.js";
 
 export async function fetchVelar(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
@@ -46,27 +47,6 @@ export async function fetchVelar(): Promise<NormalizedYield> {
     fetched_at: Date.now(),
     last_updated_block: state.lastUpdatedBlock,
     apy_stale,
+    is_live_integration: false,
   };
-}
-
-async function fetchVelarNativeApy(): Promise<number | null> {
-  try {
-    const res = await fetch(
-      "https://api.velar.co/v1/pools/apy",
-      { signal: AbortSignal.timeout(6_000) }
-    );
-    if (!res.ok) return null;
-    const data: unknown = await res.json();
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "apy" in data &&
-      typeof (data as Record<string, unknown>)["apy"] === "number"
-    ) {
-      return (data as { apy: number }).apy;
-    }
-    return null;
-  } catch {
-    return null;
-  }
 }

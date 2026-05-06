@@ -111,7 +111,12 @@
         (if (>= (var-get total-shares) amount)
           (- (var-get total-shares) amount)
           u0))
-      (ok amount))))
+      ;; sBTC was deposited here by vault. Return it so vault can pay user.
+      ;; STUB: no external protocol — 1:1 return, no yield accrual.
+      (let ((vault (unwrap! (var-get authorized-vault) err-not-vault)))
+        (try! (as-contract
+          (contract-call? .mock-sbtc transfer amount tx-sender vault none)))
+        (ok amount)))))
 
 (define-public (set-apy (bps uint))
   (let ((caller tx-sender))

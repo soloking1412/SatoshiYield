@@ -36,6 +36,40 @@ function StaleBadge() {
   );
 }
 
+function LiveBadge() {
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        background: "oklch(64% .19 150/.12)",
+        border: "1px solid oklch(64% .19 150/.3)",
+        borderRadius: 5,
+        padding: "2px 7px",
+        fontFamily: "'Space Mono', monospace",
+        fontSize: 8,
+        fontWeight: 700,
+        letterSpacing: ".08em",
+        color: "oklch(64% .19 150)",
+        marginTop: 4,
+      }}
+    >
+      <span
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          background: "oklch(64% .19 150)",
+          display: "inline-block",
+          animation: "pulse 2s ease-in-out infinite",
+        }}
+      />
+      LIVE
+    </div>
+  );
+}
+
 function isApyStale(data: NormalizedYield): boolean {
   if (data.apy_stale) return true;
   return Date.now() - data.fetched_at > 60 * 60 * 1000;
@@ -185,6 +219,7 @@ export function YieldRow({ data, index, isBest }: Props) {
         <div>
           <ApyNum apy={data.apy_percent} delay={index * 90} />
           {isApyStale(data) && <StaleBadge />}
+          {data.is_live_integration && !isApyStale(data) && <LiveBadge />}
         </div>
 
         <div style={{ minWidth: 50 }}>

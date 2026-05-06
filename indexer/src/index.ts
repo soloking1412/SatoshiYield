@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { config } from "./config.js";
 import { yieldsRouter } from "./routes/yields.js";
 import { healthRouter } from "./routes/health.js";
+import { startOracleScheduler } from "./oracle-pusher.js";
 
 const app = express();
 
@@ -79,5 +80,9 @@ app.listen(config.port, () => {
   console.log(`indexer running on :${config.port}`);
   console.log(`allowed CORS origins: ${[...ALLOWED_ORIGINS].join(", ")}`);
 });
+
+// Oracle scheduler: fetches live APY from protocol APIs and pushes to chain every 2 h.
+// No-ops silently if ORACLE_PRIVATE_KEY is not set.
+startOracleScheduler(2 * 60 * 60 * 1000);
 
 export default app;

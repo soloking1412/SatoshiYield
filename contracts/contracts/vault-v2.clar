@@ -100,7 +100,9 @@
     (asserts! (is-none (map-get? user-position caller)) err-already-active)
     ;; Blocks deposits when adapter oracle is stale; withdrawals are never checked.
     (try! (contract-call? adapter-contract get-apy))
-    (try! (contract-call? .mock-sbtc transfer amount caller (as-contract tx-sender) none))
+    ;; Send sBTC directly to the adapter so it can forward to the external protocol.
+    ;; tx-sender is still the user (caller) here, satisfying mock-sbtc's sender guard.
+    (try! (contract-call? .mock-sbtc transfer amount caller (contract-of adapter-contract) none))
     (try! (contract-call? adapter-contract deposit amount caller))
     (map-set user-position caller
       { adapter:          adapter-principal
@@ -157,8 +159,11 @@
     (asserts! (is-eq (get adapter position) from-principal) err-wrong-adapter)
     (let ((amount (get principal-amount position)))
       (try! (assert-rebalance-open to-principal))
-      ;; gross may be > amount when a real adapter accrues yield
+      ;; gross may be > amount when a real adapter accrues yield.
+      ;; from-adapter.withdraw sends sBTC to this vault, then we forward to to-adapter.
       (let ((gross (try! (contract-call? from-adapter withdraw amount caller))))
+        (try! (as-contract
+          (contract-call? .mock-sbtc transfer gross tx-sender (contract-of to-adapter) none)))
         (try! (contract-call? to-adapter deposit gross caller))
         ;; Update principal to gross so the new position reflects carried yield
         (map-set user-position caller

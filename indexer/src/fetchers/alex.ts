@@ -6,6 +6,7 @@ import {
   satsToUsd,
   exceedsDeviation,
 } from "./chain.js";
+import { fetchAlexNativeApy } from "./native-apy.js";
 
 export async function fetchAlex(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
@@ -46,28 +47,6 @@ export async function fetchAlex(): Promise<NormalizedYield> {
     fetched_at: Date.now(),
     last_updated_block: state.lastUpdatedBlock,
     apy_stale,
+    is_live_integration: true,
   };
-}
-
-/** Fetch APY from Alex's own API as a cross-source reference. Returns null on failure. */
-async function fetchAlexNativeApy(): Promise<number | null> {
-  try {
-    const res = await fetch(
-      "https://api.alexlab.co/v1/stats/apy",
-      { signal: AbortSignal.timeout(6_000) }
-    );
-    if (!res.ok) return null;
-    const data: unknown = await res.json();
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "apy" in data &&
-      typeof (data as Record<string, unknown>)["apy"] === "number"
-    ) {
-      return (data as { apy: number }).apy;
-    }
-    return null;
-  } catch {
-    return null;
-  }
 }

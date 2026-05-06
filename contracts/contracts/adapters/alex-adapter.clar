@@ -19,12 +19,14 @@
 (define-constant err-no-consensus   (err u108))
 (define-constant err-deviation      (err u109))
 (define-constant err-bad-oracle-idx (err u110))
+(define-constant err-protocol-call  (err u111))
 
 (define-data-var adapter-paused     bool false)
 (define-data-var current-apy-bps    uint u1800)
 (define-data-var total-shares       uint u0)
 (define-data-var authorized-vault   (optional principal) none)
 (define-data-var last-updated-block uint u0)
+(define-data-var lp-token-balance   uint u0)
 
 ;; oracle slot index → principal  (slots 0, 1, 2)
 (define-map oracle-principals   uint principal)
@@ -116,22 +118,51 @@
     (try! (assert-vault))
     (asserts! (not (var-get adapter-paused)) err-paused)
     (asserts! (> amount u0) err-zero-amount)
-    (let ((existing (default-to u0 (map-get? user-shares user))))
-      (map-set user-shares user (+ existing amount))
-      (var-set total-shares (+ (var-get total-shares) amount))
-      (ok amount))))
+    ;; sBTC is already in this contract (vault transferred it before calling deposit).
+    ;; Forward to ALEX Lab pool and receive LP shares back.
+    ;; ;;CONFIRM: verify add-to-position function name against ALEX testnet contract
+    ;; ;;         ST29E61D211DD0HB0S0JSKZ05X0DSAJS5G5QSTXDX.alex-vault via Hiro Explorer
+    (let ((lp-received
+            (try! (as-contract
+              (contract-call?
+                'ST29E61D211DD0HB0S0JSKZ05X0DSAJS5G5QSTXDX.alex-vault
+                add-to-position
+                amount)))))
+      (let ((existing (default-to u0 (map-get? user-shares user))))
+        (map-set user-shares user (+ existing lp-received))
+        (var-set total-shares (+ (var-get total-shares) lp-received))
+        (var-set lp-token-balance (+ (var-get lp-token-balance) lp-received))
+        (ok lp-received)))))
 
 (define-public (withdraw (amount uint) (user principal))
   (begin
     (try! (assert-vault))
     (let ((shares (default-to u0 (map-get? user-shares user))))
       (asserts! (>= shares amount) err-insufficient)
-      (map-set user-shares user (- shares amount))
-      (var-set total-shares
-        (if (>= (var-get total-shares) amount)
-          (- (var-get total-shares) amount)
-          u0))
-      (ok amount))))
+      ;; Redeem LP shares from ALEX. Gross sBTC (principal + yield) returns here.
+      ;; ;;CONFIRM: ALEX may return a tuple { dx: uint, dy: uint } — if so,
+      ;; ;;         extract the sBTC component with (get dx result).
+      ;; ;;         Verify reduce-position function name against ALEX testnet contract.
+      (let ((gross
+              (try! (as-contract
+                (contract-call?
+                  'ST29E61D211DD0HB0S0JSKZ05X0DSAJS5G5QSTXDX.alex-vault
+                  reduce-position
+                  amount)))))
+        (map-set user-shares user (- shares amount))
+        (var-set total-shares
+          (if (>= (var-get total-shares) amount)
+            (- (var-get total-shares) amount)
+            u0))
+        (var-set lp-token-balance
+          (if (>= (var-get lp-token-balance) amount)
+            (- (var-get lp-token-balance) amount)
+            u0))
+        ;; Send gross sBTC from adapter to vault; vault pays the user.
+        (let ((vault (unwrap! (var-get authorized-vault) err-not-vault)))
+          (try! (as-contract
+            (contract-call? .mock-sbtc transfer gross tx-sender vault none)))
+          (ok gross))))))
 
 ;; ---------------------------------------------------------------
 ;; Oracle management

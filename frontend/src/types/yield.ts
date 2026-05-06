@@ -12,4 +12,5 @@ export interface NormalizedYield {
   fetched_at: number;
   last_updated_block: number;
   apy_stale: boolean;
+  is_live_integration: boolean;
 }
