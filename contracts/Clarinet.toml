@@ -55,6 +55,31 @@ path = "contracts/rebalancer.clar"
 clarity_version = 3
 epoch = "latest"
 
+[contracts.bitflow-adapter-v2]
+path = "contracts/adapters/bitflow-adapter-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.alex-adapter-v2]
+path = "contracts/adapters/alex-adapter-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-adapter-v2]
+path = "contracts/adapters/zest-adapter-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.velar-adapter-v2]
+path = "contracts/adapters/velar-adapter-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault-v3]
+path = "contracts/vault-v3.clar"
+clarity_version = 3
+epoch = "latest"
+
 [repl.analysis]
 passes = ["check_checker"]
 check_checker = { trusted_sender = true, trusted_caller = true, callee_filter = false }

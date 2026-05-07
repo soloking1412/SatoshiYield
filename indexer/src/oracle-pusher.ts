@@ -21,15 +21,18 @@ import {
 import { readUint, exceedsDeviation } from "./fetchers/chain.js";
 import { fetchNativeApys } from "./fetchers/native-apy.js";
 
-const DEPLOYER   = process.env["DEPLOYER_ADDRESS"]   ?? "";
-const ORACLE_KEY = process.env["ORACLE_PRIVATE_KEY"] ?? "";
-const IS_MAINNET = process.env["STACKS_NETWORK"]     === "mainnet";
+const DEPLOYER      = process.env["DEPLOYER_ADDRESS"]   ?? "";
+const ORACLE_KEY    = process.env["ORACLE_PRIVATE_KEY"] ?? "";
+const IS_MAINNET    = process.env["STACKS_NETWORK"]     === "mainnet";
+const STACKS_API_BASE = IS_MAINNET
+  ? "https://api.hiro.so"
+  : "https://api.testnet.hiro.so";
 
 const ADAPTERS = [
-  "alex-adapter",
-  "bitflow-adapter",
-  "zest-adapter",
-  "velar-adapter",
+  "alex-adapter-v2",
+  "bitflow-adapter-v2",
+  "zest-adapter-v2",
+  "velar-adapter-v2",
 ] as const;
 
 export interface PushResult {
@@ -45,7 +48,8 @@ export interface PushResult {
  */
 export async function pushApy(
   contractName: string,
-  newBps: number
+  newBps: number,
+  options?: { nonce?: number }
 ): Promise<PushResult> {
   if (!DEPLOYER || !ORACLE_KEY) {
     return { adapter: contractName, pushed: false, reason: "missing_env" };
@@ -80,6 +84,7 @@ export async function pushApy(
     functionArgs: [uintCV(newBps)],
     senderKey: ORACLE_KEY,
     network: networkName,
+    nonce: options?.nonce !== undefined ? BigInt(options.nonce) : undefined,
   });
 
   const result = await broadcastTransaction({ transaction: tx, network: networkName });
@@ -99,25 +104,34 @@ export async function pushApy(
 export async function pushAllAdapters(
   newBpsMap: Record<string, number>
 ): Promise<PushResult[]> {
-  const results = await Promise.allSettled(
-    ADAPTERS.map((name) => {
-      const bps = newBpsMap[name];
-      if (bps === undefined) {
-        return Promise.resolve<PushResult>({
-          adapter: name,
-          pushed: false,
-          reason: "no_bps_provided",
-        });
-      }
-      return pushApy(name, bps);
-    })
-  );
+  // Fetch base nonce once — sequential broadcasts each get their own nonce slot.
+  let baseNonce = 0;
+  try {
+    const res = await fetch(`${STACKS_API_BASE}/v2/accounts/${DEPLOYER}?proof=0`);
+    const data = await res.json() as { nonce: number };
+    baseNonce = data.nonce;
+  } catch {
+    // If nonce fetch fails, let makeContractCall auto-detect (may collide).
+    console.warn("[oracle] could not fetch nonce — falling back to auto-nonce");
+  }
 
-  return results.map((r, i) =>
-    r.status === "fulfilled"
-      ? r.value
-      : { adapter: ADAPTERS[i]!, pushed: false, reason: String(r.reason) }
-  );
+  const results: PushResult[] = [];
+  let nonce = baseNonce;
+
+  for (const name of ADAPTERS) {
+    const bps = newBpsMap[name];
+    if (bps === undefined) {
+      results.push({ adapter: name, pushed: false, reason: "no_bps_provided" });
+      continue;
+    }
+    try {
+      const result = await pushApy(name, bps, { nonce: nonce++ });
+      results.push(result);
+    } catch (err) {
+      results.push({ adapter: name, pushed: false, reason: String(err) });
+    }
+  }
+  return results;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,10 +145,10 @@ export async function pushAllAdapters(
 async function buildBpsMap(): Promise<Record<string, number>> {
   const apys = await fetchNativeApys();
   const map: Record<string, number> = {};
-  if (apys.bitflow !== null) map["bitflow-adapter"] = Math.round(apys.bitflow * 100);
-  if (apys.alex    !== null) map["alex-adapter"]    = Math.round(apys.alex    * 100);
-  if (apys.zest    !== null) map["zest-adapter"]    = Math.round(apys.zest    * 100);
-  if (apys.velar   !== null) map["velar-adapter"]   = Math.round(apys.velar   * 100);
+  if (apys.bitflow !== null) map["bitflow-adapter-v2"] = Math.round(apys.bitflow * 100);
+  if (apys.alex    !== null) map["alex-adapter-v2"]    = Math.round(apys.alex    * 100);
+  if (apys.zest    !== null) map["zest-adapter-v2"]    = Math.round(apys.zest    * 100);
+  if (apys.velar   !== null) map["velar-adapter-v2"]   = Math.round(apys.velar   * 100);
   return map;
 }
 

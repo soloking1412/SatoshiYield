@@ -63,6 +63,11 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
+            contract-name: mock-sbtc
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/token/mock-sbtc.clar
+            clarity-version: 3
+        - emulated-contract-publish:
             contract-name: yield-source
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/traits/yield-source.clar
@@ -73,14 +78,19 @@ plan:
             path: contracts/adapters/alex-adapter.clar
             clarity-version: 3
         - emulated-contract-publish:
+            contract-name: alex-adapter-v2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/adapters/alex-adapter-v2.clar
+            clarity-version: 3
+        - emulated-contract-publish:
             contract-name: bitflow-adapter
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/adapters/bitflow-adapter.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: mock-sbtc
+            contract-name: bitflow-adapter-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/token/mock-sbtc.clar
+            path: contracts/adapters/bitflow-adapter-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: vault-v2
@@ -98,9 +108,19 @@ plan:
             path: contracts/vault.clar
             clarity-version: 3
         - emulated-contract-publish:
+            contract-name: vault-v3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/vault-v3.clar
+            clarity-version: 3
+        - emulated-contract-publish:
             contract-name: velar-adapter
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/adapters/velar-adapter.clar
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: velar-adapter-v2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/adapters/velar-adapter-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: yield-tracker
@@ -111,5 +131,10 @@ plan:
             contract-name: zest-adapter
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/adapters/zest-adapter.clar
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: zest-adapter-v2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/adapters/zest-adapter-v2.clar
             clarity-version: 3
       epoch: "3.2"

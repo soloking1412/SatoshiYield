@@ -11,8 +11,8 @@ import { fetchVelarNativeApy } from "./native-apy.js";
 export async function fetchVelar(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
     await Promise.allSettled([
-      readAdapterOracleState("velar-adapter"),
-      readUint("velar-adapter", "get-total-deposited"),
+      readAdapterOracleState("velar-adapter-v2"),
+      readUint("velar-adapter-v2", "get-total-deposited"),
       getBtcPriceUsd(),
       fetchVelarNativeApy(),
     ]);

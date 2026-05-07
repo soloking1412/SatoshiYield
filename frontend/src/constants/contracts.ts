@@ -6,7 +6,7 @@
  *   VITE_NETWORK              - "testnet" (default) or "mainnet"
  *   VITE_DEPLOYER_TESTNET     - Testnet deployer STX address
  *   VITE_DEPLOYER_MAINNET     - Mainnet deployer STX address
- *   VITE_VAULT_CONTRACT_NAME  - Vault contract name (default "vault-v2")
+ *   VITE_VAULT_CONTRACT_NAME  - Vault contract name (default "vault-v3")
  */
 
 const isMainnet = import.meta.env.VITE_NETWORK === "mainnet";
@@ -18,7 +18,7 @@ const DEPLOYER_MAINNET =
 
 export const DEPLOYER = isMainnet ? DEPLOYER_MAINNET : DEPLOYER_TESTNET;
 
-const VAULT_NAME = import.meta.env.VITE_VAULT_CONTRACT_NAME ?? "vault-v2";
+const VAULT_NAME = import.meta.env.VITE_VAULT_CONTRACT_NAME ?? "vault-v3";
 
 export const CONTRACTS = {
   VAULT: `${DEPLOYER}.${VAULT_NAME}`,
@@ -27,9 +27,9 @@ export const CONTRACTS = {
     ? "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token"
     : `${DEPLOYER}.mock-sbtc`,
   ADAPTERS: {
-    bitflow: `${DEPLOYER}.bitflow-adapter`,
-    alex: `${DEPLOYER}.alex-adapter`,
-    zest: `${DEPLOYER}.zest-adapter`,
-    velar: `${DEPLOYER}.velar-adapter`,
+    bitflow: `${DEPLOYER}.bitflow-adapter-v2`,
+    alex: `${DEPLOYER}.alex-adapter-v2`,
+    zest: `${DEPLOYER}.zest-adapter-v2`,
+    velar: `${DEPLOYER}.velar-adapter-v2`,
   },
 } as const;

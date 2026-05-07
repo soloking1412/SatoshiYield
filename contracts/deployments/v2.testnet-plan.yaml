@@ -1,6 +1,6 @@
 ---
-id: 0
-name: Testnet M2 — full deployment
+id: 1
+name: Testnet M2-v2 — versioned adapters + vault-v3
 network: testnet
 stacks-node: "https://api.testnet.hiro.so"
 bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
@@ -9,58 +9,41 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: yield-source
+            contract-name: bitflow-adapter-v2
             expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 100000
-            path: contracts/traits/yield-source.clar
+            cost: 200000
+            path: contracts/adapters/bitflow-adapter-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: mock-sbtc
+            contract-name: alex-adapter-v2
             expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 100000
-            path: contracts/token/mock-sbtc.clar
+            cost: 200000
+            path: contracts/adapters/alex-adapter-v2.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: zest-adapter-v2
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/zest-adapter-v2.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: velar-adapter-v2
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/velar-adapter-v2.clar
             anchor-block-only: true
             clarity-version: 3
       epoch: "3.2"
     - id: 1
       transactions:
         - contract-publish:
-            contract-name: bitflow-adapter
-            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 200000
-            path: contracts/adapters/bitflow-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
-        - contract-publish:
-            contract-name: alex-adapter
-            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 200000
-            path: contracts/adapters/alex-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
-        - contract-publish:
-            contract-name: zest-adapter
-            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 200000
-            path: contracts/adapters/zest-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
-        - contract-publish:
-            contract-name: velar-adapter
-            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
-            cost: 200000
-            path: contracts/adapters/velar-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
-      epoch: "3.2"
-    - id: 2
-      transactions:
-        - contract-publish:
-            contract-name: vault-v2
+            contract-name: vault-v3
             expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
             cost: 300000
-            path: contracts/vault-v2.clar
+            path: contracts/vault-v3.clar
             anchor-block-only: true
             clarity-version: 3
       epoch: "3.2"

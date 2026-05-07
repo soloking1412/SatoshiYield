@@ -52,26 +52,26 @@ export async function fetchBitflowNativeApy(): Promise<number | null> {
   const http = await tryHttp("https://api.bitflow.finance/v1/pools/apy");
   if (http !== null) return http;
   // HTTP unavailable — fall back to on-chain value
-  return chainApyPercent("bitflow-adapter");
+  return chainApyPercent("bitflow-adapter-v2");
 }
 
 export async function fetchAlexNativeApy(): Promise<number | null> {
   // ALEX Lab public pools endpoint (v1 confirmed working)
   const http = await tryHttp("https://api.alexlab.co/v1/pool_stats/fwp-wstx-alex-50-50-v1-01");
   if (http !== null) return http;
-  return chainApyPercent("alex-adapter");
+  return chainApyPercent("alex-adapter-v2");
 }
 
 export async function fetchZestNativeApy(): Promise<number | null> {
   const http = await tryHttp("https://app.zestprotocol.com/api/apy");
   if (http !== null) return http;
-  return chainApyPercent("zest-adapter");
+  return chainApyPercent("zest-adapter-v2");
 }
 
 export async function fetchVelarNativeApy(): Promise<number | null> {
   const http = await tryHttp("https://api.velar.co/v1/pools");
   if (http !== null) return http;
-  return chainApyPercent("velar-adapter");
+  return chainApyPercent("velar-adapter-v2");
 }
 
 // ---------------------------------------------------------------------------
