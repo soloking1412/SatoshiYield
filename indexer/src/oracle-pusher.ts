@@ -7,9 +7,10 @@ import { readUint, exceedsDeviation } from "./fetchers/chain.js";
 import { fetchNativeApys } from "./fetchers/native-apy.js";
 import type { NativeApyResult } from "./fetchers/native-apy.js";
 
-const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]   ?? "";
-const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"] ?? "";
-const IS_MAINNET      = process.env["STACKS_NETWORK"]     === "mainnet";
+const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]    ?? "";
+const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"]  ?? "";
+const ORACLE_KEY_2    = process.env["ORACLE_PRIVATE_KEY_2"] ?? "";
+const IS_MAINNET      = process.env["STACKS_NETWORK"]      === "mainnet";
 const STACKS_API_BASE = IS_MAINNET
   ? "https://api.hiro.so"
   : "https://api.testnet.hiro.so";
@@ -47,9 +48,10 @@ export interface PushResult {
 export async function pushApy(
   contractName: string,
   newBps: number,
-  options?: { nonce?: number }
+  options?: { nonce?: number; senderKey?: string }
 ): Promise<PushResult> {
-  if (!DEPLOYER || !ORACLE_KEY) {
+  const key = options?.senderKey ?? ORACLE_KEY;
+  if (!DEPLOYER || !key) {
     return { adapter: contractName, pushed: false, reason: "missing_env" };
   }
 
@@ -72,7 +74,7 @@ export async function pushApy(
     contractName,
     functionName:    "set-apy",
     functionArgs:    [uintCV(newBps)],
-    senderKey:       ORACLE_KEY,
+    senderKey:       key,
     network,
     nonce: options?.nonce !== undefined ? BigInt(options.nonce) : undefined,
   });
@@ -87,20 +89,37 @@ export async function pushApy(
   return { adapter: contractName, pushed: true, txid: result.txid };
 }
 
+async function fetchNonce(address: string): Promise<number> {
+  try {
+    const res  = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`);
+    const data = await res.json() as { nonce: number };
+    return data.nonce;
+  } catch {
+    return 0;
+  }
+}
+
 export async function pushAllAdapters(
   newBpsMap: Record<string, number>
 ): Promise<PushResult[]> {
-  let baseNonce = 0;
-  try {
-    const res  = await fetch(`${STACKS_API_BASE}/v2/accounts/${DEPLOYER}?proof=0`);
-    const data = await res.json() as { nonce: number };
-    baseNonce  = data.nonce;
-  } catch {
-    console.warn("[oracle] could not fetch nonce — falling back to auto-nonce");
+  const nonce1 = await fetchNonce(DEPLOYER);
+  let n1 = nonce1;
+
+  // If a second oracle key is configured, fetch its nonce too.
+  // Resolve the address from the key to get the right account nonce.
+  let n2 = 0;
+  let addr2 = "";
+  if (ORACLE_KEY_2) {
+    try {
+      const { getAddressFromPrivateKey } = await import("@stacks/transactions");
+      addr2 = getAddressFromPrivateKey(ORACLE_KEY_2, IS_MAINNET ? "mainnet" : "testnet");
+      n2    = await fetchNonce(addr2);
+    } catch {
+      console.warn("[oracle] could not resolve oracle-2 address — skipping second oracle");
+    }
   }
 
   const results: PushResult[] = [];
-  let nonce = baseNonce;
 
   for (const name of ADAPTERS) {
     const bps = newBpsMap[name];
@@ -108,10 +127,22 @@ export async function pushAllAdapters(
       results.push({ adapter: name, pushed: false, reason: "no_bps_provided" });
       continue;
     }
+    // Push from oracle[0]
     try {
-      results.push(await pushApy(name, bps, { nonce: nonce++ }));
+      results.push(await pushApy(name, bps, { nonce: n1++ }));
     } catch (err) {
       results.push({ adapter: name, pushed: false, reason: String(err) });
+    }
+    // Push from oracle[1] when configured — triggers 2-of-3 consensus
+    if (ORACLE_KEY_2 && addr2) {
+      try {
+        const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2 });
+        if (!r.pushed) {
+          console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r.reason}`);
+        }
+      } catch (err) {
+        console.warn(`[oracle] oracle-2 push failed for ${name}: ${String(err)}`);
+      }
     }
   }
   return results;
@@ -167,7 +198,8 @@ export function startOracleScheduler(intervalMs: number): void {
     console.log("[oracle] ORACLE_PRIVATE_KEY not set — scheduler disabled");
     return;
   }
-  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min`);
+  const dualMode = ORACLE_KEY_2 ? " (dual-oracle mode)" : " (single-oracle mode — no consensus)";
+  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min${dualMode}`);
   void runOracleCycle();
   setInterval(() => { void runOracleCycle(); }, intervalMs);
 }
