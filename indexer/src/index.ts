@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { config } from "./config.js";
 import { yieldsRouter } from "./routes/yields.js";
 import { healthRouter } from "./routes/health.js";
+import { faucetRouter } from "./routes/faucet.js";
 import { startOracleScheduler } from "./oracle-pusher.js";
 
 const app = express();
@@ -38,7 +39,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     res.setHeader("Vary", "Origin");
   }
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   if (req.method === "OPTIONS") {
     res.sendStatus(204);
     return;
@@ -69,6 +70,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use("/api/yields", yieldsRouter);
 app.use("/api/health", healthRouter);
+app.use("/api/faucet", faucetRouter);
 
 // --- Global error handler: never leak stack traces ---
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

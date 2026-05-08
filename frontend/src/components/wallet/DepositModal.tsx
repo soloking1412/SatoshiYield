@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import type { NormalizedYield, RiskLevel } from "../../types/yield.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { useDeposit } from "../../hooks/useDeposit.js";
+import { useBalance } from "../../hooks/useBalance.js";
 
 function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?: number }) {
   return (
@@ -79,38 +80,14 @@ const ghostBtn: React.CSSProperties = {
   cursor: "pointer",
 };
 
-interface Props {
-  data: NormalizedYield;
-  onClose: () => void;
+const MIN_BTC = 0.00001;
+
+function formatBtc(sats: bigint): string {
+  return (Number(sats) / 1e8).toFixed(8).replace(/\.?0+$/, "") || "0";
 }
 
-export function DepositModal({ data, onClose }: Props) {
-  const [step, setStep] = useState<"amount" | "confirm">("amount");
-  const [amount, setAmount] = useState("0.001");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const deposit = useDeposit();
-  const meta = PROTOCOLS[data.protocol];
-
-  useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
-
-  const amtNum = parseFloat(amount) || 0;
-  const yearly = (amtNum * data.apy_percent / 100).toFixed(6);
-
-  const handleConfirm = () => {
-    const sats = BigInt(Math.round(amtNum * 1e8));
-    if (sats <= 0n) return;
-    deposit.mutate({ protocol: data.protocol, amountSats: sats });
-  };
-
-  const currentStep = deposit.isSuccess
-    ? "success"
-    : deposit.isPending
-    ? "pending"
-    : step;
-
-  const Overlay = ({ children }: { children: React.ReactNode }) => (
+function Overlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
     <div
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{
@@ -143,10 +120,52 @@ export function DepositModal({ data, onClose }: Props) {
       </div>
     </div>
   );
+}
+
+interface Props {
+  data: NormalizedYield;
+  onClose: () => void;
+}
+
+export function DepositModal({ data, onClose }: Props) {
+  const [step, setStep] = useState<"amount" | "confirm">("amount");
+  const [amount, setAmount] = useState("");
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const deposit = useDeposit();
+  const { data: balanceSats = 0n } = useBalance();
+  const meta = PROTOCOLS[data.protocol];
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
+
+  const amtNum = parseFloat(amount) || 0;
+  const yearly = (amtNum * data.apy_percent / 100).toFixed(6);
+  const balanceBtc = Number(balanceSats) / 1e8;
+  const amountError =
+    amtNum > 0 && amtNum < MIN_BTC
+      ? `Minimum ${MIN_BTC} sBTC`
+      : amtNum > balanceBtc && balanceBtc > 0
+      ? "Insufficient balance"
+      : null;
+  const canProceed = amtNum >= MIN_BTC && amtNum <= balanceBtc && !amountError;
+
+  const handleConfirm = () => {
+    const sats = BigInt(Math.round(amtNum * 1e8));
+    if (sats <= 0n) return;
+    deposit.mutate({ protocol: data.protocol, amountSats: sats });
+  };
+
+  const currentStep = deposit.isSuccess
+    ? "success"
+    : deposit.isPending
+    ? "pending"
+    : step;
 
   if (currentStep === "success") {
     return (
-      <Overlay>
+      <Overlay onClose={onClose}>
         <div style={{ textAlign: "center", padding: "20px 0", animation: "fadeIn .4s ease" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
             <div
@@ -222,7 +241,7 @@ export function DepositModal({ data, onClose }: Props) {
 
   if (currentStep === "pending") {
     return (
-      <Overlay>
+      <Overlay onClose={onClose}>
         <div style={{ textAlign: "center", padding: "20px 0" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
             <div
@@ -247,7 +266,7 @@ export function DepositModal({ data, onClose }: Props) {
 
   if (currentStep === "confirm") {
     return (
-      <Overlay>
+      <Overlay onClose={onClose}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Confirm deposit</div>
           <div style={{ fontSize: 13, color: "var(--muted)" }}>
@@ -318,7 +337,7 @@ export function DepositModal({ data, onClose }: Props) {
 
   // Amount step
   return (
-    <Overlay>
+    <Overlay onClose={onClose}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
           <PIcon abbr={meta.abbr} color={meta.color} size={38} />
@@ -331,38 +350,42 @@ export function DepositModal({ data, onClose }: Props) {
         </div>
       </div>
       <div style={{ marginBottom: 18 }}>
-        <label
-          style={{
-            fontFamily: "'Space Mono', monospace",
-            fontSize: 10,
-            color: "var(--lo)",
-            letterSpacing: ".1em",
-            display: "block",
-            marginBottom: 8,
-          }}
-        >
-          AMOUNT
-        </label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <label
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 10,
+              color: "var(--lo)",
+              letterSpacing: ".1em",
+            }}
+          >
+            AMOUNT
+          </label>
+          <span style={{ fontSize: 11, color: balanceSats === 0n ? "var(--red)" : "var(--muted)" }}>
+            Balance: {formatBtc(balanceSats)} sBTC
+          </span>
+        </div>
         <div
           style={{
             display: "flex",
             alignItems: "center",
             background: "var(--bg3)",
-            border: "1.5px solid var(--border)",
+            border: `1.5px solid ${focused ? "var(--amber)" : amountError ? "var(--red)" : "var(--border)"}`,
             borderRadius: 10,
             overflow: "hidden",
             transition: "border .15s",
           }}
-          onFocus={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--amber)")}
-          onBlur={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
         >
           <input
             ref={inputRef}
             type="number"
             value={amount}
+            placeholder="0.00"
             onChange={(e) => setAmount(e.target.value)}
-            step="0.001"
-            min="0.001"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            step="0.00001"
+            min={MIN_BTC}
             style={{
               flex: 1,
               background: "transparent",
@@ -387,7 +410,8 @@ export function DepositModal({ data, onClose }: Props) {
               sBTC
             </span>
             <button
-              onClick={() => setAmount("1.000")}
+              onClick={() => setAmount(formatBtc(balanceSats))}
+              disabled={balanceSats === 0n}
               style={{
                 fontFamily: "'Space Mono', monospace",
                 fontSize: 9,
@@ -397,14 +421,18 @@ export function DepositModal({ data, onClose }: Props) {
                 border: "none",
                 borderRadius: 5,
                 padding: "3px 7px",
-                cursor: "pointer",
+                cursor: balanceSats === 0n ? "not-allowed" : "pointer",
                 fontWeight: 700,
+                opacity: balanceSats === 0n ? 0.4 : 1,
               }}
             >
               MAX
             </button>
           </div>
         </div>
+        {amountError && (
+          <div style={{ fontSize: 11, color: "var(--red)", marginTop: 6 }}>{amountError}</div>
+        )}
       </div>
       <div
         style={{
@@ -417,7 +445,7 @@ export function DepositModal({ data, onClose }: Props) {
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
           <span style={{ fontSize: 13, color: "var(--muted)" }}>Estimated yearly yield</span>
           <span style={{ fontSize: 13, fontWeight: 600, color: "var(--green)" }}>
-            +{yearly} sBTC
+            {amtNum > 0 ? `+${yearly} sBTC` : "—"}
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -429,8 +457,8 @@ export function DepositModal({ data, onClose }: Props) {
         <button onClick={onClose} style={ghostBtn}>Cancel</button>
         <button
           onClick={() => setStep("confirm")}
-          disabled={amtNum <= 0}
-          style={{ ...fillBtn, opacity: amtNum <= 0 ? 0.5 : 1 }}
+          disabled={!canProceed}
+          style={{ ...fillBtn, opacity: canProceed ? 1 : 0.5 }}
         >
           Review →
         </button>

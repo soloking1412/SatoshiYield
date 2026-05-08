@@ -35,7 +35,18 @@ export function PositionCard({ position }: { position: UserPosition }) {
   const tvl = yieldData?.tvl_usd ?? 0;
   const risk = yieldData?.risk_level;
 
-  const earned = useCountUp(0.0034, 1200, 200);
+  // Estimate earned sBTC: principal * APY * (seconds elapsed / seconds per year)
+  const secondsElapsed = position.depositedAt > 0
+    ? Math.max(0, (Date.now() / 1000) - position.depositedAt)
+    : 0;
+  const earnedBtc = apy > 0 && secondsElapsed > 0
+    ? (Number(position.principalSats) / 1e8) * (apy / 100) * (secondsElapsed / (365.25 * 24 * 3600))
+    : 0;
+  const earned = useCountUp(earnedBtc, 1200, 200);
+
+  // Check if current protocol has the best APY among all loaded yields
+  const bestApy = yields ? Math.max(...yields.map((y) => y.apy_percent)) : 0;
+  const isOnBestRate = apy > 0 && apy >= bestApy;
 
   const riskLabel = risk === "medium" ? "Med" : risk ? risk.charAt(0).toUpperCase() + risk.slice(1) : "—";
   const riskColor = risk === "low" ? "var(--green)" : risk === "high" ? "var(--red)" : "var(--yellow)";
@@ -43,7 +54,7 @@ export function PositionCard({ position }: { position: UserPosition }) {
   function formatTvl(usd: number): string {
     if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
     if (usd >= 1_000) return `$${(usd / 1_000).toFixed(0)}K`;
-    return usd ? `$${usd}` : "—";
+    return usd > 0 ? `$${usd}` : "—";
   }
 
   return (
@@ -195,8 +206,8 @@ export function PositionCard({ position }: { position: UserPosition }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                background: "oklch(68% .18 145/0.08)",
-                border: "1px solid oklch(68% .18 145/0.22)",
+                background: isOnBestRate ? "oklch(68% .18 145/0.08)" : "oklch(68% .16 82/0.08)",
+                border: isOnBestRate ? "1px solid oklch(68% .18 145/0.22)" : "1px solid oklch(68% .16 82/0.22)",
                 borderRadius: 8,
                 padding: "8px 12px",
               }}
@@ -206,12 +217,14 @@ export function PositionCard({ position }: { position: UserPosition }) {
                   width: 5,
                   height: 5,
                   borderRadius: "50%",
-                  background: "var(--green)",
+                  background: isOnBestRate ? "var(--green)" : "var(--yellow)",
                   flexShrink: 0,
                 }}
               />
-              <span style={{ fontSize: 12, color: "oklch(72% .18 145)" }}>
-                Best available rate · no rebalance needed
+              <span style={{ fontSize: 12, color: isOnBestRate ? "oklch(72% .18 145)" : "var(--muted)" }}>
+                {isOnBestRate
+                  ? "Best available rate · no rebalance needed"
+                  : "Better rate available · consider rebalancing"}
               </span>
             </div>
           </div>

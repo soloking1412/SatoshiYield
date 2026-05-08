@@ -10,7 +10,7 @@ import { useCountUp } from "../../hooks/useCountUp.js";
 function formatTvl(usd: number): string {
   if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
   if (usd >= 1_000) return `$${(usd / 1_000).toFixed(0)}K`;
-  return `$${usd}`;
+  return usd > 0 ? `$${usd}` : "—";
 }
 
 function StaleBadge() {

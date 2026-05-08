@@ -74,6 +74,8 @@ export function usePositions() {
   return useQuery({
     queryKey: ["position", address],
     enabled: address !== null && !!vaultAddr && !!vaultName,
+    refetchInterval: 15_000,
+    staleTime: 0,
     queryFn: (): Promise<UserPosition | null> => {
       if (!address || !vaultAddr || !vaultName) return Promise.resolve(null);
       return readVaultPosition(vaultAddr, vaultName, address);
