@@ -3,6 +3,7 @@ import type { UserPosition } from "../../types/position.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { useWithdraw } from "../../hooks/useWithdraw.js";
 import { useYields } from "../../hooks/useYields.js";
+import { useCurrentBlock } from "../../hooks/useCurrentBlock.js";
 import { RebalanceModal } from "../rebalance/RebalanceModal.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
 
@@ -30,15 +31,16 @@ export function PositionCard({ position }: { position: UserPosition }) {
   const withdraw = useWithdraw();
   const [rebalanceOpen, setRebalanceOpen] = useState(false);
   const { data: yields } = useYields();
+  const currentBlock = useCurrentBlock();
   const yieldData = yields?.find((y) => y.protocol === position.protocol);
   const apy = yieldData?.apy_percent ?? 0;
   const tvl = yieldData?.tvl_usd ?? 0;
   const risk = yieldData?.risk_level;
 
-  // Estimate earned sBTC: principal * APY * (seconds elapsed / seconds per year)
-  const secondsElapsed = position.depositedAt > 0
-    ? Math.max(0, (Date.now() / 1000) - position.depositedAt)
+  const blocksElapsed = currentBlock > 0 && position.depositedAt > 0
+    ? Math.max(0, currentBlock - position.depositedAt)
     : 0;
+  const secondsElapsed = blocksElapsed * 600;
   const earnedBtc = apy > 0 && secondsElapsed > 0
     ? (Number(position.principalSats) / 1e8) * (apy / 100) * (secondsElapsed / (365.25 * 24 * 3600))
     : 0;

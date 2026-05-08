@@ -3,6 +3,7 @@ import type { NormalizedYield, RiskLevel } from "../../types/yield.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { useDeposit } from "../../hooks/useDeposit.js";
 import { useBalance } from "../../hooks/useBalance.js";
+import { usePositions } from "../../hooks/usePositions.js";
 
 function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?: number }) {
   return (
@@ -134,6 +135,7 @@ export function DepositModal({ data, onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const deposit = useDeposit();
   const { data: balanceSats = 0n } = useBalance();
+  const { data: existingPosition } = usePositions();
   const meta = PROTOCOLS[data.protocol];
 
   useEffect(() => {
@@ -329,6 +331,37 @@ export function DepositModal({ data, onClose }: Props) {
             style={{ ...fillBtn, opacity: deposit.isPending ? 0.5 : 1 }}
           >
             Approve in Wallet
+          </button>
+        </div>
+      </Overlay>
+    );
+  }
+
+  // Block if user already has an active position (vault enforces 1 position per user)
+  if (existingPosition) {
+    const inSamePool = existingPosition.protocol === data.protocol;
+    return (
+      <Overlay onClose={onClose}>
+        <div style={{ textAlign: "center", padding: "20px 0" }}>
+          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>
+            {inSamePool ? "Already in this pool" : "Position already active"}
+          </div>
+          <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.65, marginBottom: 24 }}>
+            {inSamePool
+              ? <>
+                  You already have an active deposit in <strong style={{ color: "var(--text)" }}>{meta.name}</strong>.
+                  Withdraw first, then deposit again.
+                </>
+              : <>
+                  You have an active position in{" "}
+                  <strong style={{ color: "var(--text)" }}>{PROTOCOLS[existingPosition.protocol].name}</strong>.
+                  {" "}Use <strong style={{ color: "var(--amber)" }}>Rebalance</strong> on your
+                  Portfolio page to switch directly, or withdraw first.
+                </>
+            }
+          </div>
+          <button onClick={onClose} style={{ ...fillBtn, maxWidth: 160, margin: "0 auto", display: "block" }}>
+            Got it
           </button>
         </div>
       </Overlay>

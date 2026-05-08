@@ -11,8 +11,8 @@ import { fetchZestNativeApy } from "./native-apy.js";
 export async function fetchZest(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
     await Promise.allSettled([
-      readAdapterOracleState("zest-adapter-v2"),
-      readUint("zest-adapter-v2", "get-total-deposited"),
+      readAdapterOracleState("zest-adapter-v3"),
+      readUint("zest-adapter-v3", "get-total-deposited"),
       getBtcPriceUsd(),
       fetchZestNativeApy(),
     ]);

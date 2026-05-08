@@ -1,0 +1,49 @@
+---
+id: 2
+name: Testnet v3 — 2-of-3 oracle consensus adapters + vault-v4
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: bitflow-adapter-v3
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/bitflow-adapter-v3.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: alex-adapter-v3
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/alex-adapter-v3.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: zest-adapter-v3
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/zest-adapter-v3.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: velar-adapter-v3
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 200000
+            path: contracts/adapters/velar-adapter-v3.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"
+    - id: 1
+      transactions:
+        - contract-publish:
+            contract-name: vault-v4
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 300000
+            path: contracts/vault-v4.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

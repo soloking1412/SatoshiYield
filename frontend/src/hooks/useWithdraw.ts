@@ -26,12 +26,9 @@ export function useWithdraw() {
       });
     },
     onSuccess: (txid) => {
-      show({
-        variant: "success",
-        message: "Withdrawal sent! Funds returning to your wallet…",
-        txid,
-      });
-      void qc.invalidateQueries({ queryKey: ["position"] });
+      show({ variant: "success", message: "Withdrawal sent! Funds returning to your wallet…", txid });
+      void qc.refetchQueries({ queryKey: ["position", address] });
+      void qc.invalidateQueries({ queryKey: ["balance", address] });
     },
     onError: (err: unknown) => {
       const msg =

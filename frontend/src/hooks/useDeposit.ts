@@ -43,12 +43,9 @@ export function useDeposit() {
       });
     },
     onSuccess: (txid) => {
-      show({
-        variant: "success",
-        message: "Deposit sent! Confirming on-chain…",
-        txid,
-      });
-      void qc.invalidateQueries({ queryKey: ["position"] });
+      show({ variant: "success", message: "Deposit sent! Confirming on-chain…", txid });
+      void qc.invalidateQueries({ queryKey: ["position", address] });
+      void qc.invalidateQueries({ queryKey: ["balance", address] });
     },
     onError: (err: unknown) => {
       const msg =
