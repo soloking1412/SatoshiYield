@@ -7,7 +7,8 @@ const DEPLOYER_MAINNET =
 
 export const DEPLOYER = isMainnet ? DEPLOYER_MAINNET : DEPLOYER_TESTNET;
 
-const VAULT_NAME = import.meta.env.VITE_VAULT_CONTRACT_NAME ?? "vault-v4";
+// vault-v4 is the current production vault — env var kept for emergency override only
+const VAULT_NAME = "vault-v4";
 
 export const CONTRACTS = {
   VAULT: `${DEPLOYER}.${VAULT_NAME}`,
