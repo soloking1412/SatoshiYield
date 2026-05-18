@@ -65,7 +65,7 @@ function ThemeToggle() {
 
 export function Header() {
   const { pathname } = useLocation();
-  const { address, isConnected, disconnect } = useWallet();
+  const { address, isConnected, isConnecting, disconnect } = useWallet();
   const { openConnectModal } = useConnectModal();
 
   const tabs = [
@@ -189,6 +189,7 @@ export function Header() {
         ) : (
           <button
             onClick={openConnectModal}
+            disabled={isConnecting}
             style={{
               background: "var(--amber)",
               color: "#000",
@@ -198,11 +199,12 @@ export function Header() {
               fontSize: 13,
               fontWeight: 700,
               padding: "8px 16px",
-              cursor: "pointer",
+              cursor: isConnecting ? "default" : "pointer",
+              opacity: isConnecting ? 0.65 : 1,
               transition: "opacity .15s",
             }}
           >
-            Connect Wallet
+            {isConnecting ? "Connecting…" : "Connect Wallet"}
           </button>
         )}
       </div>

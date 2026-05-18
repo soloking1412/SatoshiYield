@@ -5,6 +5,7 @@ import { WalletProvider } from "./context/WalletContext.js";
 import { ToastProvider } from "./context/ToastContext.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
 import { ConnectModalProvider } from "./context/ConnectModalContext.js";
+import { ErrorBoundary } from "./components/ErrorBoundary.js";
 import { Header } from "./components/layout/Header.js";
 import { Footer } from "./components/layout/Footer.js";
 import { BottomTabs } from "./components/layout/BottomTabs.js";
@@ -14,32 +15,34 @@ import { NotFound } from "./pages/NotFound.js";
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WalletProvider>
-        <ThemeProvider>
-          <ConnectModalProvider>
-            <ToastProvider>
-              <BrowserRouter>
-                <div
-                  className="min-h-screen flex flex-col"
-                  style={{ background: "var(--bg)", color: "var(--text)" }}
-                >
-                  <Header />
-                  <div className="flex-1">
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/portfolio" element={<Portfolio />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <WalletProvider>
+            <ThemeProvider>
+              <ConnectModalProvider>
+                <BrowserRouter>
+                  <div
+                    className="min-h-screen flex flex-col"
+                    style={{ background: "var(--bg)", color: "var(--text)" }}
+                  >
+                    <Header />
+                    <div className="flex-1">
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </div>
+                    <Footer />
+                    <BottomTabs />
                   </div>
-                  <Footer />
-                  <BottomTabs />
-                </div>
-              </BrowserRouter>
-            </ToastProvider>
-          </ConnectModalProvider>
-        </ThemeProvider>
-      </WalletProvider>
-    </QueryClientProvider>
+                </BrowserRouter>
+              </ConnectModalProvider>
+            </ThemeProvider>
+          </WalletProvider>
+        </ToastProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

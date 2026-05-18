@@ -4,6 +4,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
   type ReactNode,
 } from "react";
 import {
@@ -16,6 +17,7 @@ import {
 import type { ClarityValue } from "@stacks/transactions";
 import { cvToHex, postConditionToHex } from "@stacks/transactions";
 import { networkName } from "../lib/stacksClient.js";
+import { useToast } from "./ToastContext.js";
 
 interface ContractCallOptions {
   contractAddress: string;
@@ -29,7 +31,6 @@ interface WalletState {
   address: string | null;
   isConnected: boolean;
   isConnecting: boolean;
-  connectError: string | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   callContract: (options: ContractCallOptions) => Promise<string>;
@@ -39,45 +40,42 @@ const WalletContext = createContext<WalletState | null>(null);
 
 /**
  * Pick the best STX address from a flat AddressEntry array.
- * Prefers the address matching the current network (ST for testnet, SP for mainnet).
- * Xverse returns both testnet and mainnet addresses; without this preference the
- * wrong address is sometimes selected.
+ * Prefers the address matching the active network (ST for testnet, SP for
+ * mainnet) — Xverse returns both, and without this preference the wrong one
+ * is sometimes selected.
  */
 function pickBestAddress(
   entries: { symbol?: string; address?: string }[]
 ): string | null {
   const networkPrefix = networkName === "mainnet" ? "SP" : "ST";
-  // 1. Exact network match
   const exact = entries.find((a) => a.address?.startsWith(networkPrefix));
   if (exact?.address) return exact.address;
-  // 2. Any STX-labelled entry
   const stx = entries.find((a) => a.symbol === "STX");
   if (stx?.address) return stx.address;
-  // 3. Any Stacks address
   const any = entries.find(
     (a) => a.address?.startsWith("ST") || a.address?.startsWith("SP")
   );
   return any?.address ?? null;
 }
 
-/** Read STX address from a connect() response or fall back to localStorage. */
-function extractStxAddress(
-  addresses?: unknown
-): string | null {
-  // 1. Flat array (Leather, standard format)
+/** Read an STX address from a connect() response, or fall back to localStorage. */
+function extractStxAddress(addresses?: unknown): string | null {
+  // Flat array (Leather, standard format).
   if (Array.isArray(addresses) && addresses.length > 0) {
-    const addr = pickBestAddress(addresses as { symbol?: string; address?: string }[]);
+    const addr = pickBestAddress(
+      addresses as { symbol?: string; address?: string }[]
+    );
     if (addr) return addr;
   }
 
-  // 2. Grouped object { testnet: [...], mainnet: [...] } — some Xverse versions
+  // Grouped object { testnet: [...], mainnet: [...] } — some Xverse versions.
   if (addresses && typeof addresses === "object" && !Array.isArray(addresses)) {
     const grouped = addresses as Record<string, { address?: string }[]>;
-    const preferred = networkName === "mainnet" ? grouped["mainnet"] : grouped["testnet"];
+    const preferred =
+      networkName === "mainnet" ? grouped["mainnet"] : grouped["testnet"];
     if (Array.isArray(preferred) && preferred.length > 0 && preferred[0]?.address) {
       return preferred[0].address;
     }
-    // Fall back to any group
     for (const list of Object.values(grouped)) {
       if (Array.isArray(list) && list.length > 0 && list[0]?.address) {
         return list[0].address;
@@ -85,7 +83,7 @@ function extractStxAddress(
     }
   }
 
-  // 3. @stacks/connect localStorage (written on successful connect)
+  // @stacks/connect persists addresses to localStorage on a successful connect.
   try {
     const stored = getLocalStorage();
     const stxList = stored?.addresses?.stx;
@@ -99,23 +97,47 @@ function extractStxAddress(
   return null;
 }
 
-/** Reject after ms milliseconds — used to race against hung wallet calls. */
+/** Reject after `ms` milliseconds — bounds a hung wallet call. */
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  const timer = new Promise<never>((_, reject) =>
-    setTimeout(
-      () => reject(new Error(`${label} timed out after ${ms / 1000}s — check if a wallet popup appeared behind this window`)),
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms / 1000}s`)),
       ms
-    )
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/** True when an error reflects the user dismissing the wallet prompt. */
+function isUserCancellation(msg: string): boolean {
+  const m = msg.toLowerCase();
+  return (
+    m.includes("cancel") ||
+    m.includes("reject") ||
+    m.includes("denied") ||
+    m.includes("declined") ||
+    m.includes("closed")
   );
-  return Promise.race([promise, timer]);
+}
+
+/** Map a raw connect error to a user-actionable message. */
+function friendlyConnectError(msg: string): string {
+  if (msg.toLowerCase().includes("timed out")) {
+    return "Wallet didn't respond. Open your wallet extension, unlock it, set it to Testnet, then try again.";
+  }
+  return `Couldn't connect wallet: ${msg}`;
 }
 
 export function WalletProvider({ children }: { children: ReactNode }) {
+  const { show } = useToast();
   const [address, setAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [connectError, setConnectError] = useState<string | null>(null);
+  // Guards against a second connect() while one is already in flight, which
+  // would open two wallet pickers at once.
+  const connectingRef = useRef(false);
 
-  // Restore address from localStorage on mount (survives page refresh)
+  // Restore the address from localStorage on mount (survives a page refresh).
   useEffect(() => {
     if (isConnected()) {
       const addr = extractStxAddress();
@@ -124,26 +146,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleConnect = useCallback(async () => {
-    setConnectError(null);
+    if (connectingRef.current) return;
+    connectingRef.current = true;
     setIsConnecting(true);
 
     try {
-      // Pass network so Xverse/Leather return the right addresses.
-      // forceWalletSelect: true → always show picker so the user isn't stuck
-      // on a previously-selected unresponsive wallet.
-      // Timeout: surfaces a clear message if the extension never responds.
+      // forceWalletSelect: always show the @stacks/connect picker so the user
+      // can choose any installed wallet (Leather, Xverse, Asigna…) and is never
+      // stuck on a stale prior selection.
       const response = await withTimeout(
         connect({ forceWalletSelect: true, network: networkName }),
-        60_000,
+        90_000,
         "Wallet connection"
       );
 
-      console.log("[wallet] connect() raw response:", JSON.stringify(response));
-
       let addr = extractStxAddress(response?.addresses);
 
-      // Some wallets (Xverse, Asigna) return empty addresses from connect() but
-      // respond correctly to a direct stx_getAddresses request.
+      // Some wallets return empty addresses from connect() but answer a direct
+      // stx_getAddresses request.
       if (!addr) {
         try {
           const fallback = await withTimeout(
@@ -151,43 +171,42 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             15_000,
             "stx_getAddresses"
           );
-          console.log("[wallet] stx_getAddresses fallback:", JSON.stringify(fallback));
-          // Response shape: { addresses: AddressEntry[] } or grouped object
           const raw = fallback as { addresses?: unknown };
           addr = extractStxAddress(raw?.addresses ?? fallback);
         } catch {
-          /* fallback failed — try localStorage next */
+          /* fall through to the localStorage check below */
         }
       }
+
+      // Last resort: read whatever @stacks/connect persisted.
+      if (!addr) addr = extractStxAddress();
 
       if (addr) {
         setAddress(addr);
       } else {
-        // Last resort: @stacks/connect writes to localStorage on connect
-        const stored = extractStxAddress();
-        if (stored) {
-          setAddress(stored);
-        } else {
-          setConnectError(
-            "Wallet connected but returned no address. " +
-              "Make sure your wallet is set to Testnet and try again."
-          );
-        }
+        show({
+          variant: "error",
+          message:
+            "Wallet connected but returned no address. Make sure it is set to Testnet, then try again.",
+        });
       }
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : String(err ?? "Unknown error");
-      console.error("[wallet] connect() error:", msg);
-      setConnectError(msg);
+      // The user closing the picker is not an error — stay silent.
+      if (!isUserCancellation(msg)) {
+        console.error("[wallet] connect failed:", msg);
+        show({ variant: "error", message: friendlyConnectError(msg) });
+      }
     } finally {
+      connectingRef.current = false;
       setIsConnecting(false);
     }
-  }, []);
+  }, [show]);
 
   const handleDisconnect = useCallback(() => {
     disconnect();
     setAddress(null);
-    setConnectError(null);
   }, []);
 
   const callContract = useCallback(
@@ -196,13 +215,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         ? options.contractAddress
         : `${options.contractAddress}.${options.contractName}`;
 
-      // Serialize ClarityValues to hex strings so wallets that JSON-serialize
-      // args (Xverse, Asigna) don't fail on BigInt values inside UintCV etc.
+      // Serialize ClarityValues to hex so wallets that JSON-serialize args
+      // (Xverse, Asigna) don't choke on BigInt values inside UintCV etc.
       const argsHex = options.functionArgs.map((arg) =>
         typeof arg === "string" ? arg : cvToHex(arg)
       );
 
-      // Post-conditions as hex strings — accepted by all @stacks/connect v8 wallets
       const postConditionsHex = (options.postConditions ?? []).map((pc) =>
         postConditionToHex(pc)
       );
@@ -217,7 +235,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       });
 
       if (typeof result !== "object" || result === null || !("txid" in result)) {
-        throw new Error("Wallet returned unexpected result — missing txid");
+        throw new Error("Wallet returned an unexpected result — missing txid");
       }
 
       const txid = (result as Record<string, unknown>)["txid"];
@@ -236,7 +254,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         isConnected: address !== null,
         isConnecting,
-        connectError,
         connect: handleConnect,
         disconnect: handleDisconnect,
         callContract,
