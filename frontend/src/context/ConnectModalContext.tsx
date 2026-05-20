@@ -1,28 +1,25 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { useWallet } from "./WalletContext.js";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { ConnectModal } from "../components/wallet/ConnectModal.js";
 
 interface Ctx {
-  /** Opens the @stacks/connect wallet picker. */
+  /** Opens the app's wallet picker (Xverse / Leather). */
   openConnectModal: () => void;
 }
 
 const ConnectModalContext = createContext<Ctx>({ openConnectModal: () => {} });
 
 /**
- * Wallet connection is handled entirely by the @stacks/connect picker — it
- * already renders a polished, multi-wallet modal. Rendering a second app-owned
- * overlay on top of it blocked some wallets (notably Xverse) from surfacing
- * their approval popup, so this provider just forwards to wallet.connect().
+ * Owns the app's dark-themed wallet picker. Each wallet routes to the library
+ * that reliably drives it — Xverse via sats-connect, Leather via @stacks/connect
+ * — see WalletContext.
  */
 export function ConnectModalProvider({ children }: { children: ReactNode }) {
-  const { connect } = useWallet();
-  const value = useMemo(
-    () => ({ openConnectModal: () => void connect() }),
-    [connect]
-  );
+  const [open, setOpen] = useState(false);
+  const value = useMemo(() => ({ openConnectModal: () => setOpen(true) }), []);
   return (
     <ConnectModalContext.Provider value={value}>
       {children}
+      {open && <ConnectModal onClose={() => setOpen(false)} />}
     </ConnectModalContext.Provider>
   );
 }

@@ -7,17 +7,24 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import Wallet, {
+  AddressPurpose,
+  BitcoinNetworkType,
+  RpcErrorCode,
+  getSupportedWallets,
+  setDefaultProvider,
+  removeDefaultProvider,
+} from "sats-connect";
 import {
-  connect,
-  disconnect,
-  request,
-  isConnected,
-  getLocalStorage,
+  request as stacksRequest,
+  disconnect as stacksDisconnect,
 } from "@stacks/connect";
 import type { ClarityValue } from "@stacks/transactions";
 import { cvToHex, postConditionToHex } from "@stacks/transactions";
 import { networkName } from "../lib/stacksClient.js";
 import { useToast } from "./ToastContext.js";
+
+export type WalletId = "xverse" | "leather";
 
 interface ContractCallOptions {
   contractAddress: string;
@@ -29,221 +36,257 @@ interface ContractCallOptions {
 
 interface WalletState {
   address: string | null;
+  connector: WalletId | null;
   isConnected: boolean;
   isConnecting: boolean;
-  connect: () => Promise<void>;
+  connect: (walletId: WalletId) => Promise<void>;
   disconnect: () => void;
   callContract: (options: ContractCallOptions) => Promise<string>;
 }
 
 const WalletContext = createContext<WalletState | null>(null);
 
-/**
- * Pick the best STX address from a flat AddressEntry array.
- * Prefers the address matching the active network (ST for testnet, SP for
- * mainnet) — Xverse returns both, and without this preference the wrong one
- * is sometimes selected.
- */
-function pickBestAddress(
-  entries: { symbol?: string; address?: string }[]
-): string | null {
-  const networkPrefix = networkName === "mainnet" ? "SP" : "ST";
-  const exact = entries.find((a) => a.address?.startsWith(networkPrefix));
+const ADDRESS_KEY = "satoshi.stx-address";
+const CONNECTOR_KEY = "satoshi.stx-connector";
+const STX_PREFIX = networkName === "mainnet" ? "SP" : "ST";
+const BITCOIN_NETWORK =
+  networkName === "mainnet" ? BitcoinNetworkType.Mainnet : BitcoinNetworkType.Testnet;
+
+// --- Wallet-extension detection (browser-injected globals) ------------------
+
+/** Xverse injects `window.XverseProviders`. */
+export function isXverseInstalled(): boolean {
+  return typeof window !== "undefined" && !!window.XverseProviders;
+}
+function leatherProvider(): unknown {
+  return typeof window !== "undefined"
+    ? (window as { LeatherProvider?: unknown }).LeatherProvider
+    : undefined;
+}
+/** Leather injects `window.LeatherProvider`. */
+export function isLeatherInstalled(): boolean {
+  return !!leatherProvider();
+}
+
+/** True when an error is just the user dismissing the wallet prompt. */
+function isBenign(message: string, code?: number): boolean {
+  if (code === RpcErrorCode.USER_REJECTION) return true;
+  const m = message.toLowerCase();
+  return (
+    m.includes("cancel") ||
+    m.includes("reject") ||
+    m.includes("denied") ||
+    m.includes("dismiss")
+  );
+}
+
+/** Pick the address matching the active network, else any Stacks address. */
+function pickStxAddress(addresses: { address?: string }[]): string | null {
+  const exact = addresses.find((a) => a.address?.startsWith(STX_PREFIX));
   if (exact?.address) return exact.address;
-  const stx = entries.find((a) => a.symbol === "STX");
-  if (stx?.address) return stx.address;
-  const any = entries.find(
+  const any = addresses.find(
     (a) => a.address?.startsWith("ST") || a.address?.startsWith("SP")
   );
   return any?.address ?? null;
 }
 
-/** Read an STX address from a connect() response, or fall back to localStorage. */
-function extractStxAddress(addresses?: unknown): string | null {
-  // Flat array (Leather, standard format).
-  if (Array.isArray(addresses) && addresses.length > 0) {
-    const addr = pickBestAddress(
-      addresses as { symbol?: string; address?: string }[]
-    );
-    if (addr) return addr;
-  }
+/**
+ * Xverse — via sats-connect's `wallet_connect` (Xverse's own canonical connect
+ * method). We point sats-connect straight at Xverse so its built-in picker is
+ * skipped — this app shows its own wallet modal.
+ */
+async function connectXverse(): Promise<string | null> {
+  const xverse = getSupportedWallets().find((w) => /xverse/i.test(w.name));
+  if (xverse) setDefaultProvider(xverse.id);
 
-  // Grouped object { testnet: [...], mainnet: [...] } — some Xverse versions.
-  if (addresses && typeof addresses === "object" && !Array.isArray(addresses)) {
-    const grouped = addresses as Record<string, { address?: string }[]>;
-    const preferred =
-      networkName === "mainnet" ? grouped["mainnet"] : grouped["testnet"];
-    if (Array.isArray(preferred) && preferred.length > 0 && preferred[0]?.address) {
-      return preferred[0].address;
-    }
-    for (const list of Object.values(grouped)) {
-      if (Array.isArray(list) && list.length > 0 && list[0]?.address) {
-        return list[0].address;
-      }
-    }
-  }
-
-  // @stacks/connect persists addresses to localStorage on a successful connect.
-  try {
-    const stored = getLocalStorage();
-    const stxList = stored?.addresses?.stx;
-    if (Array.isArray(stxList) && stxList.length > 0) {
-      return pickBestAddress(stxList);
-    }
-  } catch {
-    /* localStorage blocked */
-  }
-
-  return null;
-}
-
-/** Reject after `ms` milliseconds — bounds a hung wallet call. */
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(
-      () => reject(new Error(`${label} timed out after ${ms / 1000}s`)),
-      ms
-    );
+  const res = await Wallet.request("wallet_connect", {
+    addresses: [AddressPurpose.Stacks],
+    message: "Connect to SatoshiYields",
+    network: BITCOIN_NETWORK,
   });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-
-/** True when an error reflects the user dismissing the wallet prompt. */
-function isUserCancellation(msg: string): boolean {
-  const m = msg.toLowerCase();
-  return (
-    m.includes("cancel") ||
-    m.includes("reject") ||
-    m.includes("denied") ||
-    m.includes("declined") ||
-    m.includes("closed")
-  );
-}
-
-/** Map a raw connect error to a user-actionable message. */
-function friendlyConnectError(msg: string): string {
-  if (msg.toLowerCase().includes("timed out")) {
-    return "Wallet didn't respond. Open your wallet extension, unlock it, set it to Testnet, then try again.";
+  if (res.status === "error") {
+    if (isBenign(res.error?.message ?? "", res.error?.code)) return null;
+    throw new Error(res.error?.message ?? "Xverse connection failed");
   }
-  return `Couldn't connect wallet: ${msg}`;
+  const stx = res.result.addresses.find((a) => a.purpose === AddressPurpose.Stacks);
+  return stx?.address ?? null;
+}
+
+/**
+ * Leather — via @stacks/connect targeted directly at the Leather provider
+ * (sats-connect cannot see Leather; it only reads the Bitcoin WBIP registry).
+ */
+async function connectLeather(): Promise<string | null> {
+  const provider = leatherProvider();
+  if (!provider) throw new Error("Leather is not installed");
+  const res = await stacksRequest(
+    { provider: provider as never, forceWalletSelect: false },
+    "getAddresses",
+    { network: networkName }
+  );
+  const list = (res as { addresses?: { address?: string }[] }).addresses ?? [];
+  return pickStxAddress(list);
 }
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const { show } = useToast();
   const [address, setAddress] = useState<string | null>(null);
+  const [connector, setConnector] = useState<WalletId | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  // Guards against a second connect() while one is already in flight, which
-  // would open two wallet pickers at once.
   const connectingRef = useRef(false);
+  // Mirror of `connector` so callContract/disconnect read it without re-binding.
+  const connectorRef = useRef<WalletId | null>(null);
 
-  // Restore the address from localStorage on mount (survives a page refresh).
+  // Restore a previous session (survives a page refresh).
   useEffect(() => {
-    if (isConnected()) {
-      const addr = extractStxAddress();
-      if (addr) setAddress(addr);
+    try {
+      const savedAddr = localStorage.getItem(ADDRESS_KEY);
+      const savedConn = localStorage.getItem(CONNECTOR_KEY);
+      if (
+        savedAddr &&
+        savedAddr.startsWith(STX_PREFIX) &&
+        (savedConn === "xverse" || savedConn === "leather")
+      ) {
+        setAddress(savedAddr);
+        setConnector(savedConn);
+        connectorRef.current = savedConn;
+      }
+    } catch {
+      /* localStorage blocked */
     }
   }, []);
 
-  const handleConnect = useCallback(async () => {
-    if (connectingRef.current) return;
-    connectingRef.current = true;
-    setIsConnecting(true);
+  const handleConnect = useCallback(
+    async (walletId: WalletId) => {
+      if (connectingRef.current) return;
+      connectingRef.current = true;
+      setIsConnecting(true);
+      try {
+        const addr =
+          walletId === "xverse" ? await connectXverse() : await connectLeather();
+        if (!addr) return; // user dismissed the prompt
 
-    try {
-      // forceWalletSelect: always show the @stacks/connect picker so the user
-      // can choose any installed wallet (Leather, Xverse, Asigna…) and is never
-      // stuck on a stale prior selection.
-      const response = await withTimeout(
-        connect({ forceWalletSelect: true, network: networkName }),
-        90_000,
-        "Wallet connection"
-      );
-
-      let addr = extractStxAddress(response?.addresses);
-
-      // Some wallets return empty addresses from connect() but answer a direct
-      // stx_getAddresses request.
-      if (!addr) {
-        try {
-          const fallback = await withTimeout(
-            request("stx_getAddresses", { network: networkName }),
-            15_000,
-            "stx_getAddresses"
-          );
-          const raw = fallback as { addresses?: unknown };
-          addr = extractStxAddress(raw?.addresses ?? fallback);
-        } catch {
-          /* fall through to the localStorage check below */
+        if (!addr.startsWith(STX_PREFIX)) {
+          const want = networkName === "mainnet" ? "Mainnet" : "Testnet";
+          show({
+            variant: "error",
+            message: `Your wallet is on the wrong network. Switch it to ${want} and reconnect.`,
+          });
+          return;
         }
-      }
 
-      // Last resort: read whatever @stacks/connect persisted.
-      if (!addr) addr = extractStxAddress();
-
-      if (addr) {
         setAddress(addr);
-      } else {
-        show({
-          variant: "error",
-          message:
-            "Wallet connected but returned no address. Make sure it is set to Testnet, then try again.",
-        });
+        setConnector(walletId);
+        connectorRef.current = walletId;
+        try {
+          localStorage.setItem(ADDRESS_KEY, addr);
+          localStorage.setItem(CONNECTOR_KEY, walletId);
+        } catch {
+          /* localStorage blocked */
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err ?? "");
+        if (!isBenign(message)) {
+          console.error("[wallet] connect failed:", message);
+          show({
+            variant: "error",
+            message:
+              walletId === "leather"
+                ? "Couldn't connect Leather. Make sure it's installed and unlocked, then try again."
+                : "Couldn't connect Xverse. Make sure it's installed and unlocked, then try again.",
+          });
+        }
+      } finally {
+        connectingRef.current = false;
+        setIsConnecting(false);
       }
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : String(err ?? "Unknown error");
-      // The user closing the picker is not an error — stay silent.
-      if (!isUserCancellation(msg)) {
-        console.error("[wallet] connect failed:", msg);
-        show({ variant: "error", message: friendlyConnectError(msg) });
-      }
-    } finally {
-      connectingRef.current = false;
-      setIsConnecting(false);
-    }
-  }, [show]);
+    },
+    [show]
+  );
 
   const handleDisconnect = useCallback(() => {
-    disconnect();
+    const c = connectorRef.current;
+    if (c === "xverse") {
+      void Wallet.disconnect().catch(() => {});
+      try {
+        removeDefaultProvider();
+      } catch {
+        /* ignore */
+      }
+    } else if (c === "leather") {
+      try {
+        stacksDisconnect();
+      } catch {
+        /* ignore */
+      }
+    }
     setAddress(null);
+    setConnector(null);
+    connectorRef.current = null;
+    try {
+      localStorage.removeItem(ADDRESS_KEY);
+      localStorage.removeItem(CONNECTOR_KEY);
+    } catch {
+      /* localStorage blocked */
+    }
   }, []);
 
   const callContract = useCallback(
     async (options: ContractCallOptions): Promise<string> => {
-      const contractAddr = options.contractAddress.includes(".")
+      const contract = options.contractAddress.includes(".")
         ? options.contractAddress
         : `${options.contractAddress}.${options.contractName}`;
 
-      // Serialize ClarityValues to hex so wallets that JSON-serialize args
-      // (Xverse, Asigna) don't choke on BigInt values inside UintCV etc.
-      const argsHex = options.functionArgs.map((arg) =>
+      // Serialize ClarityValues + post-conditions to hex — the format every
+      // SIP-010 wallet expects for stx_callContract.
+      const functionArgs = options.functionArgs.map((arg) =>
         typeof arg === "string" ? arg : cvToHex(arg)
       );
-
-      const postConditionsHex = (options.postConditions ?? []).map((pc) =>
+      const postConditions = (options.postConditions ?? []).map((pc) =>
         postConditionToHex(pc)
       );
+      const postConditionMode = options.postConditions?.length ? "deny" : "allow";
 
-      const result = await request("stx_callContract", {
-        contract: contractAddr as `${string}.${string}`,
+      // Leather — route through @stacks/connect, the provider it connected with.
+      if (connectorRef.current === "leather") {
+        const provider = leatherProvider();
+        if (!provider) {
+          throw new Error("Leather wallet unavailable — reconnect your wallet.");
+        }
+        const res = await stacksRequest(
+          { provider: provider as never },
+          "stx_callContract",
+          {
+            contract: contract as `${string}.${string}`,
+            functionName: options.functionName,
+            functionArgs,
+            network: networkName,
+            postConditions,
+            postConditionMode,
+          }
+        );
+        const txid = (res as { txid?: unknown }).txid;
+        if (typeof txid !== "string" || txid.length === 0) {
+          throw new Error("Wallet returned no transaction id");
+        }
+        return txid;
+      }
+
+      // Xverse — route through sats-connect.
+      const res = await Wallet.request("stx_callContract", {
+        contract,
         functionName: options.functionName,
-        functionArgs: argsHex,
-        network: networkName,
-        postConditions: postConditionsHex,
-        postConditionMode: options.postConditions?.length ? "deny" : "allow",
+        functionArgs,
+        postConditions,
+        postConditionMode,
       });
-
-      if (typeof result !== "object" || result === null || !("txid" in result)) {
-        throw new Error("Wallet returned an unexpected result — missing txid");
+      if (res.status === "error") {
+        throw new Error(res.error?.message ?? "Wallet rejected the transaction");
       }
-
-      const txid = (result as Record<string, unknown>)["txid"];
-      if (typeof txid !== "string" || txid.length === 0) {
-        throw new Error("Wallet returned an empty txid");
+      if (!res.result?.txid) {
+        throw new Error("Wallet returned no transaction id");
       }
-
-      return txid;
+      return res.result.txid;
     },
     []
   );
@@ -252,6 +295,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     <WalletContext.Provider
       value={{
         address,
+        connector,
         isConnected: address !== null,
         isConnecting,
         connect: handleConnect,
