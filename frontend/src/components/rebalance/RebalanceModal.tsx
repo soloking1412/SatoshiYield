@@ -10,6 +10,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   currentProtocol: ProtocolId;
+  /** The position's on-chain adapter principal — the rebalance source. */
+  currentAdapter: string;
 }
 
 const fillBtn: React.CSSProperties = {
@@ -38,7 +40,7 @@ const ghostBtn: React.CSSProperties = {
   cursor: "pointer",
 };
 
-export function RebalanceModal({ open, onClose, currentProtocol }: Props) {
+export function RebalanceModal({ open, onClose, currentProtocol, currentAdapter }: Props) {
   const { data: yields } = useYields();
   const rebalance = useRebalance();
   const [selected, setSelected] = useState<ProtocolId | null>(null);
@@ -51,7 +53,7 @@ export function RebalanceModal({ open, onClose, currentProtocol }: Props) {
 
   const handleConfirm = () => {
     if (!selected) return;
-    rebalance.mutate({ from: currentProtocol, to: selected }, { onSuccess: onClose });
+    rebalance.mutate({ fromAdapter: currentAdapter, to: selected }, { onSuccess: onClose });
   };
 
   const Overlay = ({ children }: { children: React.ReactNode }) => (
@@ -171,7 +173,16 @@ export function RebalanceModal({ open, onClose, currentProtocol }: Props) {
           return (
             <div
               key={y.protocol}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
               onClick={() => setSelected(y.protocol)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelected(y.protocol);
+                }
+              }}
               style={{
                 display: "flex",
                 alignItems: "center",

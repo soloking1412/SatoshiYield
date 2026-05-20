@@ -108,7 +108,7 @@ describe("YieldTable", () => {
     }
   });
 
-  it("renders 4 skeleton rows while loading", () => {
+  it("renders the loading state while fetching", () => {
     mockUseYields.mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -117,8 +117,7 @@ describe("YieldTable", () => {
 
     const { container } = render(<YieldTable />, { wrapper });
 
-    const skeletons = container.querySelectorAll(".animate-pulse");
-    expect(skeletons.length).toBe(4);
+    expect(container.textContent).toMatch(/scanning protocols/i);
   });
 
   it("renders error state when fetch fails", () => {

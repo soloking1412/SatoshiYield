@@ -5,10 +5,18 @@ const DEPLOYER_TESTNET =
 const DEPLOYER_MAINNET =
   import.meta.env.VITE_DEPLOYER_MAINNET ?? "REPLACE_WITH_MAINNET_DEPLOYER";
 
+// Fail the build loudly rather than ship a mainnet bundle with a placeholder
+// deployer — every contract call would otherwise target a non-existent address.
+if (isMainnet && DEPLOYER_MAINNET === "REPLACE_WITH_MAINNET_DEPLOYER") {
+  throw new Error(
+    "VITE_DEPLOYER_MAINNET must be set for a mainnet build (placeholder still in use)."
+  );
+}
+
 export const DEPLOYER = isMainnet ? DEPLOYER_MAINNET : DEPLOYER_TESTNET;
 
-// vault-v4 is the current production vault — env var kept for emergency override only
-const VAULT_NAME = "vault-v4";
+// vault-v5 — SIP-010 token trait + rebalance staleness guard
+const VAULT_NAME = "vault-v5";
 
 export const CONTRACTS = {
   VAULT: `${DEPLOYER}.${VAULT_NAME}`,
@@ -17,9 +25,9 @@ export const CONTRACTS = {
     ? "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token"
     : `${DEPLOYER}.mock-sbtc`,
   ADAPTERS: {
-    bitflow: `${DEPLOYER}.bitflow-adapter-v3`,
-    alex:    `${DEPLOYER}.alex-adapter-v3`,
-    zest:    `${DEPLOYER}.zest-adapter-v3`,
-    velar:   `${DEPLOYER}.velar-adapter-v3`,
+    bitflow: `${DEPLOYER}.bitflow-adapter-v4`,
+    alex:    `${DEPLOYER}.alex-adapter-v4`,
+    zest:    `${DEPLOYER}.zest-adapter-v4`,
+    velar:   `${DEPLOYER}.velar-adapter-v4`,
   },
 } as const;

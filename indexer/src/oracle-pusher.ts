@@ -16,26 +16,26 @@ const STACKS_API_BASE = IS_MAINNET
   : "https://api.testnet.hiro.so";
 
 const ADAPTERS = [
-  "alex-adapter-v3",
-  "bitflow-adapter-v3",
-  "zest-adapter-v3",
-  "velar-adapter-v3",
+  "alex-adapter-v4",
+  "bitflow-adapter-v4",
+  "zest-adapter-v4",
+  "velar-adapter-v4",
 ] as const;
 
 type AdapterName = typeof ADAPTERS[number];
 
 const PROTOCOL_KEY: Record<AdapterName, keyof NativeApyResult> = {
-  "alex-adapter-v3":    "alex",
-  "bitflow-adapter-v3": "bitflow",
-  "zest-adapter-v3":    "zest",
-  "velar-adapter-v3":   "velar",
+  "alex-adapter-v4":    "alex",
+  "bitflow-adapter-v4": "bitflow",
+  "zest-adapter-v4":    "zest",
+  "velar-adapter-v4":   "velar",
 };
 
 const TARGET_BPS: Record<AdapterName, number> = {
-  "bitflow-adapter-v3": 320,
-  "alex-adapter-v3":    510,
-  "zest-adapter-v3":    280,
-  "velar-adapter-v3":   440,
+  "bitflow-adapter-v4": 320,
+  "alex-adapter-v4":    510,
+  "zest-adapter-v4":    280,
+  "velar-adapter-v4":   440,
 };
 
 export interface PushResult {
@@ -43,6 +43,12 @@ export interface PushResult {
   pushed:  boolean;
   txid?:   string;
   reason?: string;
+}
+
+/** Strip anything resembling a private key (long hex run) from error text. */
+function sanitize(value: unknown): string {
+  const text = value instanceof Error ? value.message : String(value);
+  return text.replace(/\b[0-9a-fA-F]{64,}\b/g, "[redacted]");
 }
 
 export async function pushApy(
@@ -131,7 +137,7 @@ export async function pushAllAdapters(
     try {
       results.push(await pushApy(name, bps, { nonce: n1++ }));
     } catch (err) {
-      results.push({ adapter: name, pushed: false, reason: String(err) });
+      results.push({ adapter: name, pushed: false, reason: sanitize(err) });
     }
     // Push from oracle[1] when configured — triggers 2-of-3 consensus
     if (ORACLE_KEY_2 && addr2) {
@@ -141,7 +147,7 @@ export async function pushAllAdapters(
           console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r.reason}`);
         }
       } catch (err) {
-        console.warn(`[oracle] oracle-2 push failed for ${name}: ${String(err)}`);
+        console.warn(`[oracle] oracle-2 push failed for ${name}: ${sanitize(err)}`);
       }
     }
   }
@@ -189,7 +195,7 @@ async function runOracleCycle(): Promise<void> {
         : console.warn(`[oracle] skipped ${r.adapter} reason=${r.reason}`);
     }
   } catch (err) {
-    console.error("[oracle] cycle error:", (err as Error).message);
+    console.error("[oracle] cycle error:", sanitize(err));
   }
 }
 
@@ -198,8 +204,15 @@ export function startOracleScheduler(intervalMs: number): void {
     console.log("[oracle] ORACLE_PRIVATE_KEY not set — scheduler disabled");
     return;
   }
-  const dualMode = ORACLE_KEY_2 ? " (dual-oracle mode)" : " (single-oracle mode — no consensus)";
-  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min${dualMode}`);
+  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min`);
+  if (ORACLE_KEY_2) {
+    console.log("[oracle] dual-oracle mode — 2-of-3 consensus active");
+  } else {
+    console.warn(
+      "[oracle] single-oracle mode — ORACLE_PRIVATE_KEY_2 not set. 2-of-3 consensus " +
+        "cannot be reached: on-chain APY goes stale after 720 blocks and deposits get blocked."
+    );
+  }
   void runOracleCycle();
   setInterval(() => { void runOracleCycle(); }, intervalMs);
 }

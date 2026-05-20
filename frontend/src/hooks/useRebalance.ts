@@ -11,27 +11,32 @@ export function useRebalance() {
   const qc = useQueryClient();
 
   return useMutation({
+    // `fromAdapter` is the position's on-chain adapter principal ("ADDR.name");
+    // `to` is the target protocol the user picked.
     mutationFn: async ({
-      from,
+      fromAdapter,
       to,
     }: {
-      from: ProtocolId;
+      fromAdapter: string;
       to: ProtocolId;
     }) => {
       if (!address) throw new Error("Wallet not connected");
 
-      const fromContract = CONTRACTS.ADAPTERS[from];
-      const toContract = CONTRACTS.ADAPTERS[to];
-      const [fromAddr, fromName] = fromContract.split(".");
-      const [toAddr, toName] = toContract.split(".");
+      const [fromAddr, fromName] = fromAdapter.split(".");
+      const [toAddr, toName] = CONTRACTS.ADAPTERS[to].split(".");
       const [vaultAddr, vaultName] = CONTRACTS.VAULT.split(".");
+      const [sbtcAddr, sbtcName] = CONTRACTS.SBTC_TOKEN.split(".");
+      if (!fromAddr || !fromName) {
+        throw new Error("Position has an invalid adapter — cannot rebalance");
+      }
 
       return callContract({
         contractAddress: vaultAddr!,
         contractName: vaultName!,
         functionName: "rebalance",
         functionArgs: [
-          contractPrincipalCV(fromAddr!, fromName!),
+          contractPrincipalCV(sbtcAddr!, sbtcName!),
+          contractPrincipalCV(fromAddr, fromName),
           contractPrincipalCV(toAddr!, toName!),
         ],
       });

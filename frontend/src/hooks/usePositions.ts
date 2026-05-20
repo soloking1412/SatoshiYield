@@ -57,11 +57,16 @@ async function readVaultPosition(
   if (!val || !val.value?.adapter) return null;
 
   const adapterPrincipal = val.value.adapter.value;
-  const protocol = ADAPTER_BY_PRINCIPAL[adapterPrincipal] ?? "bitflow";
+  const protocol = ADAPTER_BY_PRINCIPAL[adapterPrincipal];
+  if (!protocol) {
+    // Withdraw/rebalance target `adapter` directly, so funds stay accessible;
+    // only the display label falls back here.
+    console.warn(`[positions] unrecognized adapter principal: ${adapterPrincipal}`);
+  }
 
   return {
     adapter: adapterPrincipal,
-    protocol,
+    protocol: protocol ?? "bitflow",
     principalSats: BigInt(val.value["principal-amount"].value),
     depositedAt: Number(val.value["deposited-at"].value),
   };

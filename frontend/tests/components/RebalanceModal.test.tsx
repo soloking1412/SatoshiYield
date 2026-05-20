@@ -5,6 +5,7 @@ import { RebalanceModal } from "../../src/components/rebalance/RebalanceModal.js
 import type { NormalizedYield } from "../../src/types/yield.js";
 
 const mockMutate = vi.fn();
+const CURRENT_ADAPTER = "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1.bitflow-adapter-v3";
 
 vi.mock("../../src/hooks/useRebalance.js", () => ({
   useRebalance: () => ({
@@ -92,6 +93,7 @@ describe("RebalanceModal", () => {
         open={true}
         onClose={vi.fn()}
         currentProtocol="bitflow"
+        currentAdapter={CURRENT_ADAPTER}
       />,
       { wrapper }
     );
@@ -106,6 +108,7 @@ describe("RebalanceModal", () => {
         open={true}
         onClose={vi.fn()}
         currentProtocol="bitflow"
+        currentAdapter={CURRENT_ADAPTER}
       />,
       { wrapper }
     );
@@ -126,6 +129,7 @@ describe("RebalanceModal", () => {
         open={true}
         onClose={onClose}
         currentProtocol="bitflow"
+        currentAdapter={CURRENT_ADAPTER}
       />,
       { wrapper }
     );
@@ -138,7 +142,7 @@ describe("RebalanceModal", () => {
 
     expect(mockMutate).toHaveBeenCalledOnce();
     expect(mockMutate).toHaveBeenCalledWith(
-      { from: "bitflow", to: "alex" },
+      { fromAdapter: CURRENT_ADAPTER, to: "alex" },
       expect.objectContaining({ onSuccess: expect.any(Function) })
     );
   });
@@ -149,6 +153,7 @@ describe("RebalanceModal", () => {
         open={true}
         onClose={vi.fn()}
         currentProtocol="bitflow"
+        currentAdapter={CURRENT_ADAPTER}
       />,
       { wrapper }
     );
@@ -163,6 +168,7 @@ describe("RebalanceModal", () => {
         open={false}
         onClose={vi.fn()}
         currentProtocol="bitflow"
+        currentAdapter={CURRENT_ADAPTER}
       />,
       { wrapper }
     );

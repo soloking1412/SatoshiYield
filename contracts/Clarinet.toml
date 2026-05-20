@@ -15,6 +15,16 @@ path = "contracts/traits/yield-source.clar"
 clarity_version = 3
 epoch = "latest"
 
+[contracts.sip-010-trait]
+path = "contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source-v2]
+path = "contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
 [contracts.bitflow-adapter]
 path = "contracts/adapters/bitflow-adapter.clar"
 clarity_version = 3
@@ -102,6 +112,31 @@ epoch = "latest"
 
 [contracts.vault-v4]
 path = "contracts/vault-v4.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.bitflow-adapter-v4]
+path = "contracts/adapters/bitflow-adapter-v4.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.alex-adapter-v4]
+path = "contracts/adapters/alex-adapter-v4.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-adapter-v4]
+path = "contracts/adapters/zest-adapter-v4.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.velar-adapter-v4]
+path = "contracts/adapters/velar-adapter-v4.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault-v5]
+path = "contracts/vault-v5.clar"
 clarity_version = 3
 epoch = "latest"
 

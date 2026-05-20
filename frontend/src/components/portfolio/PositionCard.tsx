@@ -3,7 +3,6 @@ import type { UserPosition } from "../../types/position.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { useWithdraw } from "../../hooks/useWithdraw.js";
 import { useYields } from "../../hooks/useYields.js";
-import { useCurrentBlock } from "../../hooks/useCurrentBlock.js";
 import { RebalanceModal } from "../rebalance/RebalanceModal.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
 
@@ -31,20 +30,14 @@ export function PositionCard({ position }: { position: UserPosition }) {
   const withdraw = useWithdraw();
   const [rebalanceOpen, setRebalanceOpen] = useState(false);
   const { data: yields } = useYields();
-  const currentBlock = useCurrentBlock();
   const yieldData = yields?.find((y) => y.protocol === position.protocol);
   const apy = yieldData?.apy_percent ?? 0;
   const tvl = yieldData?.tvl_usd ?? 0;
   const risk = yieldData?.risk_level;
 
-  const blocksElapsed = currentBlock > 0 && position.depositedAt > 0
-    ? Math.max(0, currentBlock - position.depositedAt)
-    : 0;
-  const secondsElapsed = blocksElapsed * 600;
-  const earnedBtc = apy > 0 && secondsElapsed > 0
-    ? (Number(position.principalSats) / 1e8) * (apy / 100) * (secondsElapsed / (365.25 * 24 * 3600))
-    : 0;
-  const earned = useCountUp(earnedBtc, 1200, 200);
+  // Testnet adapters are 1:1 stubs — they return exactly the principal, so no
+  // yield is realised. Earned stays 0 until real yield-bearing adapters ship.
+  const earned = useCountUp(0, 1200, 200);
 
   // Check if current protocol has the best APY among all loaded yields
   const bestApy = yields ? Math.max(...yields.map((y) => y.apy_percent)) : 0;
@@ -261,7 +254,7 @@ export function PositionCard({ position }: { position: UserPosition }) {
             Rebalance
           </button>
           <button
-            onClick={() => withdraw.mutate({ protocol: position.protocol })}
+            onClick={() => withdraw.mutate({ adapter: position.adapter })}
             disabled={withdraw.isPending}
             style={{
               flex: 1,
@@ -292,6 +285,7 @@ export function PositionCard({ position }: { position: UserPosition }) {
         open={rebalanceOpen}
         onClose={() => setRebalanceOpen(false)}
         currentProtocol={position.protocol}
+        currentAdapter={position.adapter}
       />
     </>
   );

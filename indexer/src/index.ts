@@ -6,6 +6,50 @@ import { healthRouter } from "./routes/health.js";
 import { faucetRouter } from "./routes/faucet.js";
 import { startOracleScheduler } from "./oracle-pusher.js";
 
+/**
+ * Validate environment at startup: print the network banner, warn on missing
+ * oracle keys, and hard-fail a mainnet boot that is missing required config.
+ */
+function validateConfig(): void {
+  const network = process.env["STACKS_NETWORK"] ?? "testnet";
+  if (network !== "mainnet" && network !== "testnet") {
+    throw new Error(
+      `Invalid STACKS_NETWORK "${network}" — must be "mainnet" or "testnet".`
+    );
+  }
+  const isMainnet = network === "mainnet";
+  console.log(`[indexer] network: ${isMainnet ? "MAINNET" : "TESTNET"}`);
+
+  const oracleKey = process.env["ORACLE_PRIVATE_KEY"];
+  const oracleKey2 = process.env["ORACLE_PRIVATE_KEY_2"];
+  if (!oracleKey) {
+    console.warn(
+      "[indexer] ORACLE_PRIVATE_KEY not set — oracle scheduler disabled, APY will not refresh."
+    );
+  } else if (!oracleKey2) {
+    console.warn(
+      "[indexer] ORACLE_PRIVATE_KEY_2 not set — single-oracle mode. 2-of-3 consensus " +
+        "cannot be reached: on-chain APY goes stale after 720 blocks and deposits get blocked."
+    );
+  }
+
+  if (isMainnet) {
+    const missing = (["DEPLOYER_ADDRESS", "STACKS_API_URL"] as const).filter(
+      (k) => !process.env[k]
+    );
+    if (missing.length > 0) {
+      throw new Error(`[indexer] mainnet requires env vars: ${missing.join(", ")}`);
+    }
+    if (!oracleKey || !oracleKey2) {
+      throw new Error(
+        "[indexer] mainnet requires ORACLE_PRIVATE_KEY and ORACLE_PRIVATE_KEY_2 for 2-of-3 oracle consensus."
+      );
+    }
+  }
+}
+
+validateConfig();
+
 const app = express();
 
 app.use(express.json());
@@ -68,6 +112,14 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// Purge expired rate-limit buckets so the map can't grow unbounded over time.
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of hits) {
+    if (now > entry.reset) hits.delete(ip);
+  }
+}, RATE_WINDOW_MS).unref();
+
 app.use("/api/yields", yieldsRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/faucet", faucetRouter);
@@ -78,9 +130,29 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`indexer running on :${config.port}`);
   console.log(`allowed CORS origins: ${[...ALLOWED_ORIGINS].join(", ")}`);
+});
+
+// Graceful shutdown: drain in-flight requests on SIGTERM/SIGINT (Render/Railway
+// send SIGTERM on redeploy) instead of dropping connections abruptly.
+function shutdown(signal: string): void {
+  console.log(`[indexer] ${signal} received — shutting down`);
+  server.close(() => {
+    console.log("[indexer] HTTP server closed");
+    process.exit(0);
+  });
+  setTimeout(() => process.exit(1), 10_000).unref();
+}
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
+process.on("unhandledRejection", (reason) => {
+  console.error(
+    "[indexer] unhandled rejection:",
+    reason instanceof Error ? reason.message : reason
+  );
 });
 
 // Oracle scheduler: fetches live APY from protocol APIs and pushes to chain every 2 h.

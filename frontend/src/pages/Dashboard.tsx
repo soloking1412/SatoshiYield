@@ -1,37 +1,23 @@
-import { useState, useEffect } from "react";
 import { useWallet } from "../context/WalletContext.js";
 import { useConnectModal } from "../context/ConnectModalContext.js";
 import { YieldTable } from "../components/yields/YieldTable.js";
 
-function LiveBadge() {
-  const [minutes, setMinutes] = useState(3);
-  useEffect(() => {
-    const t = setInterval(() => setMinutes((m) => m + 1), 60_000);
-    return () => clearInterval(t);
-  }, []);
+function TestnetBadge() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <div
-        style={{
-          width: 7,
-          height: 7,
-          borderRadius: "50%",
-          background: "var(--green)",
-          flexShrink: 0,
-          animation: "pulseDot 1.8s ease-in-out infinite",
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'Space Mono', monospace",
-          fontSize: 10,
-          color: "var(--muted)",
-          letterSpacing: ".05em",
-        }}
-      >
-        LIVE · {minutes}m ago
-      </span>
-    </div>
+    <span
+      style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: 10,
+        background: "oklch(68% .19 52/0.12)",
+        border: "1px solid oklch(68% .19 52/.3)",
+        color: "var(--amber)",
+        padding: "3px 8px",
+        borderRadius: 5,
+        letterSpacing: ".08em",
+      }}
+    >
+      TESTNET · SIMULATED
+    </span>
   );
 }
 
@@ -72,12 +58,12 @@ export function Dashboard() {
                 margin: 0,
               }}
             >
-              Live Yields
+              Yields
             </h1>
-            <LiveBadge />
+            <TestnetBadge />
           </div>
           <p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.65, margin: 0 }}>
-            sBTC yield rates across Stacks DeFi protocols, updated every 5 minutes.
+            Simulated sBTC yield rates on Stacks testnet — for testing, not live mainnet data.
             {!isConnected && (
               <>
                 {" "}

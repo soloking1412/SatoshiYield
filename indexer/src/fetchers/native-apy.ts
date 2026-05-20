@@ -1,3 +1,18 @@
+/**
+ * Native protocol APY fetchers.
+ *
+ * STATUS (probed 2026-05-17): none of these endpoints return usable APY data —
+ * api.bitflow.finance does not resolve (DNS), the ALEX pool_stats path 500s,
+ * app.zestprotocol.com is behind a bot wall, and api.velar.co/v1/pools 404s.
+ * Until working endpoints are wired in, every fetch returns null and the
+ * oracle-pusher falls back to its TARGET_BPS constants — so the on-chain /
+ * displayed APY is a configured target, NOT a live protocol rate.
+ *
+ * To make yields genuine: confirm each protocol's real public APY endpoint and
+ * update the URL + `extractApy` parsing below. Until then, surface these as
+ * "reference rates" rather than "live" in the UI.
+ */
+
 const TIMEOUT_MS = 6_000;
 
 export interface NativeApyResult {

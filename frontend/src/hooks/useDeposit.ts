@@ -26,6 +26,7 @@ export function useDeposit() {
       const adapterContract = CONTRACTS.ADAPTERS[protocol];
       const [adapterAddr, adapterName] = adapterContract.split(".");
       const [vaultAddr, vaultName] = CONTRACTS.VAULT.split(".");
+      const [sbtcAddr, sbtcName] = CONTRACTS.SBTC_TOKEN.split(".");
 
       const postCondition = Pc.principal(address)
         .willSendEq(amountSats)
@@ -36,6 +37,7 @@ export function useDeposit() {
         contractName: vaultName!,
         functionName: "deposit",
         functionArgs: [
+          contractPrincipalCV(sbtcAddr!, sbtcName!),
           contractPrincipalCV(adapterAddr!, adapterName!),
           uintCV(amountSats),
         ],

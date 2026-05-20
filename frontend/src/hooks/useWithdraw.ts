@@ -3,7 +3,6 @@ import { contractPrincipalCV } from "@stacks/transactions";
 import { useWallet } from "../context/WalletContext.js";
 import { useToast } from "../context/ToastContext.js";
 import { CONTRACTS } from "../constants/contracts.js";
-import type { ProtocolId } from "../types/yield.js";
 
 export function useWithdraw() {
   const { callContract, address } = useWallet();
@@ -11,18 +10,27 @@ export function useWithdraw() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ protocol }: { protocol: ProtocolId }) => {
+    // `adapter` is the position's on-chain adapter principal ("ADDR.name").
+    // Targeting it directly keeps withdraw correct even when the protocol
+    // label could not be resolved from the known-adapter table.
+    mutationFn: async ({ adapter }: { adapter: string }) => {
       if (!address) throw new Error("Wallet not connected");
 
-      const adapterContract = CONTRACTS.ADAPTERS[protocol];
-      const [adapterAddr, adapterName] = adapterContract.split(".");
+      const [adapterAddr, adapterName] = adapter.split(".");
       const [vaultAddr, vaultName] = CONTRACTS.VAULT.split(".");
+      const [sbtcAddr, sbtcName] = CONTRACTS.SBTC_TOKEN.split(".");
+      if (!adapterAddr || !adapterName) {
+        throw new Error("Position has an invalid adapter — cannot withdraw");
+      }
 
       return callContract({
         contractAddress: vaultAddr!,
         contractName: vaultName!,
         functionName: "withdraw",
-        functionArgs: [contractPrincipalCV(adapterAddr!, adapterName!)],
+        functionArgs: [
+          contractPrincipalCV(sbtcAddr!, sbtcName!),
+          contractPrincipalCV(adapterAddr, adapterName),
+        ],
       });
     },
     onSuccess: (txid) => {

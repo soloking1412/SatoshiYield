@@ -20,10 +20,19 @@ function assertSafeName(name: string, label: string): void {
 function decodeUint(hex: string): number {
   const raw = hex.startsWith("0x") ? hex.slice(2) : hex;
   if (raw.length < 6) throw new Error("Clarity response too short");
-  const valueHex = raw.slice(4); // skip "0701" (ok + uint prefix)
-  const parsed = parseInt(valueHex, 16);
-  if (!Number.isFinite(parsed)) throw new Error("Failed to parse uint from chain");
-  return parsed;
+  const valueHex = raw.slice(4); // skip "0701" (ok-response + uint type prefix)
+  let value: bigint;
+  try {
+    value = BigInt(`0x${valueHex}`);
+  } catch {
+    throw new Error("Failed to parse uint from chain");
+  }
+  // Clarity uints are 128-bit; guard the JS safe-integer range instead of
+  // silently losing precision the way parseInt(hex, 16) would.
+  if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error("Chain uint exceeds JS safe-integer range");
+  }
+  return Number(value);
 }
 
 export async function readUint(
