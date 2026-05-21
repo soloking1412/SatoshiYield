@@ -11,8 +11,8 @@ import { fetchAlexNativeApy } from "./native-apy.js";
 export async function fetchAlex(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
     await Promise.allSettled([
-      readAdapterOracleState("alex-adapter-v3"),
-      readUint("alex-adapter-v3", "get-total-deposited"),
+      readAdapterOracleState("alex-adapter-v4"),
+      readUint("alex-adapter-v4", "get-total-deposited"),
       getBtcPriceUsd(),
       fetchAlexNativeApy(),
     ]);

@@ -11,8 +11,8 @@ import { fetchBitflowNativeApy } from "./native-apy.js";
 export async function fetchBitflow(): Promise<NormalizedYield> {
   const [onChainResult, totalSatsResult, btcPriceResult, nativeApyResult] =
     await Promise.allSettled([
-      readAdapterOracleState("bitflow-adapter-v3"),
-      readUint("bitflow-adapter-v3", "get-total-deposited"),
+      readAdapterOracleState("bitflow-adapter-v4"),
+      readUint("bitflow-adapter-v4", "get-total-deposited"),
       getBtcPriceUsd(),
       fetchBitflowNativeApy(),
     ]);

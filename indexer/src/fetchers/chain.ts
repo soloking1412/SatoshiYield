@@ -20,6 +20,10 @@ function assertSafeName(name: string, label: string): void {
 function decodeUint(hex: string): number {
   const raw = hex.startsWith("0x") ? hex.slice(2) : hex;
   if (raw.length < 6) throw new Error("Clarity response too short");
+  // First byte: 07 = (ok ...), 08 = (err ...). Throw on err so callers
+  // treat a stale/failed read-only as "no data" rather than misreading the
+  // error code (e.g. u107 for err-stale-apy) as an APY value.
+  if (raw.startsWith("08")) throw new Error("Clarity call returned err response");
   const valueHex = raw.slice(4); // skip "0701" (ok-response + uint type prefix)
   let value: bigint;
   try {
