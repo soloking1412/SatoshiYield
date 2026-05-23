@@ -3,7 +3,7 @@ import {
   broadcastTransaction,
   uintCV,
 } from "@stacks/transactions";
-import { readUint, exceedsDeviation } from "./fetchers/chain.js";
+import { readUint, exceedsDeviation, readOracleReportBps } from "./fetchers/chain.js";
 import { fetchNativeApys } from "./fetchers/native-apy.js";
 import type { NativeApyResult } from "./fetchers/native-apy.js";
 
@@ -40,6 +40,7 @@ const TARGET_BPS: Record<AdapterName, number> = {
 
 export interface PushResult {
   adapter: string;
+  oracle:  0 | 1;
   pushed:  boolean;
   txid?:   string;
   reason?: string;
@@ -54,11 +55,12 @@ function sanitize(value: unknown): string {
 export async function pushApy(
   contractName: string,
   newBps: number,
-  options?: { nonce?: number; senderKey?: string }
+  options?: { nonce?: number; senderKey?: string; oracleIdx?: 0 | 1 }
 ): Promise<PushResult> {
-  const key = options?.senderKey ?? ORACLE_KEY;
+  const oracleIdx = options?.oracleIdx ?? 0;
+  const key       = options?.senderKey ?? ORACLE_KEY;
   if (!DEPLOYER || !key) {
-    return { adapter: contractName, pushed: false, reason: "missing_env" };
+    return { adapter: contractName, oracle: oracleIdx, pushed: false, reason: "missing_env" };
   }
 
   let currentBps = 0;
@@ -70,7 +72,7 @@ export async function pushApy(
 
   if (currentBps > 0 && exceedsDeviation(newBps, currentBps, 50)) {
     console.error(`[oracle] deviation too large — ${contractName}: current=${currentBps} new=${newBps}`);
-    return { adapter: contractName, pushed: false, reason: "deviation_exceeded" };
+    return { adapter: contractName, oracle: oracleIdx, pushed: false, reason: "deviation_exceeded" };
   }
 
   const network = IS_MAINNET ? "mainnet" as const : "testnet" as const;
@@ -89,10 +91,10 @@ export async function pushApy(
 
   if ("error" in result) {
     console.error(`[oracle] broadcast failed for ${contractName}:`, result.error);
-    return { adapter: contractName, pushed: false, reason: result.error as string };
+    return { adapter: contractName, oracle: oracleIdx, pushed: false, reason: result.error as string };
   }
 
-  return { adapter: contractName, pushed: true, txid: result.txid };
+  return { adapter: contractName, oracle: oracleIdx, pushed: true, txid: result.txid };
 }
 
 async function fetchNonce(address: string): Promise<number> {
@@ -130,23 +132,26 @@ export async function pushAllAdapters(
   for (const name of ADAPTERS) {
     const bps = newBpsMap[name];
     if (bps === undefined) {
-      results.push({ adapter: name, pushed: false, reason: "no_bps_provided" });
+      results.push({ adapter: name, oracle: 0, pushed: false, reason: "no_bps_provided" });
       continue;
     }
     // Push from oracle[0]
     try {
-      results.push(await pushApy(name, bps, { nonce: n1++ }));
+      results.push(await pushApy(name, bps, { nonce: n1++, oracleIdx: 0 }));
     } catch (err) {
-      results.push({ adapter: name, pushed: false, reason: sanitize(err) });
+      results.push({ adapter: name, oracle: 0, pushed: false, reason: sanitize(err) });
     }
-    // Push from oracle[1] when configured — triggers 2-of-3 consensus
+    // Push from oracle[1] when configured — required to reach 2-of-3 consensus.
+    // Include the result in the response so a missing 2nd vote is visible.
     if (ORACLE_KEY_2 && addr2) {
       try {
-        const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2 });
+        const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2, oracleIdx: 1 });
+        results.push(r);
         if (!r.pushed) {
           console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r.reason}`);
         }
       } catch (err) {
+        results.push({ adapter: name, oracle: 1, pushed: false, reason: sanitize(err) });
         console.warn(`[oracle] oracle-2 push failed for ${name}: ${sanitize(err)}`);
       }
     }
@@ -161,24 +166,37 @@ async function buildBpsMap(): Promise<Record<string, number>> {
   for (const name of ADAPTERS) {
     const protocolKey = PROTOCOL_KEY[name];
     const native      = apys[protocolKey];
-    const target      = TARGET_BPS[name];
+    const fallback    = TARGET_BPS[name];
 
-    if (native !== null) {
-      map[name] = Math.round(native * 100);
-      continue;
+    // Desired target: live native APY when the protocol API responded, else
+    // the curated fallback. Either way, we must respect the on-chain ±50%
+    // deviation guard against the *committed* current-apy-bps below.
+    const target = native !== null ? Math.round(native * 100) : fallback;
+
+    // Baseline for the ramp. Prefer fresh on-chain APY. If get-apy is stale
+    // (throws err-stale-apy), the contract's deviation guard still compares
+    // against current-apy-bps — so falling back to 0 here is fatal: we'd push
+    // the full target and get err-deviation forever. Use the raw oracle-0
+    // report as a proxy: it's the value that was used in the last consensus
+    // commit, so it's almost always identical to current-apy-bps.
+    let baseline = 0;
+    try {
+      baseline = await readUint(name, "get-apy");
+    } catch {
+      try {
+        baseline = await readOracleReportBps(name, 0);
+      } catch { /* leave 0 — only happens on first-ever push */ }
     }
 
-    let current = 0;
-    try { current = await readUint(name, "get-apy"); } catch { /* unset */ }
-
-    if (current === 0 || current === target) {
+    if (baseline === 0 || baseline === target) {
       map[name] = target;
     } else {
-      // Move at most 40% of current per cycle — stays within the 50% on-chain deviation guard
-      const step = Math.floor(current * 0.4);
-      map[name]  = target > current
-        ? Math.min(target, current + step)
-        : Math.max(target, current - step);
+      // Move at most 40% of baseline per cycle — stays inside the 50%
+      // on-chain deviation guard with margin for rounding.
+      const step = Math.floor(baseline * 0.4);
+      map[name]  = target > baseline
+        ? Math.min(target, baseline + step)
+        : Math.max(target, baseline - step);
     }
   }
   return map;
@@ -197,7 +215,7 @@ export async function runOracleCycle(): Promise<PushResult[]> {
     return results;
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
-    return [{ adapter: "cycle", pushed: false, reason: sanitize(err) }];
+    return [{ adapter: "cycle", oracle: 0, pushed: false, reason: sanitize(err) }];
   }
 }
 

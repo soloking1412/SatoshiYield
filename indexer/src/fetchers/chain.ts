@@ -150,3 +150,69 @@ export function exceedsDeviation(
   if (currentBps === 0) return false;
   return (Math.abs(newBps - currentBps) / currentBps) * 100 > maxPct;
 }
+
+/**
+ * Reads the raw bps last reported by an oracle slot, regardless of staleness.
+ *
+ * The adapter's `get-apy` hides the underlying `current-apy-bps` once
+ * `last-updated-block` is older than STALE-BLOCKS (returns err-stale-apy with
+ * no value). When that happens we still need *some* reference point to ramp
+ * from — the on-chain deviation guard compares against the committed
+ * `current-apy-bps`, not against zero. The last oracle-0 report is the closest
+ * thing we can read directly, and it's almost always a good proxy because
+ * the previous consensus commit was computed from it.
+ *
+ * Returns 0 if the slot has never reported.
+ */
+export async function readOracleReportBps(
+  contractName: string,
+  idx: number
+): Promise<number> {
+  assertSafeName(contractName, "contractName");
+  if (!Number.isInteger(idx) || idx < 0 || idx > 2) {
+    throw new Error(`Invalid oracle idx: ${idx}`);
+  }
+
+  // Clarity uint argument: type byte 0x01 + 16-byte big-endian value
+  const argHex = `0x01${idx.toString(16).padStart(32, "0")}`;
+
+  const url = `${STACKS_API}/v2/contracts/call-read/${DEPLOYER}/${contractName}/get-oracle-report`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sender: DEPLOYER, arguments: [argHex] }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+
+  if (!res.ok) throw new Error(`Chain read ${contractName}.get-oracle-report returned ${res.status}`);
+
+  const json: unknown = await res.json();
+  if (
+    typeof json !== "object" || json === null ||
+    !("okay" in json) || !("result" in json) ||
+    typeof (json as Record<string, unknown>)["result"] !== "string"
+  ) {
+    throw new Error(`Unexpected chain response shape for ${contractName}.get-oracle-report`);
+  }
+  const { okay, result } = json as { okay: boolean; result: string };
+  if (!okay) throw new Error(`Contract error for ${contractName}.get-oracle-report`);
+
+  // Response shape: (ok (tuple ((block uint) (bps uint))))
+  // Fields are emitted alphabetically: block then bps.
+  // Hex layout: 07 0c 00000002 05 "block" 01 <16B> 03 "bps" 01 <16B>
+  const raw = (result.startsWith("0x") ? result.slice(2) : result).toLowerCase();
+  const PREFIX = "070c0000000205626c6f636b01"; // ok + tuple(2) + len(5) + "block" + uint
+  if (!raw.startsWith(PREFIX)) {
+    throw new Error("Unexpected oracle-report shape");
+  }
+  // Skip prefix + 16-byte block value (32 hex) + "03" + "bps" (627073) + "01"
+  const cursor = PREFIX.length + 32 + 2 + 6 + 2;
+  const valueHex = raw.slice(cursor, cursor + 32);
+  if (valueHex.length !== 32) throw new Error("Could not extract bps field");
+
+  const value = BigInt(`0x${valueHex}`);
+  if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error("Oracle report bps exceeds JS safe-integer range");
+  }
+  return Number(value);
+}
