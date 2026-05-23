@@ -77,6 +77,9 @@ export async function pushApy(
 
   const network = IS_MAINNET ? "mainnet" as const : "testnet" as const;
 
+  // Hard-set the fee so makeContractCall doesn't call Hiro's /v2/fees/transaction —
+  // that endpoint is aggressively rate-limited and was 429'ing whole cycles. set-apy
+  // is a small contract call; 10_000 uSTX (0.01 STX) is plenty for inclusion.
   const tx = await makeContractCall({
     contractAddress: DEPLOYER,
     contractName,
@@ -84,20 +87,50 @@ export async function pushApy(
     functionArgs:    [uintCV(newBps)],
     senderKey:       key,
     network,
+    fee:             10_000n,
     nonce: options?.nonce !== undefined ? BigInt(options.nonce) : undefined,
   });
 
   const result = await broadcastTransaction({ transaction: tx, network });
 
   if ("error" in result) {
-    console.error(`[oracle] broadcast failed for ${contractName}:`, result.error);
-    return { adapter: contractName, oracle: oracleIdx, pushed: false, reason: result.error as string };
+    // broadcastTransaction returns { error, reason?, reason_data? }. The top-level
+    // "error" is generic ("transaction rejected"); the "reason" is the actionable
+    // detail (e.g. "BadNonce") and we need it in logs to debug rejections.
+    const r = result as { error: string; reason?: string; reason_data?: unknown };
+    const detail = r.reason
+      ? `${r.error}: ${r.reason}${r.reason_data ? " " + JSON.stringify(r.reason_data) : ""}`
+      : r.error;
+    console.error(`[oracle] broadcast failed for ${contractName}:`, detail);
+    return { adapter: contractName, oracle: oracleIdx, pushed: false, reason: detail };
   }
 
   return { adapter: contractName, oracle: oracleIdx, pushed: true, txid: result.txid };
 }
 
+/**
+ * Returns the next nonce that's safe to use, accounting for any pending
+ * mempool transactions the address has in flight. Critical for oracle pushes:
+ * if a previous cycle's tx is still pending and we reuse the executed-nonce,
+ * the new tx is rejected as BadNonce. Hiro's /extended/v1/.../nonces gives us
+ * `possible_next_nonce = max(last_executed+1, max(mempool_nonces)+1)`.
+ */
 async function fetchNonce(address: string): Promise<number> {
+  try {
+    const res = await fetch(
+      `${STACKS_API_BASE}/extended/v1/address/${address}/nonces`,
+      { signal: AbortSignal.timeout(8_000) }
+    );
+    if (res.ok) {
+      const data = await res.json() as { possible_next_nonce?: number };
+      if (typeof data.possible_next_nonce === "number") {
+        return data.possible_next_nonce;
+      }
+    }
+  } catch { /* fall through */ }
+
+  // Fallback: executed-only nonce. Used if extended/v1 is down — better than
+  // crashing the cycle, but pending txs may cause BadNonce until they mine.
   try {
     const res  = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`);
     const data = await res.json() as { nonce: number };
@@ -128,6 +161,8 @@ export async function pushAllAdapters(
   }
 
   const results: PushResult[] = [];
+  // Small delay between broadcasts so we don't burst Hiro's per-second limits.
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   for (const name of ADAPTERS) {
     const bps = newBpsMap[name];
@@ -135,25 +170,31 @@ export async function pushAllAdapters(
       results.push({ adapter: name, oracle: 0, pushed: false, reason: "no_bps_provided" });
       continue;
     }
-    // Push from oracle[0]
+
+    // Push from oracle[0]. Only advance the nonce on success — a rejected tx
+    // doesn't consume one on-chain, and bumping locally would skip the slot
+    // and cause every subsequent push to BadNonce.
     try {
-      results.push(await pushApy(name, bps, { nonce: n1++, oracleIdx: 0 }));
+      const r0 = await pushApy(name, bps, { nonce: n1, oracleIdx: 0 });
+      results.push(r0);
+      if (r0.pushed) n1++;
     } catch (err) {
       results.push({ adapter: name, oracle: 0, pushed: false, reason: sanitize(err) });
     }
+    await wait(300);
+
     // Push from oracle[1] when configured — required to reach 2-of-3 consensus.
-    // Include the result in the response so a missing 2nd vote is visible.
     if (ORACLE_KEY_2 && addr2) {
       try {
-        const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2, oracleIdx: 1 });
-        results.push(r);
-        if (!r.pushed) {
-          console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r.reason}`);
-        }
+        const r1 = await pushApy(name, bps, { nonce: n2, senderKey: ORACLE_KEY_2, oracleIdx: 1 });
+        results.push(r1);
+        if (r1.pushed) n2++;
+        if (!r1.pushed) console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r1.reason}`);
       } catch (err) {
         results.push({ adapter: name, oracle: 1, pushed: false, reason: sanitize(err) });
         console.warn(`[oracle] oracle-2 push failed for ${name}: ${sanitize(err)}`);
       }
+      await wait(300);
     }
   }
   return results;
@@ -174,18 +215,30 @@ async function buildBpsMap(): Promise<Record<string, number>> {
     const target = native !== null ? Math.round(native * 100) : fallback;
 
     // Baseline for the ramp. Prefer fresh on-chain APY. If get-apy is stale
-    // (throws err-stale-apy), the contract's deviation guard still compares
-    // against current-apy-bps — so falling back to 0 here is fatal: we'd push
-    // the full target and get err-deviation forever. Use the raw oracle-0
-    // report as a proxy: it's the value that was used in the last consensus
-    // commit, so it's almost always identical to current-apy-bps.
+    // (throws err-stale-apy), we can't see current-apy-bps directly — but the
+    // contract's deviation guard still compares against it. Slot 0's report
+    // alone is unsafe: oracle-0 may have advanced it via a tx whose try-commit
+    // didn't reach consensus, in which case current-apy-bps did NOT change
+    // and slot 0 now overshoots.
+    //
+    // Use min(slot-0, slot-1) instead. Whichever oracle has been failing keeps
+    // its slot pinned to the value at the last successful commit (== current-
+    // apy-bps), so min is always ≤ current-apy-bps. That keeps the ramp inside
+    // the ±50% deviation guard while still moving the baseline forward each
+    // cycle a successful commit lands.
     let baseline = 0;
     try {
       baseline = await readUint(name, "get-apy");
     } catch {
-      try {
-        baseline = await readOracleReportBps(name, 0);
-      } catch { /* leave 0 — only happens on first-ever push */ }
+      const [r0, r1] = await Promise.allSettled([
+        readOracleReportBps(name, 0),
+        readOracleReportBps(name, 1),
+      ]);
+      const v0 = r0.status === "fulfilled" ? r0.value : 0;
+      const v1 = r1.status === "fulfilled" ? r1.value : 0;
+      // If only one slot has ever reported, use it. Otherwise the lower of the
+      // two — that's the safe proxy for current-apy-bps.
+      baseline = v0 > 0 && v1 > 0 ? Math.min(v0, v1) : Math.max(v0, v1);
     }
 
     if (baseline === 0 || baseline === target) {
