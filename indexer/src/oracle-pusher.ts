@@ -255,7 +255,19 @@ async function buildBpsMap(): Promise<Record<string, number>> {
   return map;
 }
 
+// Process-wide mutex: prevents the in-process 6h scheduler and the external
+// cron's POST /api/oracle/push from running concurrently. Without it, both
+// callers fetch the same possible_next_nonce, race their broadcasts, and most
+// of the second cycle's txs fail with BadNonce while half push wrong bps
+// because the baseline read happens against in-flight state from the other.
+let cycleInProgress = false;
+
 export async function runOracleCycle(): Promise<PushResult[]> {
+  if (cycleInProgress) {
+    console.warn("[oracle] cycle already in progress — skipping");
+    return [{ adapter: "cycle", oracle: 0, pushed: false, reason: "concurrent_cycle_skipped" }];
+  }
+  cycleInProgress = true;
   console.log(`[oracle] cycle ${new Date().toISOString()}`);
   try {
     const bpsMap  = await buildBpsMap();
@@ -269,6 +281,8 @@ export async function runOracleCycle(): Promise<PushResult[]> {
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
     return [{ adapter: "cycle", oracle: 0, pushed: false, reason: sanitize(err) }];
+  } finally {
+    cycleInProgress = false;
   }
 }
 
@@ -286,6 +300,8 @@ export function startOracleScheduler(intervalMs: number): void {
         "cannot be reached: on-chain APY goes stale after 720 blocks and deposits get blocked."
     );
   }
-  void runOracleCycle();
+  // No boot-time cycle: it races with the external cron whenever Render
+  // redeploys. The 6h interval below + the external cron's 30-min cadence
+  // keep oracles fresh without needing an immediate kick.
   setInterval(() => { void runOracleCycle(); }, intervalMs);
 }
