@@ -5,6 +5,16 @@
 **/.env
 **/.env.*
 !.env.example
+**/wallet.json
+**/wallets.json
+**/keys.json
+**/secrets.json
+**/*.mnemonic
+**/*.seed
+# Clarinet stores deployer/account mnemonics in settings/*.toml — never commit.
+contracts/settings/Mainnet.toml
+contracts/settings/Testnet.toml
+contracts/settings/Devnet.toml
 
 # logs
 **/*.log
@@ -32,3 +42,6 @@ pnpm-debug.log*
 .idea/
 .vscode/
 *.swp
+
+# local security reports / tooling
+.superstack/

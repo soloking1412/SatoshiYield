@@ -12,13 +12,20 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: STACKS_NETWORK
+        value: mainnet
       - key: STACKS_API_URL
-        value: https://api.testnet.hiro.so
-      - key: DEPLOYER_ADDRESS
-        value: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+        value: https://api.hiro.so
       - key: CACHE_TTL_SECONDS
         value: "300"
-      # Set CORS_ALLOWED_ORIGINS in the Render dashboard to your deployed
-      # frontend URL(s), comma-separated.
-      - key: CORS_ALLOWED_ORIGINS
+      # All of the values below MUST be set in the Render dashboard before the
+      # service can boot. chain.ts and index.ts both throw at startup if they
+      # are missing or wrong.
+      - key: DEPLOYER_ADDRESS         # Asigna 2-of-3 multi-sig SP-principal
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS     # comma-separated, e.g. https://satoshiyields.com
+        sync: false
+      - key: ORACLE_PRIVATE_KEY       # 64-hex, fresh oracle wallet 1
+        sync: false
+      - key: ORACLE_PRIVATE_KEY_2     # 64-hex, fresh oracle wallet 2 (REQUIRED for 2-of-3 consensus)
         sync: false

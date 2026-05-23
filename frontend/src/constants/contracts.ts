@@ -1,29 +1,30 @@
-const isMainnet = import.meta.env.VITE_NETWORK === "mainnet";
+// Mainnet-only build. The Mainnet-beta branch ships exclusively against
+// Stacks mainnet (sBTC at SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token).
+// VITE_NETWORK is still validated in lib/stacksClient.ts so an accidental
+// "testnet" build fails fast.
 
-const DEPLOYER_TESTNET =
-  import.meta.env.VITE_DEPLOYER_TESTNET ?? "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1";
-const DEPLOYER_MAINNET =
-  import.meta.env.VITE_DEPLOYER_MAINNET ?? "REPLACE_WITH_MAINNET_DEPLOYER";
-
-// Fail the build loudly rather than ship a mainnet bundle with a placeholder
-// deployer — every contract call would otherwise target a non-existent address.
-if (isMainnet && DEPLOYER_MAINNET === "REPLACE_WITH_MAINNET_DEPLOYER") {
+const network = import.meta.env.VITE_NETWORK;
+if (network !== "mainnet") {
   throw new Error(
-    "VITE_DEPLOYER_MAINNET must be set for a mainnet build (placeholder still in use)."
+    `Mainnet-beta branch requires VITE_NETWORK="mainnet" (got ${JSON.stringify(network)}).`
   );
 }
 
-export const DEPLOYER = isMainnet ? DEPLOYER_MAINNET : DEPLOYER_TESTNET;
+const DEPLOYER_RAW = import.meta.env.VITE_DEPLOYER_MAINNET;
+if (!DEPLOYER_RAW || DEPLOYER_RAW === "REPLACE_WITH_MAINNET_DEPLOYER") {
+  throw new Error(
+    "VITE_DEPLOYER_MAINNET must be set to the mainnet deployer (Asigna multi-sig) address."
+  );
+}
+
+export const DEPLOYER: string = DEPLOYER_RAW;
 
 // vault-v5 — SIP-010 token trait + rebalance staleness guard
 const VAULT_NAME = "vault-v5";
 
 export const CONTRACTS = {
   VAULT: `${DEPLOYER}.${VAULT_NAME}`,
-  REBALANCER: `${DEPLOYER}.rebalancer`,
-  SBTC_TOKEN: isMainnet
-    ? "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token"
-    : `${DEPLOYER}.mock-sbtc`,
+  SBTC_TOKEN: "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token",
   ADAPTERS: {
     bitflow: `${DEPLOYER}.bitflow-adapter-v4`,
     alex:    `${DEPLOYER}.alex-adapter-v4`,

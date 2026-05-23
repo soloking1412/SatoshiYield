@@ -1,19 +1,12 @@
 [project]
 name = "satoshi-yield"
-description = "Non-custodial sBTC yield optimizer on Stacks"
+description = "Non-custodial sBTC yield optimizer on Stacks (mainnet)"
 authors = []
 telemetry = false
 cache_dir = "./.cache"
 
-[contracts.mock-sbtc]
-path = "contracts/token/mock-sbtc.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.yield-source]
-path = "contracts/traits/yield-source.clar"
-clarity_version = 3
-epoch = "latest"
+# Mainnet bundle: 1 vault + 4 v4 adapters + 2 traits. mock-sbtc, vault v1..v4,
+# rebalancer, yield-tracker, and all v1/v2/v3 adapters are intentionally absent.
 
 [contracts.sip-010-trait]
 path = "contracts/traits/sip-010-trait.clar"
@@ -25,93 +18,8 @@ path = "contracts/traits/yield-source-v2.clar"
 clarity_version = 3
 epoch = "latest"
 
-[contracts.bitflow-adapter]
-path = "contracts/adapters/bitflow-adapter.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.alex-adapter]
-path = "contracts/adapters/alex-adapter.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.zest-adapter]
-path = "contracts/adapters/zest-adapter.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.velar-adapter]
-path = "contracts/adapters/velar-adapter.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.vault]
-path = "contracts/vault.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.vault-v2]
-path = "contracts/vault-v2.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.yield-tracker]
-path = "contracts/yield-tracker.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.rebalancer]
-path = "contracts/rebalancer.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.bitflow-adapter-v2]
-path = "contracts/adapters/bitflow-adapter-v2.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.alex-adapter-v2]
-path = "contracts/adapters/alex-adapter-v2.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.zest-adapter-v2]
-path = "contracts/adapters/zest-adapter-v2.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.velar-adapter-v2]
-path = "contracts/adapters/velar-adapter-v2.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.vault-v3]
-path = "contracts/vault-v3.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.bitflow-adapter-v3]
-path = "contracts/adapters/bitflow-adapter-v3.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.alex-adapter-v3]
-path = "contracts/adapters/alex-adapter-v3.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.zest-adapter-v3]
-path = "contracts/adapters/zest-adapter-v3.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.velar-adapter-v3]
-path = "contracts/adapters/velar-adapter-v3.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.vault-v4]
-path = "contracts/vault-v4.clar"
+[contracts.vault-v5]
+path = "contracts/vault-v5.clar"
 clarity_version = 3
 epoch = "latest"
 
@@ -132,11 +40,6 @@ epoch = "latest"
 
 [contracts.velar-adapter-v4]
 path = "contracts/adapters/velar-adapter-v4.clar"
-clarity_version = 3
-epoch = "latest"
-
-[contracts.vault-v5]
-path = "contracts/vault-v5.clar"
 clarity_version = 3
 epoch = "latest"
 

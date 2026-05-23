@@ -5,8 +5,8 @@ import { useToast } from "../context/ToastContext.js";
 import { CONTRACTS } from "../constants/contracts.js";
 import type { ProtocolId } from "../types/yield.js";
 
-const isMainnet = import.meta.env.VITE_NETWORK === "mainnet";
-const SBTC_ASSET_NAME = isMainnet ? "sbtc" : "mock-sbtc";
+// Mainnet sBTC fungible-token name (SM3K…sbtc-token defines "sbtc").
+const SBTC_ASSET_NAME = "sbtc";
 
 export function useDeposit() {
   const { callContract, address } = useWallet();

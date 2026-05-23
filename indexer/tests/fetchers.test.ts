@@ -6,9 +6,11 @@ import { fetchAlex } from "../src/fetchers/alex.js";
 import { fetchZest } from "../src/fetchers/zest.js";
 import { fetchVelar } from "../src/fetchers/velar.js";
 
-// Must match the defaults in chain.ts
-const DEPLOYER = "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1";
-const API = "https://api.testnet.hiro.so";
+// Test-only fake principal. Must match process.env.DEPLOYER_ADDRESS in the
+// test setup; chain.ts has no defaults, so the env must be populated before
+// chain.ts is imported.
+const DEPLOYER = "SP000000000000000000002AMW42H";
+const API = "https://api.hiro.so";
 const BTC_PRICE = 75_000;
 
 /** Encode an unsigned integer as a Clarity (ok uint) hex response. */
@@ -33,20 +35,38 @@ const server = setupServer(
   ),
 
   // Bitflow: 12.5% APY (1250 bps), 0.5 BTC deposited
-  chainHandler("bitflow-adapter", "get-apy", 1250),
-  chainHandler("bitflow-adapter", "get-total-deposited", 50_000_000),
+  chainHandler("bitflow-adapter-v4", "get-apy", 1250),
+  chainHandler("bitflow-adapter-v4", "get-last-updated-block", 99_999),
+  chainHandler("bitflow-adapter-v4", "get-total-deposited", 50_000_000),
 
   // Alex: 10% APY (1000 bps), 10 BTC deposited -> TVL $750,000
-  chainHandler("alex-adapter", "get-apy", 1000),
-  chainHandler("alex-adapter", "get-total-deposited", 1_000_000_000),
+  chainHandler("alex-adapter-v4", "get-apy", 1000),
+  chainHandler("alex-adapter-v4", "get-last-updated-block", 99_999),
+  chainHandler("alex-adapter-v4", "get-total-deposited", 1_000_000_000),
 
   // Zest: 8.5% APY (850 bps), 2 BTC deposited
-  chainHandler("zest-adapter", "get-apy", 850),
-  chainHandler("zest-adapter", "get-total-deposited", 200_000_000),
+  chainHandler("zest-adapter-v4", "get-apy", 850),
+  chainHandler("zest-adapter-v4", "get-last-updated-block", 99_999),
+  chainHandler("zest-adapter-v4", "get-total-deposited", 200_000_000),
 
   // Velar: 20% APY (2000 bps), 0.3 BTC deposited
-  chainHandler("velar-adapter", "get-apy", 2000),
-  chainHandler("velar-adapter", "get-total-deposited", 30_000_000)
+  chainHandler("velar-adapter-v4", "get-apy", 2000),
+  chainHandler("velar-adapter-v4", "get-last-updated-block", 99_999),
+  chainHandler("velar-adapter-v4", "get-total-deposited", 30_000_000),
+
+  // Native APY endpoints — return 404 to fall through to chain-only path.
+  http.get("https://app.bitflow.finance/api/yield/sbtc", () =>
+    HttpResponse.json({}, { status: 404 })
+  ),
+  http.get("https://api.alexgo.io/v1/stats/pool-info/sbtc-stx", () =>
+    HttpResponse.json({}, { status: 404 })
+  ),
+  http.get("https://api.zestprotocol.com/v1/markets/sbtc", () =>
+    HttpResponse.json({}, { status: 404 })
+  ),
+  http.get("https://api.velar.com/v1/pools/sbtc", () =>
+    HttpResponse.json({}, { status: 404 })
+  )
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
@@ -75,22 +95,25 @@ describe("fetchBitflow", () => {
     expect(result.fetched_at).toBeGreaterThanOrEqual(before);
   });
 
-  it("throws when the chain returns a non-200 response", async () => {
+  it("marks apy as stale (no throw) when the chain returns a non-200 response", async () => {
     server.use(
-      http.post(chainUrl("bitflow-adapter", "get-apy"), () =>
+      http.post(chainUrl("bitflow-adapter-v4", "get-apy"), () =>
         HttpResponse.json({ error: "not found" }, { status: 404 })
       )
     );
-    await expect(fetchBitflow()).rejects.toThrow();
+    const result = await fetchBitflow();
+    expect(result.apy_stale).toBe(true);
+    expect(result.apy_percent).toBe(0);
   });
 
-  it("throws when chain response has unexpected shape", async () => {
+  it("marks apy as stale (no throw) when chain response has unexpected shape", async () => {
     server.use(
-      http.post(chainUrl("bitflow-adapter", "get-apy"), () =>
+      http.post(chainUrl("bitflow-adapter-v4", "get-apy"), () =>
         HttpResponse.json({ unexpected: true })
       )
     );
-    await expect(fetchBitflow()).rejects.toThrow();
+    const result = await fetchBitflow();
+    expect(result.apy_stale).toBe(true);
   });
 });
 

@@ -1,10 +1,19 @@
 /**
  * Shared helper to read-only call a deployed contract on the Stacks chain.
- * Config is driven by environment variables for portability.
+ * Config is fully driven by environment variables. There are no fallbacks
+ * to testnet — running this without explicit env vars is always a misconfig.
  */
 
-const STACKS_API = process.env["STACKS_API_URL"] ?? "https://api.testnet.hiro.so";
-const DEPLOYER = process.env["DEPLOYER_ADDRESS"] ?? "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1";
+const STACKS_API = process.env["STACKS_API_URL"];
+const DEPLOYER = process.env["DEPLOYER_ADDRESS"];
+
+if (!STACKS_API || !DEPLOYER) {
+  throw new Error(
+    "[chain] STACKS_API_URL and DEPLOYER_ADDRESS env vars are required " +
+      "(no testnet fallback)."
+  );
+}
+
 const TIMEOUT_MS = 8_000;
 
 // Allow only alphanumeric and hyphens — prevents path traversal / injection.

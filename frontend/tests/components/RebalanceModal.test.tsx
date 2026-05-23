@@ -5,7 +5,7 @@ import { RebalanceModal } from "../../src/components/rebalance/RebalanceModal.js
 import type { NormalizedYield } from "../../src/types/yield.js";
 
 const mockMutate = vi.fn();
-const CURRENT_ADAPTER = "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1.bitflow-adapter-v3";
+const CURRENT_ADAPTER = "SP000000000000000000002AMW42H.bitflow-adapter-v4";
 
 vi.mock("../../src/hooks/useRebalance.js", () => ({
   useRebalance: () => ({
