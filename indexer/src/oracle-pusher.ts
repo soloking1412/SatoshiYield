@@ -184,7 +184,7 @@ async function buildBpsMap(): Promise<Record<string, number>> {
   return map;
 }
 
-async function runOracleCycle(): Promise<void> {
+export async function runOracleCycle(): Promise<PushResult[]> {
   console.log(`[oracle] cycle ${new Date().toISOString()}`);
   try {
     const bpsMap  = await buildBpsMap();
@@ -194,8 +194,10 @@ async function runOracleCycle(): Promise<void> {
         ? console.log(`[oracle] pushed ${r.adapter} txid=${r.txid}`)
         : console.warn(`[oracle] skipped ${r.adapter} reason=${r.reason}`);
     }
+    return results;
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
+    return [{ adapter: "cycle", pushed: false, reason: sanitize(err) }];
   }
 }
 
@@ -204,7 +206,7 @@ export function startOracleScheduler(intervalMs: number): void {
     console.log("[oracle] ORACLE_PRIVATE_KEY not set — scheduler disabled");
     return;
   }
-  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min`);
+  console.log(`[oracle] in-process scheduler interval=${intervalMs / 60_000}min (fallback; primary driver is external cron via /api/oracle/push)`);
   if (ORACLE_KEY_2) {
     console.log("[oracle] dual-oracle mode — 2-of-3 consensus active");
   } else {

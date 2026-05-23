@@ -22,3 +22,8 @@ services:
       # frontend URL(s), comma-separated.
       - key: CORS_ALLOWED_ORIGINS
         sync: false
+      # Bearer token gating POST /api/oracle/push. Set in the Render dashboard
+      # and mirror to GitHub repo secret INDEXER_ADMIN_TOKEN for the
+      # oracle-push workflow to authenticate.
+      - key: ADMIN_TOKEN
+        sync: false

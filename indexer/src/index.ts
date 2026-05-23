@@ -4,6 +4,7 @@ import { config } from "./config.js";
 import { yieldsRouter } from "./routes/yields.js";
 import { healthRouter } from "./routes/health.js";
 import { faucetRouter } from "./routes/faucet.js";
+import { oracleRouter } from "./routes/oracle.js";
 import { startOracleScheduler } from "./oracle-pusher.js";
 
 /**
@@ -30,6 +31,13 @@ function validateConfig(): void {
     console.warn(
       "[indexer] ORACLE_PRIVATE_KEY_2 not set — single-oracle mode. 2-of-3 consensus " +
         "cannot be reached: on-chain APY goes stale after 720 blocks and deposits get blocked."
+    );
+  }
+
+  if (!process.env["ADMIN_TOKEN"]) {
+    console.warn(
+      "[indexer] ADMIN_TOKEN not set — POST /api/oracle/push will reject all calls, " +
+        "leaving in-process scheduler as the only refresh path."
     );
   }
 
@@ -123,6 +131,7 @@ setInterval(() => {
 app.use("/api/yields", yieldsRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/faucet", faucetRouter);
+app.use("/api/oracle", oracleRouter);
 
 // --- Global error handler: never leak stack traces ---
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -155,8 +164,10 @@ process.on("unhandledRejection", (reason) => {
   );
 });
 
-// Oracle scheduler: fetches live APY from protocol APIs and pushes to chain every 2 h.
+// In-process oracle scheduler runs as a 6-hour fallback. The primary refresh
+// driver is an external cron (GitHub Actions) hitting POST /api/oracle/push
+// every 30 min, which survives Render free-tier process suspension.
 // No-ops silently if ORACLE_PRIVATE_KEY is not set.
-startOracleScheduler(2 * 60 * 60 * 1000);
+startOracleScheduler(6 * 60 * 60 * 1000);
 
 export default app;

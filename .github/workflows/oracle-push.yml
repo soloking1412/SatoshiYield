@@ -1,0 +1,61 @@
+name: oracle-push
+
+# Refreshes on-chain APY by hitting the indexer's admin push endpoint.
+# This runs in GitHub's infrastructure, so it is unaffected by Render free-tier
+# process suspension and is the primary driver of oracle freshness. The
+# in-process scheduler in indexer/src/index.ts is a 6h fallback.
+
+on:
+  schedule:
+    # Every 30 minutes. The 720-block on-chain stale window is roughly 5 days
+    # at testnet block cadence, so 30 min gives a very wide safety margin.
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: oracle-push
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: POST /api/oracle/push
+        env:
+          INDEXER_URL: ${{ secrets.INDEXER_URL }}
+          INDEXER_ADMIN_TOKEN: ${{ secrets.INDEXER_ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${INDEXER_URL:-}" ] || [ -z "${INDEXER_ADMIN_TOKEN:-}" ]; then
+            echo "Missing INDEXER_URL or INDEXER_ADMIN_TOKEN repo secret" >&2
+            exit 1
+          fi
+
+          # Render free-tier cold starts can take 30-60s, so allow a generous
+          # connect timeout. --fail-with-body so we see the JSON on a 4xx/5xx.
+          http_code=$(curl \
+            --silent \
+            --show-error \
+            --output response.json \
+            --write-out '%{http_code}' \
+            --connect-timeout 60 \
+            --max-time 120 \
+            --retry 2 \
+            --retry-delay 10 \
+            --retry-connrefused \
+            -X POST \
+            -H "Authorization: Bearer ${INDEXER_ADMIN_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${INDEXER_URL%/}/api/oracle/push")
+
+          echo "HTTP ${http_code}"
+          echo "--- response body ---"
+          cat response.json || true
+          echo
+          echo "---------------------"
+
+          if [ "${http_code}" != "200" ]; then
+            echo "Oracle push failed with HTTP ${http_code}" >&2
+            exit 1
+          fi
