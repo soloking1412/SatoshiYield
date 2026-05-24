@@ -1,0 +1,49 @@
+---
+# Testnet v6 — deploy yield-accrual adapters (v5) alongside existing vault-v5.
+#
+# These adapters are additive — vault-v5 stays unchanged, existing user
+# positions on v4 adapters are not affected.
+#
+# Deploy procedure:
+#   1. clarinet deployments apply --testnet -p deployments/v6.testnet-plan.yaml
+#   2. node scripts/init-v6.mjs
+#      (sets vault, oracles, approves adapters, funds yield reserves)
+#
+id: 4
+name: Testnet v6 - yield-accrual adapters (v5)
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: bitflow-adapter-v5
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 250000
+            path: contracts/adapters/bitflow-adapter-v5.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: alex-adapter-v5
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 250000
+            path: contracts/adapters/alex-adapter-v5.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: zest-adapter-v5
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 250000
+            path: contracts/adapters/zest-adapter-v5.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: velar-adapter-v5
+            expected-sender: ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1
+            cost: 250000
+            path: contracts/adapters/velar-adapter-v5.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

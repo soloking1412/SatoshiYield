@@ -20,6 +20,10 @@ const ADAPTERS = [
   "bitflow-adapter-v4",
   "zest-adapter-v4",
   "velar-adapter-v4",
+  "alex-adapter-v5",
+  "bitflow-adapter-v5",
+  "zest-adapter-v5",
+  "velar-adapter-v5",
 ] as const;
 
 type AdapterName = typeof ADAPTERS[number];
@@ -29,6 +33,10 @@ const PROTOCOL_KEY: Record<AdapterName, keyof NativeApyResult> = {
   "bitflow-adapter-v4": "bitflow",
   "zest-adapter-v4":    "zest",
   "velar-adapter-v4":   "velar",
+  "alex-adapter-v5":    "alex",
+  "bitflow-adapter-v5": "bitflow",
+  "zest-adapter-v5":    "zest",
+  "velar-adapter-v5":   "velar",
 };
 
 const TARGET_BPS: Record<AdapterName, number> = {
@@ -36,6 +44,10 @@ const TARGET_BPS: Record<AdapterName, number> = {
   "alex-adapter-v4":    510,
   "zest-adapter-v4":    280,
   "velar-adapter-v4":   440,
+  "bitflow-adapter-v5": 320,
+  "alex-adapter-v5":    510,
+  "zest-adapter-v5":    280,
+  "velar-adapter-v5":   440,
 };
 
 export interface PushResult {

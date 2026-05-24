@@ -24,10 +24,11 @@ export const CONTRACTS = {
   SBTC_TOKEN: isMainnet
     ? "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token"
     : `${DEPLOYER}.mock-sbtc`,
+  // v5 adapters add time-weighted yield accrual: withdraw returns principal + earned yield
   ADAPTERS: {
-    bitflow: `${DEPLOYER}.bitflow-adapter-v4`,
-    alex:    `${DEPLOYER}.alex-adapter-v4`,
-    zest:    `${DEPLOYER}.zest-adapter-v4`,
-    velar:   `${DEPLOYER}.velar-adapter-v4`,
+    bitflow: `${DEPLOYER}.bitflow-adapter-v5`,
+    alex:    `${DEPLOYER}.alex-adapter-v5`,
+    zest:    `${DEPLOYER}.zest-adapter-v5`,
+    velar:   `${DEPLOYER}.velar-adapter-v5`,
   },
 } as const;

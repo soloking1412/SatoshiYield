@@ -11,8 +11,8 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 const { makeContractCall, uintCV, standardPrincipalCV, broadcastTransaction, AnchorMode, PostConditionMode } =
-  require("/Users/soloking/SatoshiYield/scripts/node_modules/@stacks/transactions");
-const { STACKS_TESTNET } = require("/Users/soloking/SatoshiYield/scripts/node_modules/@stacks/network");
+  require("/Users/soloking/SatoshiYields/scripts/node_modules/@stacks/transactions");
+const { STACKS_TESTNET } = require("/Users/soloking/SatoshiYields/scripts/node_modules/@stacks/network");
 
 const DEPLOYER = "ST1JXS4BTWDNNEX28QS8ABHQSCAD4BQMAN11TP6B1";
 const PRIVATE_KEY = "0xcf70b45e9f19063616faca847a1616d5ea53145ab96a5ff680a9004f402834a401";

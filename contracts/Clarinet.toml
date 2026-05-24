@@ -140,6 +140,26 @@ path = "contracts/vault-v5.clar"
 clarity_version = 3
 epoch = "latest"
 
+[contracts.bitflow-adapter-v5]
+path = "contracts/adapters/bitflow-adapter-v5.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.alex-adapter-v5]
+path = "contracts/adapters/alex-adapter-v5.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-adapter-v5]
+path = "contracts/adapters/zest-adapter-v5.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.velar-adapter-v5]
+path = "contracts/adapters/velar-adapter-v5.clar"
+clarity_version = 3
+epoch = "latest"
+
 [repl.analysis]
 passes = ["check_checker"]
 check_checker = { trusted_sender = true, trusted_caller = true, callee_filter = false }
