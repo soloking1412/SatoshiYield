@@ -133,7 +133,7 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
                   height: 46,
                   borderRadius: "50%",
                   border: "3px solid var(--bg4)",
-                  borderTopColor: "var(--amber)",
+                  borderTopColor: "var(--accent)",
                   animation: "spin .8s linear infinite",
                 }}
               />
@@ -206,7 +206,7 @@ function WalletRow({
           style={{
             fontSize: 11.5,
             fontWeight: 700,
-            color: "var(--amber)",
+            color: "var(--accent)",
             whiteSpace: "nowrap",
           }}
         >

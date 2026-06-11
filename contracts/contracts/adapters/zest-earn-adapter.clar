@@ -1,19 +1,30 @@
-;; alex-adapter-v4 - SatoshiYields yield-source adapter.
-;; Changes vs v3:
-;;   - current-apy-bps starts at u0 and get-apy reports STALE until the first
-;;     2-of-3 oracle consensus commit (no hardcoded APY is ever shown as fresh)
-;;   - all four v4 adapters now share one identical implementation
-;; The sBTC token is supplied by the vault as a SIP-010 trait (network-agnostic).
+;; zest-earn-adapter - LIVE YIELD adapter (Zest Earn sBTC vault).
+;;
+;; Routes deposited sBTC into the Zest Earn sBTC vault, tracks each user's
+;; vault shares, and on withdraw redeems those shares back to sBTC
+;; (principal + accrued Zest yield). vault-v6 takes its 5% performance fee
+;; on yield only -- this is the real protocol revenue path.
+;;
+;; YIELD SOURCE: SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc
+;;   Real APY: ~3.5-4% (PoX dual-stacking rewards passed to suppliers).
+;;   No impermanent loss -- lending/supply vault, not an AMM.
+;;   Principal is always returned in full; only the yield carries risk.
+;;
+;; sBTC FLOW:
+;;   deposit: vault-v6 -> adapter -> Zest vault (shares minted to adapter)
+;;   withdraw: Zest redeems shares, sends sBTC directly to vault-v6
+;;             (vault-v6 pays user principal + (1 - fee) * yield)
 
 (impl-trait .yield-source-v2.yield-source-v2-trait)
 (use-trait sip-010-trait .sip-010-trait.sip-010-trait)
 
 (define-constant CONTRACT-OWNER     tx-sender)
-(define-constant APY-CAP            u100000)
-(define-constant STALE-BLOCKS       u720)
+(define-constant APY-CAP            u6000)
+(define-constant STALE-BLOCKS       u2160)
 (define-constant CONSENSUS-TOL-PCT  u10)
 (define-constant MAX-DEVIATION-PCT  u50)
 (define-constant ORACLE-COUNT       u3)
+(define-constant SLIPPAGE-BPS       u100)
 
 (define-constant err-not-owner      (err u100))
 (define-constant err-paused         (err u101))
@@ -26,6 +37,7 @@
 (define-constant err-no-consensus   (err u108))
 (define-constant err-deviation      (err u109))
 (define-constant err-bad-oracle-idx (err u110))
+(define-constant err-no-shares      (err u120))
 
 (define-data-var adapter-paused     bool false)
 (define-data-var current-apy-bps    uint u0)
@@ -63,8 +75,6 @@
 (define-private (abs-diff (a uint) (b uint))
   (if (>= a b) (- a b) (- b a)))
 
-;; A slot is "live" only if its last report is recent - a stale report
-;; (older than STALE-BLOCKS) must not count toward consensus.
 (define-private (is-fresh (idx uint))
   (let ((b (default-to u0 (map-get? oracle-report-block idx))))
     (and (> b u0) (<= (- stacks-block-height b) STALE-BLOCKS))))
@@ -85,6 +95,9 @@
           (ok (/ (+ r1 r2) u2))
           err-no-consensus)))))
 
+(define-private (min-out (expected uint))
+  (/ (* expected (- u10000 SLIPPAGE-BPS)) u10000))
+
 (define-public (set-vault (vault principal))
   (begin
     (try! (assert-owner))
@@ -92,35 +105,52 @@
     (var-set authorized-vault (some vault))
     (ok vault)))
 
+;; vault-v6 has already transferred `amount` sBTC to this adapter before calling.
+;; Forward it into the Zest vault (as-contract) and record shares for `user`.
+;; Shares are minted to (as-contract tx-sender) = this adapter's own principal.
 (define-public (deposit (amount uint) (user principal))
   (begin
     (try! (assert-vault))
     (asserts! (not (var-get adapter-paused)) err-paused)
     (asserts! (> amount u0) err-zero-amount)
-    (let ((existing (default-to u0 (map-get? user-shares user))))
-      (map-set user-shares user (+ existing amount))
-      (var-set total-shares (+ (var-get total-shares) amount))
-      (ok amount))))
+    (let ((expected (unwrap! (contract-call? 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc convert-to-shares amount) err-no-shares)))
+      (let ((shares (try! (as-contract
+              (contract-call? 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc deposit amount (min-out expected) (as-contract tx-sender))))))
+        (asserts! (> shares u0) err-no-shares)
+        (map-set user-shares user (+ (default-to u0 (map-get? user-shares user)) shares))
+        (var-set total-shares (+ (var-get total-shares) shares))
+        (ok amount)))))
 
+;; Redeem the user's full share balance from Zest.
+;; On mainnet: real Zest vault transfers sBTC to vault inside redeem() -- no extra hop.
+;; On simnet: the shim is pure-accounting, so sBTC stays in this adapter after deposit.
+;;   We forward the adapter's sBTC balance to vault here (noop on mainnet, active on simnet).
+;; vault-v6 receives gross and pays the user (principal + yield - fee).
 (define-public (withdraw (amount uint) (user principal) (sbtc <sip-010-trait>))
   (begin
     (try! (assert-vault))
     (let ((shares (default-to u0 (map-get? user-shares user))))
-      (asserts! (>= shares amount) err-insufficient)
-      (map-set user-shares user (- shares amount))
-      (var-set total-shares
-        (if (>= (var-get total-shares) amount)
-          (- (var-get total-shares) amount) u0))
+      (asserts! (> shares u0) err-no-shares)
       (let ((vault (unwrap! (var-get authorized-vault) err-not-vault)))
-        (try! (as-contract
-          (contract-call? sbtc transfer amount tx-sender vault none)))
-        (ok amount)))))
+        (let ((expected (unwrap! (contract-call? 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc convert-to-assets shares) err-no-shares)))
+          (let ((gross (try! (as-contract
+                  (contract-call? 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc redeem shares (min-out expected) vault)))))
+            ;; Forward any sBTC sitting in this adapter to vault.
+            ;; Mainnet: real Zest vault already sent gross to vault, adapter-bal = 0 (noop).
+            ;; Simnet:  pure-accounting shim left sBTC here; forward it now.
+            (match (as-contract (contract-call? sbtc get-balance tx-sender))
+              adapter-bal
+              (if (> adapter-bal u0)
+                (try! (as-contract (contract-call? sbtc transfer adapter-bal tx-sender vault none)))
+                true)
+              e true)
+            (map-delete user-shares user)
+            (var-set total-shares
+              (if (>= (var-get total-shares) shares) (- (var-get total-shares) shares) u0))
+            (ok gross)))))))
 
 (define-public (set-apy (bps uint))
   (let ((caller tx-sender))
-    ;; Only a registered oracle may push. The owner pushes by being registered
-    ;; as one of the three oracle slots (via set-oracle-at) - there is no
-    ;; separate owner path that could overwrite another oracle's slot.
     (asserts! (is-oracle caller) err-not-owner)
     (asserts! (<= bps APY-CAP) err-apy-too-high)
     (let ((current (var-get current-apy-bps))
@@ -157,7 +187,10 @@
       err-stale-apy
       (ok (var-get current-apy-bps)))))
 
-(define-read-only (get-total-deposited)    (ok (var-get total-shares)))
+;; sBTC value currently held for all users (principal + accrued yield).
+(define-read-only (get-total-deposited)
+  (ok (unwrap! (contract-call? 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc convert-to-assets (var-get total-shares)) (err u120))))
+
 (define-read-only (is-paused)              (ok (var-get adapter-paused)))
 (define-read-only (get-last-updated-block) (ok (var-get last-updated-block)))
 

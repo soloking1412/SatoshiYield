@@ -1,34 +1,52 @@
-// Mainnet-only build. The Mainnet-beta branch ships exclusively against
-// Stacks mainnet (sBTC at SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token).
-// VITE_NETWORK is still validated in lib/stacksClient.ts so an accidental
-// "testnet" build fails fast.
+// Supports "mainnet" (production Asigna deployer, real sBTC) and
+// "testnet" (smoke-test, testnet deployer, mock-sbtc).
+// VITE_NETWORK is validated in lib/stacksClient.ts; this file mirrors it so
+// the contract addresses are always derived from the correct deployer.
 
 const network = import.meta.env.VITE_NETWORK;
-if (network !== "mainnet") {
+if (network !== "mainnet" && network !== "testnet") {
   throw new Error(
-    `Mainnet-beta branch requires VITE_NETWORK="mainnet" (got ${JSON.stringify(network)}).`
+    `VITE_NETWORK must be "mainnet" or "testnet" (got ${JSON.stringify(network)}).`
   );
 }
 
-const DEPLOYER_RAW = import.meta.env.VITE_DEPLOYER_MAINNET;
+const isTestnet = network === "testnet";
+
+// Deployer: Asigna 2-of-3 multi-sig on mainnet; testnet dev wallet otherwise.
+const DEPLOYER_RAW = isTestnet
+  ? import.meta.env.VITE_DEPLOYER_TESTNET
+  : import.meta.env.VITE_DEPLOYER_MAINNET;
+
 if (!DEPLOYER_RAW || DEPLOYER_RAW === "REPLACE_WITH_MAINNET_DEPLOYER") {
   throw new Error(
-    "VITE_DEPLOYER_MAINNET must be set to the mainnet deployer (Asigna multi-sig) address."
+    isTestnet
+      ? "VITE_DEPLOYER_TESTNET must be set to the testnet deployer address (ST...)."
+      : "VITE_DEPLOYER_MAINNET must be set to the mainnet deployer (Asigna multi-sig) address."
   );
 }
 
 export const DEPLOYER: string = DEPLOYER_RAW;
 
-// vault-v5 — SIP-010 token trait + rebalance staleness guard
-const VAULT_NAME = "vault-v5";
+// vault-v6 — sync (Zest) + async (hBTC) adapters.
+const VAULT_NAME = "vault-v6";
+
+// sBTC token: real sBTC on mainnet, mock-sbtc on testnet.
+const SBTC_TOKEN = isTestnet
+  ? `${DEPLOYER_RAW}.mock-sbtc`
+  : "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
+
+// Adapter contract names. Env-overridable so a rename needs no code change.
+// Keep in sync with the indexer's *_ADAPTER_NAME vars.
+const ADAPTER_NAMES = {
+  zest: import.meta.env.VITE_ZEST_ADAPTER ?? "zest-earn-adapter",
+  hbtc: import.meta.env.VITE_HBTC_ADAPTER ?? "hermetica-hbtc-adapter",
+};
 
 export const CONTRACTS = {
-  VAULT: `${DEPLOYER}.${VAULT_NAME}`,
-  SBTC_TOKEN: "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929CCA.sbtc-token",
+  VAULT:      `${DEPLOYER}.${VAULT_NAME}`,
+  SBTC_TOKEN,
   ADAPTERS: {
-    bitflow: `${DEPLOYER}.bitflow-adapter-v4`,
-    alex:    `${DEPLOYER}.alex-adapter-v4`,
-    zest:    `${DEPLOYER}.zest-adapter-v4`,
-    velar:   `${DEPLOYER}.velar-adapter-v4`,
+    zest: `${DEPLOYER}.${ADAPTER_NAMES.zest}`,
+    hbtc: `${DEPLOYER}.${ADAPTER_NAMES.hbtc}`,
   },
 } as const;

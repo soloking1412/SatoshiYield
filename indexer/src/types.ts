@@ -1,4 +1,4 @@
-export type ProtocolId = "bitflow" | "alex" | "zest" | "velar";
+export type ProtocolId = "zest" | "hbtc";
 
 export type RiskLevel = "low" | "medium" | "high";
 

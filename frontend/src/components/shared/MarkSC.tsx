@@ -28,26 +28,26 @@ export function MarkSC({
     >
       <path
         d={mkP(-sp, s * 0.13)}
-        stroke="oklch(64% .19 278)"
+        stroke="var(--accent2)"
         strokeWidth={sw}
         strokeLinecap="round"
-        opacity=".42"
+        opacity=".5"
       />
       <path
         d={mkP(0, s * 0.3)}
-        stroke="oklch(68% .19 52)"
+        stroke="var(--accent)"
         strokeWidth={sw}
         strokeLinecap="round"
       />
       <path
         d={mkP(+sp, s * 0.09)}
-        stroke="oklch(68% .19 188)"
+        stroke="var(--accent)"
         strokeWidth={sw}
         strokeLinecap="round"
-        opacity=".42"
+        opacity=".38"
       />
-      <circle cx={cx} cy={top} r={sw * 0.82} fill="oklch(64% .19 278)" />
-      <circle cx={cx} cy={bot} r={sw * 0.62} fill="oklch(68% .19 52)" opacity=".55" />
+      <circle cx={cx} cy={top} r={sw * 0.82} fill="var(--accent)" />
+      <circle cx={cx} cy={bot} r={sw * 0.62} fill="var(--accent2)" />
     </svg>
   );
 }

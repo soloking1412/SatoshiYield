@@ -6,6 +6,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { networkName } from "../lib/stacksClient.js";
 
 export type ToastVariant = "success" | "error" | "pending";
 
@@ -25,7 +26,9 @@ interface ToastState {
 const ToastContext = createContext<ToastState | null>(null);
 
 const EXPLORER = "https://explorer.hiro.so/txid";
-const CHAIN = "testnet";
+// Drive the explorer chain from the build's network so mainnet links never
+// point at the testnet explorer.
+const CHAIN = networkName;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);

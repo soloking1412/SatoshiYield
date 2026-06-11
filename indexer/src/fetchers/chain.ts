@@ -82,41 +82,6 @@ export async function readUint(
   return decodeUint(result);
 }
 
-/** Fetch BTC/USD price from CoinGecko (module-level cache, 5-min TTL). */
-let btcPriceCachedAt = 0;
-let btcPriceUsd = 83_000; // sensible default
-
-export async function getBtcPriceUsd(): Promise<number> {
-  if (Date.now() - btcPriceCachedAt < 5 * 60 * 1000) return btcPriceUsd;
-  try {
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-      { signal: AbortSignal.timeout(5_000) }
-    );
-    if (res.ok) {
-      const data: unknown = await res.json();
-      const price =
-        typeof data === "object" && data !== null &&
-        "bitcoin" in data &&
-        typeof (data as Record<string, Record<string, number>>)["bitcoin"]?.["usd"] === "number"
-          ? (data as { bitcoin: { usd: number } }).bitcoin.usd
-          : undefined;
-      if (price !== undefined && price > 0) {
-        btcPriceUsd = price;
-        btcPriceCachedAt = Date.now();
-      }
-    }
-  } catch (err) {
-    console.warn("[chain] CoinGecko price fetch failed:", (err as Error).message);
-  }
-  return btcPriceUsd;
-}
-
-/** Convert satoshis to USD. */
-export function satsToUsd(sats: number, btcPrice: number): number {
-  return (sats / 1e8) * btcPrice;
-}
-
 export interface AdapterOracleState {
   apyBps: number;
   lastUpdatedBlock: number;

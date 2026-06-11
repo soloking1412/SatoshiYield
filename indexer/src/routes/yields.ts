@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { aggregateYields } from "../aggregator.js";
 import type { ProtocolId } from "../types.js";
 
-const VALID_PROTOCOLS = new Set<string>(["bitflow", "alex", "zest", "velar"]);
+const VALID_PROTOCOLS = new Set<string>(["zest", "hbtc"]);
 
 export const yieldsRouter = Router();
 

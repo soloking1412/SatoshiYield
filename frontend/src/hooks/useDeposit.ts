@@ -3,6 +3,7 @@ import { Pc, uintCV, contractPrincipalCV } from "@stacks/transactions";
 import { useWallet } from "../context/WalletContext.js";
 import { useToast } from "../context/ToastContext.js";
 import { CONTRACTS } from "../constants/contracts.js";
+import { PROTOCOLS } from "../constants/protocols.js";
 import type { ProtocolId } from "../types/yield.js";
 
 // Mainnet sBTC fungible-token name (SM3K…sbtc-token defines "sbtc").
@@ -32,10 +33,14 @@ export function useDeposit() {
         .willSendEq(amountSats)
         .ft(CONTRACTS.SBTC_TOKEN as `${string}.${string}`, SBTC_ASSET_NAME);
 
+      // Async adapters (hBTC) use the vault's deposit-async entrypoint; sync
+      // adapters (Zest) use the atomic deposit.
+      const functionName = PROTOCOLS[protocol].async ? "deposit-async" : "deposit";
+
       return callContract({
         contractAddress: vaultAddr!,
         contractName: vaultName!,
-        functionName: "deposit",
+        functionName,
         functionArgs: [
           contractPrincipalCV(sbtcAddr!, sbtcName!),
           contractPrincipalCV(adapterAddr!, adapterName!),

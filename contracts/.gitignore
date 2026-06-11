@@ -2,6 +2,9 @@
 **/settings/Mainnet.toml
 **/settings/Testnet.toml
 .cache/**
+# Clarinet shim for the real Zest Earn vault -- kept in cache so clarinet check
+# resolves zest-earn-adapter's static calls without stacks-block-time errors.
+!.cache/requirements/SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc.clar
 history.txt
 
 logs
@@ -11,3 +14,7 @@ coverage
 *.info
 costs-reports.json
 node_modules
+
+# Clarinet auto-generated deployment plans (regenerated; embed a default sender)
+deployments/default.simnet-plan.yaml
+deployments/default.testnet-plan.yaml

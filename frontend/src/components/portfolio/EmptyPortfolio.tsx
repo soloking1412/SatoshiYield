@@ -32,7 +32,7 @@ export function EmptyPortfolio() {
       <Link
         to="/"
         style={{
-          background: "var(--amber)",
+          background: "var(--accent)",
           color: "#000",
           border: "none",
           borderRadius: 10,

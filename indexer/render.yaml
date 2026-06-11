@@ -3,8 +3,13 @@
 services:
   - type: web
     name: satoshi-yield-indexer
+    # Always-on paid tier (NOT free): the free tier sleeps after ~15 min idle,
+    # which would stop the 30-min oracle push and let the on-chain APY go stale
+    # (blocking deposits). "starter" stays up 24/7. Run only ONE instance — the
+    # oracle pusher is a single writer (multiple instances would clash on nonces).
+    plan: starter
+    numInstances: 1
     runtime: node
-    plan: free
     rootDir: indexer
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start

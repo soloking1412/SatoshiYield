@@ -5,16 +5,20 @@
 **/.env
 **/.env.*
 !.env.example
+# Test-only env with public values (committed so the test suite has the env the
+# mainnet build requires). Never put secrets in .env.test.
+!**/.env.test
 **/wallet.json
 **/wallets.json
 **/keys.json
 **/secrets.json
 **/*.mnemonic
 **/*.seed
-# Clarinet stores deployer/account mnemonics in settings/*.toml — never commit.
-contracts/settings/Mainnet.toml
-contracts/settings/Testnet.toml
-contracts/settings/Devnet.toml
+# Clarinet stores deployer/account mnemonics in settings/*.toml — never commit
+# (any subproject). Commit a settings/*.toml.example instead.
+**/settings/Mainnet.toml
+**/settings/Testnet.toml
+**/settings/Devnet.toml
 
 # logs
 **/*.log
@@ -45,3 +49,22 @@ pnpm-debug.log*
 
 # local security reports / tooling
 .superstack/
+
+# knowledge-graph tool output (regenerable via /graphify)
+graphify-out/
+
+# Claude Code workspace (personal/local config — not product)
+**/.claude/settings.local.json
+**/.claude/launch.json
+**/.claude/*.local.json
+
+# misc build/tooling noise
+**/*.tsbuildinfo
+**/.turbo/
+**/coverage/
+Thumbs.db
+
+# auto-generated Clarinet deployment plans (regenerated each run; keep the
+# hand-written mainnet plan v6.mainnet-plan.yaml)
+**/deployments/default.simnet-plan.yaml
+**/deployments/default.testnet-plan.yaml

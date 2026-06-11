@@ -155,8 +155,10 @@ process.on("unhandledRejection", (reason) => {
   );
 });
 
-// Oracle scheduler: fetches live APY from protocol APIs and pushes to chain every 2 h.
+// Oracle scheduler: fetches live APY and pushes to chain every 30 min — well
+// inside the adapters' ~5.5h (2160-block) staleness window, so on-chain APY
+// never goes stale (and deposits never block) while the indexer is running.
 // No-ops silently if ORACLE_PRIVATE_KEY is not set.
-startOracleScheduler(2 * 60 * 60 * 1000);
+startOracleScheduler(30 * 60 * 1000);
 
 export default app;

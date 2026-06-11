@@ -1,0 +1,19 @@
+[project]
+name = "hbtc-fork-test"
+description = "Mainnet-fork validation of the real Hermetica hBTC flow"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[[project.requirements]]
+contract_id = "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+[[project.requirements]]
+contract_id = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"
+
+[repl.remote_data]
+enabled = true
+api_url = "https://api.hiro.so"
+initial_height = 8244077
+
+[repl.settings]
+initial_epoch = "3.2"

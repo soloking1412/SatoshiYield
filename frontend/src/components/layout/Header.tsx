@@ -3,6 +3,7 @@ import { useWallet } from "../../context/WalletContext.js";
 import { useTheme } from "../../context/ThemeContext.js";
 import { useConnectModal } from "../../context/ConnectModalContext.js";
 import { MarkSC } from "../shared/MarkSC.js";
+import { networkName } from "../../lib/stacksClient.js";
 
 function truncate(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -18,7 +19,7 @@ function ThemeToggle() {
       style={{
         width: 36,
         height: 36,
-        borderRadius: 9,
+        borderRadius: "var(--r-sm)",
         border: "1px solid var(--border)",
         background: "var(--bg3)",
         cursor: "pointer",
@@ -26,8 +27,10 @@ function ThemeToggle() {
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        transition: "background .15s, border .15s",
+        transition: "background .15s, border-color .15s",
       }}
+      onMouseOver={e => (e.currentTarget.style.background = "var(--bg4)")}
+      onMouseOut={e => (e.currentTarget.style.background = "var(--bg3)")}
     >
       {isDark ? (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -69,142 +72,189 @@ export function Header() {
   const { openConnectModal } = useConnectModal();
 
   const tabs = [
-    { label: "Yields", to: "/" },
+    { label: "Home",      to: "/" },
+    { label: "Yields",    to: "/yields" },
+    { label: "TVL",       to: "/tvl" },
     { label: "Portfolio", to: "/portfolio" },
   ];
 
   return (
     <nav
       style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "0 20px",
-        height: 56,
-        gap: 16,
-        background: "var(--navBg)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        borderBottom: "1px solid var(--border)",
         position: "sticky",
         top: 0,
         zIndex: 100,
-        transition: "background .25s",
+        background: "var(--navBg)",
+        borderBottom: "1px solid var(--border)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
       }}
     >
-      {/* Logo */}
-      <Link
-        to="/"
+      <div
         style={{
+          maxWidth: 1080,
+          margin: "0 auto",
+          padding: "0 20px",
+          height: 60,
           display: "flex",
           alignItems: "center",
-          gap: 10,
-          userSelect: "none",
-          flexShrink: 0,
-          textDecoration: "none",
+          gap: 16,
         }}
       >
-        <MarkSC size={28} pulse />
-        <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1 }}>
-          <span style={{ color: "var(--amber)" }}>Satoshi</span>
-          <span style={{ color: "var(--text)" }}>Yields</span>
-        </span>
-      </Link>
+        {/* Logo */}
+        <Link
+          to="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            userSelect: "none",
+            flexShrink: 0,
+            textDecoration: "none",
+          }}
+        >
+          <MarkSC size={28} pulse />
+          <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1 }}>
+            <span style={{ color: "var(--accent)" }}>Satoshi</span>
+            <span style={{ color: "var(--text)" }}>Yield</span>
+          </span>
+        </Link>
 
-      {/* Desktop tabs */}
-      <div className="hidden sm:flex" style={{ gap: 4 }}>
-        {tabs.map(({ label, to }) => {
-          const active = to === "/" ? pathname === "/" : pathname === to;
-          return (
-            <Link
-              key={to}
-              to={to}
-              style={{
-                background: active ? "var(--bg3)" : "transparent",
-                border: "none",
-                borderRadius: 8,
-                color: active ? "var(--text)" : "var(--muted)",
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: 14,
-                fontWeight: active ? 600 : 400,
-                padding: "6px 14px",
-                cursor: "pointer",
-                transition: "all .15s",
-                textDecoration: "none",
-                display: "inline-block",
-              }}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </div>
+        {/* Desktop nav tabs */}
+        <div className="hidden sm:flex" style={{ gap: 2, marginLeft: 14 }}>
+          {tabs.map(({ label, to }) => {
+            const active = to === "/" ? pathname === "/" : pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                style={{
+                  position: "relative",
+                  background: "transparent",
+                  color: active ? "var(--text)" : "var(--muted)",
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: 14,
+                  fontWeight: active ? 600 : 500,
+                  padding: "8px 14px",
+                  borderRadius: "var(--r-sm)",
+                  transition: "color .15s",
+                  textDecoration: "none",
+                  display: "inline-block",
+                }}
+                onMouseOver={e => { if (!active) e.currentTarget.style.color = "var(--text)"; }}
+                onMouseOut={e => { if (!active) e.currentTarget.style.color = "var(--muted)"; }}
+              >
+                {label}
+                {active && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: -9,
+                      left: 14,
+                      right: 14,
+                      height: 2,
+                      background: "var(--accent)",
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </div>
 
-      <div style={{ flex: 1 }} />
+        <div style={{ flex: 1 }} />
 
-      <ThemeToggle />
+        <ThemeToggle />
 
-      {/* Wallet area — desktop only */}
-      <div className="hidden sm:flex" style={{ alignItems: "center", gap: 8 }}>
-        {isConnected && address ? (
-          <>
-            <span
+        {/* Wallet area — desktop only */}
+        <div className="hidden sm:flex" style={{ alignItems: "center", gap: 9 }}>
+          {isConnected && address ? (
+            <div
               style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 10,
-                background: "oklch(68% .19 52/0.12)",
-                border: "1px solid oklch(68% .19 52/.3)",
-                color: "var(--amber)",
-                padding: "3px 8px",
-                borderRadius: 5,
-                letterSpacing: ".06em",
-              }}
-            >
-              testnet
-            </span>
-            <span
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 12,
-                color: "var(--muted)",
-              }}
-            >
-              {truncate(address)}
-            </span>
-            <button
-              onClick={disconnect}
-              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
                 background: "var(--bg3)",
                 border: "1px solid var(--border)",
-                borderRadius: 8,
-                color: "var(--muted)",
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: 12,
-                padding: "6px 12px",
-                cursor: "pointer",
+                borderRadius: "var(--r-pill)",
+                padding: "7px 14px 7px 11px",
               }}
             >
-              Disconnect
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--pos)", flexShrink: 0 }} />
+              {networkName !== "mainnet" && (
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, color: "var(--accent)", letterSpacing: ".06em" }}>
+                  {networkName.toUpperCase()}
+                </span>
+              )}
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "var(--text)" }}>
+                {truncate(address)}
+              </span>
+              <button
+                onClick={disconnect}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--lo)",
+                  cursor: "pointer",
+                  padding: "0 2px",
+                  fontSize: 12,
+                  lineHeight: 1,
+                  transition: "color .15s",
+                }}
+                onMouseOver={e => (e.currentTarget.style.color = "var(--neg)")}
+                onMouseOut={e => (e.currentTarget.style.color = "var(--lo)")}
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={openConnectModal}
+              disabled={isConnecting}
+              style={{
+                background: "var(--accent)",
+                color: "var(--onAccent)",
+                border: "none",
+                borderRadius: "var(--r-pill)",
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 13.5,
+                fontWeight: 700,
+                padding: "9px 20px",
+                cursor: isConnecting ? "default" : "pointer",
+                whiteSpace: "nowrap",
+                opacity: isConnecting ? 0.65 : 1,
+                transition: "transform .12s, opacity .15s",
+              }}
+              onMouseOver={e => { if (!isConnecting) e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseOut={e => { e.currentTarget.style.transform = "none"; }}
+            >
+              {isConnecting ? "Connecting…" : "Connect"}
             </button>
-          </>
-        ) : (
+          )}
+        </div>
+
+        {/* Mobile connect button — only shown when not connected */}
+        {!isConnected && (
           <button
             onClick={openConnectModal}
+            className="sm:hidden"
             disabled={isConnecting}
             style={{
-              background: "var(--amber)",
-              color: "#000",
-              border: "none",
-              borderRadius: 10,
+              background: "var(--accentD)",
+              color: "var(--accent)",
+              border: "1.5px solid color-mix(in oklch, var(--accent) 35%, transparent)",
+              borderRadius: "var(--r-pill)",
               fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: 700,
-              padding: "8px 16px",
+              padding: "6px 14px",
               cursor: isConnecting ? "default" : "pointer",
+              whiteSpace: "nowrap",
               opacity: isConnecting ? 0.65 : 1,
-              transition: "opacity .15s",
             }}
           >
-            {isConnecting ? "Connecting…" : "Connect Wallet"}
+            {isConnecting ? "…" : "Connect"}
           </button>
         )}
       </div>

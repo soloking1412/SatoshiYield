@@ -1,13 +1,14 @@
-import { STACKS_MAINNET } from "@stacks/network";
+import { STACKS_MAINNET, STACKS_TESTNET } from "@stacks/network";
 
-// Mainnet-only build. constants/contracts.ts also validates this — the double
-// check is intentional so a misconfigured env can never produce a testnet bundle.
+// Supports both "mainnet" (production) and "testnet" (Phase 2 smoke-test).
+// Set VITE_NETWORK in .env.local (mainnet) or .env.testnet.local (testnet).
 const rawNetwork = import.meta.env.VITE_NETWORK;
-if (rawNetwork !== "mainnet") {
+if (rawNetwork !== "mainnet" && rawNetwork !== "testnet") {
   throw new Error(
-    `Mainnet-beta branch requires VITE_NETWORK="mainnet" (got ${JSON.stringify(rawNetwork)}).`
+    `VITE_NETWORK must be "mainnet" or "testnet" (got ${JSON.stringify(rawNetwork)}).`
   );
 }
 
-export const stacksNetwork = STACKS_MAINNET;
-export const networkName = "mainnet" as const;
+export const networkName = rawNetwork as "mainnet" | "testnet";
+export const stacksNetwork =
+  rawNetwork === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET;

@@ -1,13 +1,15 @@
 import type { RiskLevel } from "../../types/yield.js";
 
-const MAP: Record<RiskLevel, [string, string, string, string]> = {
-  low:    ["oklch(64% .19 150/.14)", "oklch(68% .18 150)", "oklch(64% .19 150/.3)", "Low"],
-  medium: ["oklch(76% .16 82/.12)",  "oklch(72% .16 82)",  "oklch(76% .16 82/.28)", "Med"],
-  high:   ["oklch(64% .19 22/.14)",  "oklch(68% .19 22)",  "oklch(64% .19 22/.3)",  "High"],
+const MAP: Record<RiskLevel, [string, string, string]> = {
+  low:    ["var(--accent2D)", "var(--accent2)", "color-mix(in oklch, var(--accent2) 30%, transparent)"],
+  medium: ["color-mix(in oklch, var(--warn) 14%, transparent)", "var(--warn)", "color-mix(in oklch, var(--warn) 28%, transparent)"],
+  high:   ["color-mix(in oklch, var(--neg) 14%, transparent)",  "var(--neg)",  "color-mix(in oklch, var(--neg) 30%, transparent)"],
 };
 
+const LABEL: Record<RiskLevel, string> = { low: "Low", medium: "Med", high: "High" };
+
 export function RiskBadge({ level }: { level: RiskLevel }) {
-  const [bg, color, border, label] = MAP[level] ?? MAP.medium;
+  const [bg, color, border] = MAP[level] ?? MAP.medium;
   return (
     <span
       style={{
@@ -19,11 +21,12 @@ export function RiskBadge({ level }: { level: RiskLevel }) {
         color,
         border: `1px solid ${border}`,
         padding: "2px 8px",
-        borderRadius: 5,
+        borderRadius: "var(--r-sm)",
         whiteSpace: "nowrap",
+        display: "inline-block",
       }}
     >
-      {label}
+      {LABEL[level]}
     </span>
   );
 }

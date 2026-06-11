@@ -70,7 +70,7 @@ export class ErrorBoundary extends Component<Props, State> {
               style={{
                 fontFamily: "'Space Mono', monospace",
                 fontSize: 11,
-                color: "var(--red)",
+                color: "var(--neg)",
                 background: "var(--bg3)",
                 borderRadius: 8,
                 padding: "10px 12px",
@@ -85,7 +85,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <button
             onClick={() => window.location.reload()}
             style={{
-              background: "var(--amber)",
+              background: "var(--accent)",
               color: "#000",
               border: "none",
               borderRadius: 10,

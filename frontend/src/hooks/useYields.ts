@@ -8,7 +8,7 @@ import type { NormalizedYield, ProtocolId, RiskLevel } from "../types/yield.js";
  */
 const INDEXER_BASE: string = import.meta.env.VITE_INDEXER_URL ?? "";
 
-const VALID_PROTOCOLS = new Set<string>(["bitflow", "alex", "zest", "velar"]);
+const VALID_PROTOCOLS = new Set<string>(["zest", "hbtc"]);
 const VALID_RISK = new Set<string>(["low", "medium", "high"]);
 
 /** Runtime-validate each yield entry from the API. */

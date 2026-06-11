@@ -28,39 +28,21 @@ const mockUseYields = vi.mocked(useYields);
 
 const FIXTURES: NormalizedYield[] = [
   {
-    protocol: "bitflow",
-    apy_percent: 22.0,
-    risk_level: "low",
+    protocol: "hbtc",
+    apy_percent: 8.0,
+    risk_level: "medium",
     lock_period_days: 0,
     reward_token: "sBTC",
-    tvl_usd: 1_200_000,
-    fetched_at: Date.now(),
-  },
-  {
-    protocol: "velar",
-    apy_percent: 20.0,
-    risk_level: "medium",
-    lock_period_days: 7,
-    reward_token: "VELAR",
-    tvl_usd: 800_000,
-    fetched_at: Date.now(),
-  },
-  {
-    protocol: "alex",
-    apy_percent: 18.0,
-    risk_level: "low",
-    lock_period_days: 0,
-    reward_token: "ALEX",
-    tvl_usd: 3_500_000,
+    tvl_usd: 12_000_000,
     fetched_at: Date.now(),
   },
   {
     protocol: "zest",
-    apy_percent: 15.0,
-    risk_level: "high",
-    lock_period_days: 30,
-    reward_token: "ZEST",
-    tvl_usd: 500_000,
+    apy_percent: 3.4,
+    risk_level: "low",
+    lock_period_days: 0,
+    reward_token: "sBTC",
+    tvl_usd: 83_000_000,
     fetched_at: Date.now(),
   },
 ];
@@ -75,7 +57,7 @@ describe("YieldTable", () => {
     vi.clearAllMocks();
   });
 
-  it("renders 4 protocol rows when data is loaded", () => {
+  it("renders the two live tiles (Zest, Hermetica hBTC) and a coming-soon tile", () => {
     mockUseYields.mockReturnValue({
       data: FIXTURES,
       isLoading: false,
@@ -84,10 +66,14 @@ describe("YieldTable", () => {
 
     render(<YieldTable />, { wrapper });
 
-    expect(screen.getByText("Bitflow")).toBeInTheDocument();
-    expect(screen.getByText("ALEX Lab")).toBeInTheDocument();
-    expect(screen.getByText("Zest")).toBeInTheDocument();
-    expect(screen.getByText("Velar")).toBeInTheDocument();
+    expect(screen.getAllByText("Zest").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Hermetica hBTC").length).toBeGreaterThanOrEqual(1);
+    // The removed AMM/stub protocols must NOT be rendered.
+    expect(screen.queryByText("ALEX Lab")).toBeNull();
+    expect(screen.queryByText("Velar")).toBeNull();
+    expect(screen.queryByText("Bitflow")).toBeNull();
+    // "More yields coming soon" tile (Dual Stacking) is shown.
+    expect(screen.getByText("Dual Stacking (PoX)")).toBeInTheDocument();
   });
 
   it("renders protocols in APY descending order", () => {
@@ -117,7 +103,7 @@ describe("YieldTable", () => {
 
     const { container } = render(<YieldTable />, { wrapper });
 
-    expect(container.textContent).toMatch(/scanning protocols/i);
+    expect(container.textContent).toMatch(/finding the best rates/i);
   });
 
   it("renders error state when fetch fails", () => {
@@ -129,7 +115,7 @@ describe("YieldTable", () => {
 
     render(<YieldTable />, { wrapper });
 
-    expect(screen.getByText(/unable to load yield data/i)).toBeInTheDocument();
+    expect(screen.getByText(/indexer unreachable/i)).toBeInTheDocument();
   });
 
   it("renders empty state when data is an empty array", () => {

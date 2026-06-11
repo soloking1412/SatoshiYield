@@ -1,50 +1,49 @@
-import { useState } from "react";
 import type { UserPosition } from "../../types/position.js";
 import { PROTOCOLS } from "../../constants/protocols.js";
 import { useWithdraw } from "../../hooks/useWithdraw.js";
+import {
+  useRequestWithdraw,
+  useClaimWithdraw,
+  useCancelWithdraw,
+} from "../../hooks/useAsyncWithdraw.js";
 import { useYields } from "../../hooks/useYields.js";
-import { RebalanceModal } from "../rebalance/RebalanceModal.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
 
 function formatSats(sats: bigint): string {
   return (Number(sats) / 1e8).toFixed(6);
 }
 
-function Sparkline({ apy }: { apy: number }) {
-  const pts = [apy * 0.88, apy * 0.91, apy * 0.87, apy * 0.93, apy * 0.96, apy * 0.94, apy];
-  const w = 80, h = 28;
-  const mn = Math.min(...pts), mx = Math.max(...pts);
-  const py = (v: number) => ((v - mn) / (mx - mn || 1)) * (h - 4) + 2;
-  const d = pts
-    .map((v, i) => `${i === 0 ? "M" : "L"} ${(i / (pts.length - 1)) * w} ${h - py(v)}`)
-    .join(" ");
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none" style={{ opacity: 0.6 }}>
-      <path d={d} stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+const btn = (primary: boolean): React.CSSProperties => ({
+  flex: 1,
+  padding: 13,
+  borderRadius: "var(--r)",
+  cursor: "pointer",
+  background: primary ? "var(--accent)" : "var(--bg3)",
+  border: primary ? "1.5px solid var(--accent)" : "1px solid var(--border)",
+  color: primary ? "var(--onAccent)" : "var(--muted)",
+  fontFamily: "'Space Grotesk', sans-serif",
+  fontSize: 14,
+  fontWeight: primary ? 700 : 500,
+});
 
 export function PositionCard({ position }: { position: UserPosition }) {
   const meta = PROTOCOLS[position.protocol];
   const withdraw = useWithdraw();
-  const [rebalanceOpen, setRebalanceOpen] = useState(false);
+  const requestW = useRequestWithdraw();
+  const claimW = useClaimWithdraw();
+  const cancelW = useCancelWithdraw();
   const { data: yields } = useYields();
   const yieldData = yields?.find((y) => y.protocol === position.protocol);
   const apy = yieldData?.apy_percent ?? 0;
   const tvl = yieldData?.tvl_usd ?? 0;
   const risk = yieldData?.risk_level;
 
-  // Testnet adapters are 1:1 stubs — they return exactly the principal, so no
-  // yield is realised. Earned stays 0 until real yield-bearing adapters ship.
   const earned = useCountUp(0, 1200, 200);
-
-  // Check if current protocol has the best APY among all loaded yields
-  const bestApy = yields ? Math.max(...yields.map((y) => y.apy_percent)) : 0;
-  const isOnBestRate = apy > 0 && apy >= bestApy;
+  const pending = position.isAsync && position.status === "pending";
+  const busy = withdraw.isPending || requestW.isPending || claimW.isPending || cancelW.isPending;
 
   const riskLabel = risk === "medium" ? "Med" : risk ? risk.charAt(0).toUpperCase() + risk.slice(1) : "—";
-  const riskColor = risk === "low" ? "var(--green)" : risk === "high" ? "var(--red)" : "var(--yellow)";
+  const riskColor = risk === "low" ? "var(--pos)" : risk === "high" ? "var(--neg)" : "var(--warn)";
 
   function formatTvl(usd: number): string {
     if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
@@ -53,240 +52,139 @@ export function PositionCard({ position }: { position: UserPosition }) {
   }
 
   return (
-    <>
+    <div
+      style={{
+        background: "var(--bg2)",
+        border: "1px solid color-mix(in oklch, var(--accent) 22%, transparent)",
+        borderRadius: "var(--r-lg)",
+        overflow: "hidden",
+        boxShadow: "0 0 40px -8px var(--glow)",
+      }}
+    >
+      {/* Header */}
       <div
         style={{
-          background: "var(--bg2)",
-          border: "1px solid oklch(68% .19 52/.22)",
-          borderRadius: 16,
-          overflow: "hidden",
-          boxShadow: "0 0 40px -8px oklch(68% .19 52/.1)",
+          padding: "22px 24px 18px",
+          borderBottom: "1px solid var(--border)",
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          flexWrap: "wrap",
         }}
       >
-        {/* Header */}
         <div
           style={{
-            padding: "22px 24px 18px",
-            borderBottom: "1px solid var(--border)",
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            flexWrap: "wrap",
+            width: 44, height: 44, borderRadius: "50%", background: meta.color,
+            flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 15, fontWeight: 700, color: "#fff",
           }}
         >
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              background: meta.color,
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 15,
-              fontWeight: 700,
-              color: "#fff",
-            }}
-          >
-            {meta.abbr}
-          </div>
-          <div style={{ flex: 1, minWidth: 120 }}>
-            <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 3 }}>{meta.name}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "var(--green)",
-                  animation: "pulseDot 2s infinite",
-                }}
-              />
-              <span style={{ fontSize: 12, color: "var(--green)" }}>Active position</span>
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 22,
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {formatSats(position.principalSats)}{" "}
-              <span style={{ color: "var(--amber)" }}>sBTC</span>
-            </div>
-            <div
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 10,
-                color: "var(--muted)",
-                marginTop: 3,
-                letterSpacing: ".06em",
-              }}
-            >
-              PRINCIPAL
-            </div>
+          {meta.abbr}
+        </div>
+        <div style={{ flex: 1, minWidth: 120 }}>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 3 }}>{meta.name}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: pending ? "var(--warn)" : "var(--pos)",
+              animation: "pulseDot 2s infinite",
+            }} />
+            <span style={{ fontSize: 12, color: pending ? "var(--warn)" : "var(--pos)" }}>
+              {pending ? "Withdrawal pending" : "Active position"}
+            </span>
           </div>
         </div>
-
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4">
-          {[
-            ["APY",    apy ? `${apy.toFixed(1)}%` : "—",  "var(--green)", "border-r border-b sm:border-b-0 [border-color:var(--border)]"],
-            ["EARNED", `+${earned.toFixed(6)} sBTC`,       "var(--green)", "border-b sm:border-r sm:border-b-0 [border-color:var(--border)]"],
-            ["RISK",   riskLabel,                          riskColor,      "border-r [border-color:var(--border)]"],
-            ["TVL",    formatTvl(tvl),                     "var(--text)",  ""],
-          ].map(([label, value, color, borderCls]) => (
-            <div
-              key={label}
-              className={borderCls as string}
-              style={{ padding: "14px 18px" }}
-            >
-              <div
-                style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: 9,
-                  color: "var(--lo)",
-                  letterSpacing: ".1em",
-                  marginBottom: 5,
-                }}
-              >
-                {label}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: color as string,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {value}
-              </div>
-            </div>
-          ))}
+        <div style={{ textAlign: "right" }}>
+          <div style={{
+            fontFamily: "'Space Mono', monospace", fontSize: 22, fontWeight: 700,
+            letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
+          }}>
+            {formatSats(position.principalSats)}{" "}
+            <span style={{ color: "var(--accent)" }}>sBTC</span>
+          </div>
+          <div style={{
+            fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--muted)",
+            marginTop: 3, letterSpacing: ".06em",
+          }}>
+            PRINCIPAL
+          </div>
         </div>
+      </div>
 
-        {/* Sparkline */}
-        {apy > 0 && (
-          <div
-            style={{
-              padding: "14px 24px",
-              borderTop: "1px solid var(--border)",
-              borderBottom: "1px solid var(--border)",
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
-              flexWrap: "wrap",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 9,
-                color: "var(--lo)",
-                letterSpacing: ".08em",
-              }}
-            >
-              7D APY
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4">
+        {[
+          ["APY",    apy ? `${apy.toFixed(1)}%` : "—",  "var(--pos)", "border-r border-b sm:border-b-0 [border-color:var(--border)]"],
+          ["REALIZED", `+${earned.toFixed(6)} sBTC`,     "var(--pos)", "border-b sm:border-r sm:border-b-0 [border-color:var(--border)]"],
+          ["RISK",   riskLabel,                          riskColor,      "border-r [border-color:var(--border)]"],
+          ["TVL",    formatTvl(tvl),                     "var(--text)",  ""],
+        ].map(([label, value, color, borderCls]) => (
+          <div key={label} className={borderCls as string} style={{ padding: "14px 18px" }}>
+            <div style={{
+              fontFamily: "'Space Mono', monospace", fontSize: 9, color: "var(--lo)",
+              letterSpacing: ".1em", marginBottom: 5,
+            }}>
+              {label}
             </div>
-            <Sparkline apy={apy} />
-            <div style={{ flex: 1, minWidth: 100 }} />
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: isOnBestRate ? "oklch(68% .18 145/0.08)" : "oklch(68% .16 82/0.08)",
-                border: isOnBestRate ? "1px solid oklch(68% .18 145/0.22)" : "1px solid oklch(68% .16 82/0.22)",
-                borderRadius: 8,
-                padding: "8px 12px",
-              }}
-            >
-              <div
-                style={{
-                  width: 5,
-                  height: 5,
-                  borderRadius: "50%",
-                  background: isOnBestRate ? "var(--green)" : "var(--yellow)",
-                  flexShrink: 0,
-                }}
-              />
-              <span style={{ fontSize: 12, color: isOnBestRate ? "oklch(72% .18 145)" : "var(--muted)" }}>
-                {isOnBestRate
-                  ? "Best available rate · no rebalance needed"
-                  : "Better rate available · consider rebalancing"}
-              </span>
+            <div style={{ fontSize: 14, fontWeight: 600, color: color as string, fontVariantNumeric: "tabular-nums" }}>
+              {value}
             </div>
           </div>
-        )}
+        ))}
+      </div>
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: 10, padding: "18px 24px" }}>
-          <button
-            onClick={() => setRebalanceOpen(true)}
-            style={{
-              flex: 1,
-              padding: 13,
-              borderRadius: 10,
-              cursor: "pointer",
-              background: "transparent",
-              border: "1.5px solid var(--amber)",
-              color: "var(--amber)",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 14,
-              fontWeight: 700,
-              transition: "all .15s",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "var(--amber)";
-              e.currentTarget.style.color = "#000";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "var(--amber)";
-            }}
-          >
-            Rebalance
-          </button>
+      {/* Async pending notice */}
+      {pending && (
+        <div style={{
+          padding: "14px 24px", borderTop: "1px solid var(--border)",
+          fontSize: 12.5, color: "var(--muted)", lineHeight: 1.5,
+        }}>
+          Your redemption has been requested. Hermetica funds redemptions after a short cooldown —
+          claim once it's ready, or cancel anytime to keep your hBTC position.
+        </div>
+      )}
+
+      {/* Actions */}
+      <div style={{ display: "flex", gap: 10, padding: "18px 24px", flexWrap: "wrap" }}>
+        {!position.isAsync && (
           <button
             onClick={() => withdraw.mutate({ adapter: position.adapter })}
-            disabled={withdraw.isPending}
-            style={{
-              flex: 1,
-              padding: 13,
-              borderRadius: 10,
-              cursor: withdraw.isPending ? "not-allowed" : "pointer",
-              background: "var(--bg3)",
-              border: "1px solid var(--border)",
-              color: "var(--muted)",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 14,
-              fontWeight: 500,
-              opacity: withdraw.isPending ? 0.5 : 1,
-            }}
+            disabled={busy}
+            style={{ ...btn(true), opacity: busy ? 0.5 : 1, cursor: busy ? "not-allowed" : "pointer" }}
           >
             {withdraw.isPending ? "Withdrawing…" : "Withdraw"}
           </button>
-        </div>
+        )}
 
-        {withdraw.isError && (
-          <p style={{ fontSize: 12, color: "var(--red)", textAlign: "center", padding: "0 24px 16px" }}>
-            Withdrawal failed. Please try again.
-          </p>
+        {position.isAsync && !pending && (
+          <button
+            onClick={() => requestW.mutate({ adapter: position.adapter })}
+            disabled={busy}
+            style={{ ...btn(true), opacity: busy ? 0.5 : 1, cursor: busy ? "not-allowed" : "pointer" }}
+          >
+            {requestW.isPending ? "Requesting…" : "Request Withdrawal"}
+          </button>
+        )}
+
+        {position.isAsync && pending && (
+          <>
+            <button
+              onClick={() => claimW.mutate({ adapter: position.adapter })}
+              disabled={busy}
+              style={{ ...btn(true), opacity: busy ? 0.5 : 1, cursor: busy ? "not-allowed" : "pointer" }}
+            >
+              {claimW.isPending ? "Claiming…" : "Claim"}
+            </button>
+            <button
+              onClick={() => cancelW.mutate({ adapter: position.adapter })}
+              disabled={busy}
+              style={{ ...btn(false), opacity: busy ? 0.5 : 1, cursor: busy ? "not-allowed" : "pointer" }}
+            >
+              {cancelW.isPending ? "Cancelling…" : "Cancel"}
+            </button>
+          </>
         )}
       </div>
-
-      <RebalanceModal
-        open={rebalanceOpen}
-        onClose={() => setRebalanceOpen(false)}
-        currentProtocol={position.protocol}
-        currentAdapter={position.adapter}
-      />
-    </>
+    </div>
   );
 }

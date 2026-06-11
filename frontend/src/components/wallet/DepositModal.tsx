@@ -4,6 +4,8 @@ import { PROTOCOLS } from "../../constants/protocols.js";
 import { useDeposit } from "../../hooks/useDeposit.js";
 import { useBalance } from "../../hooks/useBalance.js";
 import { usePositions } from "../../hooks/usePositions.js";
+import { useHbtcCapacity } from "../../hooks/useHbtcCapacity.js";
+import { networkName } from "../../lib/stacksClient.js";
 
 function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?: number }) {
   return (
@@ -30,9 +32,9 @@ function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?:
 
 function RiskBadgeInline({ risk }: { risk: RiskLevel }) {
   const map: Record<RiskLevel, [string, string, string]> = {
-    low:    ["oklch(64% .19 150/.14)", "oklch(68% .18 150)", "oklch(64% .19 150/.3)"],
-    medium: ["oklch(76% .16 82/.12)",  "oklch(72% .16 82)",  "oklch(76% .16 82/.28)"],
-    high:   ["oklch(64% .19 22/.14)",  "oklch(68% .19 22)",  "oklch(64% .19 22/.3)"],
+    low:    ["var(--accent2D)", "var(--accent2)", "color-mix(in oklch, var(--accent2) 30%, transparent)"],
+    medium: ["color-mix(in oklch, var(--warn) 12%, transparent)", "var(--warn)", "color-mix(in oklch, var(--warn) 28%, transparent)"],
+    high:   ["color-mix(in oklch, var(--neg) 14%, transparent)", "var(--neg)", "color-mix(in oklch, var(--neg) 30%, transparent)"],
   };
   const [bg, color, border] = map[risk] ?? map.medium;
   const label = risk === "medium" ? "Med" : risk.charAt(0).toUpperCase() + risk.slice(1);
@@ -56,7 +58,7 @@ function RiskBadgeInline({ risk }: { risk: RiskLevel }) {
 }
 
 const fillBtn: React.CSSProperties = {
-  background: "var(--amber)",
+  background: "var(--accent)",
   color: "#000",
   border: "none",
   borderRadius: 10,
@@ -137,6 +139,8 @@ export function DepositModal({ data, onClose }: Props) {
   const { data: balanceSats = 0n } = useBalance();
   const { data: existingPosition } = usePositions();
   const meta = PROTOCOLS[data.protocol];
+  const isHbtc = data.protocol === "hbtc";
+  const { data: hbtcCap } = useHbtcCapacity(isHbtc);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -145,12 +149,21 @@ export function DepositModal({ data, onClose }: Props) {
   const amtNum = parseFloat(amount) || 0;
   const yearly = (amtNum * data.apy_percent / 100).toFixed(6);
   const balanceBtc = Number(balanceSats) / 1e8;
+  const amountSats = BigInt(Math.round(amtNum * 1e8));
+  // hBTC enforces a deposit cap on its vault; warn before the tx reverts (u103001).
+  const overCapacity =
+    isHbtc && !!hbtcCap && amtNum > 0 && amountSats > hbtcCap.headroomSats;
+  const capacityError = overCapacity
+    ? hbtcCap!.headroomSats === 0n
+      ? "Hermetica hBTC is at capacity — please try again later"
+      : `hBTC has only ~${(Number(hbtcCap!.headroomSats) / 1e8).toFixed(4)} sBTC capacity left`
+    : null;
   const amountError =
     amtNum > 0 && amtNum < MIN_BTC
       ? `Minimum ${MIN_BTC} sBTC`
       : amtNum > balanceBtc && balanceBtc > 0
       ? "Insufficient balance"
-      : null;
+      : capacityError;
   const canProceed = amtNum >= MIN_BTC && amtNum <= balanceBtc && !amountError;
 
   const handleConfirm = () => {
@@ -175,8 +188,8 @@ export function DepositModal({ data, onClose }: Props) {
                 width: 64,
                 height: 64,
                 borderRadius: "50%",
-                background: "oklch(68% .18 145/0.12)",
-                border: "2px solid oklch(68% .18 145/0.4)",
+                background: "var(--accent2D)",
+                border: "2px solid color-mix(in oklch, var(--accent2) 40%, transparent)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -184,7 +197,7 @@ export function DepositModal({ data, onClose }: Props) {
               }}
             >
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12l5 5 9-9" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 12l5 5 9-9" stroke="var(--pos)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -192,8 +205,10 @@ export function DepositModal({ data, onClose }: Props) {
           <div style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>
             <strong style={{ color: "var(--text)" }}>{amount} sBTC</strong> deposited to {meta.name}
           </div>
-          <div style={{ fontSize: 13, color: "var(--green)", marginBottom: 24 }}>
-            Earning {data.apy_percent.toFixed(1)}% APY
+          <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 24 }}>
+            {meta.kind === "lending"
+              ? `Earning ~${data.apy_percent.toFixed(1)}% APY · real sBTC yield via ${meta.name} lending.`
+              : `Earning ~${data.apy_percent.toFixed(1)}% target · ${meta.name} managed strategy. Withdrawals are processed in two steps.`}
           </div>
           {deposit.data && (
             <div
@@ -214,7 +229,7 @@ export function DepositModal({ data, onClose }: Props) {
           <div style={{ display: "flex", gap: 10 }}>
             {deposit.data && (
               <a
-                href={`https://explorer.hiro.so/txid/${deposit.data}?chain=testnet`}
+                href={`https://explorer.hiro.so/txid/${deposit.data}?chain=${networkName}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -252,7 +267,7 @@ export function DepositModal({ data, onClose }: Props) {
                 height: 56,
                 borderRadius: "50%",
                 border: "3px solid var(--bg4)",
-                borderTopColor: "var(--amber)",
+                borderTopColor: "var(--accent)",
                 animation: "spin .8s linear infinite",
               }}
             />
@@ -286,8 +301,8 @@ export function DepositModal({ data, onClose }: Props) {
           {[
             ["Protocol", <div style={{ display: "flex", alignItems: "center", gap: 8 }}><PIcon abbr={meta.abbr} color={meta.color} size={22} /><span style={{ fontWeight: 600 }}>{meta.name}</span></div>],
             ["Amount",   <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>{amount} sBTC</span>],
-            ["APY",      <span style={{ color: "var(--green)", fontWeight: 700 }}>{data.apy_percent.toFixed(1)}%</span>],
-            ["Yearly est.", <span style={{ color: "var(--green)" }}>+{yearly} sBTC</span>],
+            ["Market APY", <span style={{ color: "var(--pos)", fontWeight: 700 }}>{data.apy_percent.toFixed(1)}%</span>],
+            ["At market rate / yr", <span style={{ color: "var(--pos)" }}>~{yearly} sBTC</span>],
             ["Risk",     <RiskBadgeInline risk={data.risk_level} />],
           ].map(([k, v], i) => (
             <div
@@ -305,21 +320,41 @@ export function DepositModal({ data, onClose }: Props) {
             </div>
           ))}
         </div>
-        <div
-          style={{
-            background: "oklch(68% .16 82/0.08)",
-            border: "1px solid oklch(68% .16 82/0.25)",
-            borderRadius: 8,
-            padding: "10px 14px",
-            marginBottom: 22,
-          }}
-        >
-          <span style={{ fontSize: 12, color: "oklch(72% .14 82)" }}>
-            Your Stacks wallet will prompt you to sign this transaction.
-          </span>
-        </div>
+        {meta.principalProtected ? (
+          <div
+            style={{
+              background: "color-mix(in oklch, var(--warn) 8%, transparent)",
+              border: "1px solid color-mix(in oklch, var(--warn) 25%, transparent)",
+              borderRadius: 8,
+              padding: "10px 14px",
+              marginBottom: 22,
+            }}
+          >
+            <span style={{ fontSize: 12, color: "oklch(72% .14 82)" }}>
+              Principal-protected beta — your sBTC is returned in full on withdraw.
+              Your Stacks wallet will prompt you to sign this transaction.
+            </span>
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "color-mix(in oklch, var(--neg) 10%, transparent)",
+              border: "1px solid color-mix(in oklch, var(--neg) 35%, transparent)",
+              borderRadius: 8,
+              padding: "10px 14px",
+              marginBottom: 22,
+            }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--neg)", marginBottom: 4 }}>
+              Not principal-guaranteed — managed strategy
+            </div>
+            <span style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5 }}>
+              {meta.blurb}
+            </span>
+          </div>
+        )}
         {deposit.isError && (
-          <div style={{ fontSize: 12, color: "var(--red)", marginBottom: 14, textAlign: "center" }}>
+          <div style={{ fontSize: 12, color: "var(--neg)", marginBottom: 14, textAlign: "center" }}>
             {deposit.error instanceof Error ? deposit.error.message : "Transaction failed. Please try again."}
           </div>
         )}
@@ -355,8 +390,7 @@ export function DepositModal({ data, onClose }: Props) {
               : <>
                   You have an active position in{" "}
                   <strong style={{ color: "var(--text)" }}>{PROTOCOLS[existingPosition.protocol].name}</strong>.
-                  {" "}Use <strong style={{ color: "var(--amber)" }}>Rebalance</strong> on your
-                  Portfolio page to switch directly, or withdraw first.
+                  {" "}Withdraw it first, then deposit here.
                 </>
             }
           </div>
@@ -394,7 +428,7 @@ export function DepositModal({ data, onClose }: Props) {
           >
             AMOUNT
           </label>
-          <span style={{ fontSize: 11, color: balanceSats === 0n ? "var(--red)" : "var(--muted)" }}>
+          <span style={{ fontSize: 11, color: balanceSats === 0n ? "var(--neg)" : "var(--muted)" }}>
             Balance: {formatBtc(balanceSats)} sBTC
           </span>
         </div>
@@ -403,7 +437,7 @@ export function DepositModal({ data, onClose }: Props) {
             display: "flex",
             alignItems: "center",
             background: "var(--bg3)",
-            border: `1.5px solid ${focused ? "var(--amber)" : amountError ? "var(--red)" : "var(--border)"}`,
+            border: `1.5px solid ${focused ? "var(--accent)" : amountError ? "var(--neg)" : "var(--border)"}`,
             borderRadius: 10,
             overflow: "hidden",
             transition: "border .15s",
@@ -436,7 +470,7 @@ export function DepositModal({ data, onClose }: Props) {
               style={{
                 fontFamily: "'Space Mono', monospace",
                 fontSize: 12,
-                color: "var(--amber)",
+                color: "var(--accent)",
                 fontWeight: 700,
               }}
             >
@@ -449,8 +483,8 @@ export function DepositModal({ data, onClose }: Props) {
                 fontFamily: "'Space Mono', monospace",
                 fontSize: 9,
                 letterSpacing: ".08em",
-                background: "oklch(68% .19 52/0.12)",
-                color: "var(--amber)",
+                background: "var(--accentD)",
+                color: "var(--accent)",
                 border: "none",
                 borderRadius: 5,
                 padding: "3px 7px",
@@ -464,7 +498,7 @@ export function DepositModal({ data, onClose }: Props) {
           </div>
         </div>
         {amountError && (
-          <div style={{ fontSize: 11, color: "var(--red)", marginTop: 6 }}>{amountError}</div>
+          <div style={{ fontSize: 11, color: "var(--neg)", marginTop: 6 }}>{amountError}</div>
         )}
       </div>
       <div
@@ -476,9 +510,9 @@ export function DepositModal({ data, onClose }: Props) {
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>Estimated yearly yield</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--green)" }}>
-            {amtNum > 0 ? `+${yearly} sBTC` : "—"}
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>At current market rate / yr</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pos)" }}>
+            {amtNum > 0 ? `~${yearly} sBTC` : "—"}
           </span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>

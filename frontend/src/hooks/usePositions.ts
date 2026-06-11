@@ -51,6 +51,9 @@ async function readVaultPosition(
       adapter: FieldVal;
       "principal-amount": FieldVal;
       "deposited-at": FieldVal;
+      "is-async": { type: string; value: boolean };
+      status: FieldVal;
+      "claim-id": FieldVal;
     };
   };
 
@@ -59,16 +62,21 @@ async function readVaultPosition(
   const adapterPrincipal = val.value.adapter.value;
   const protocol = ADAPTER_BY_PRINCIPAL[adapterPrincipal];
   if (!protocol) {
-    // Withdraw/rebalance target `adapter` directly, so funds stay accessible;
-    // only the display label falls back here.
+    // Withdraw targets `adapter` directly, so funds stay accessible; only the
+    // display label falls back here.
     console.warn(`[positions] unrecognized adapter principal: ${adapterPrincipal}`);
   }
 
+  const statusCode = Number(val.value["status"]?.value ?? 0);
+
   return {
     adapter: adapterPrincipal,
-    protocol: protocol ?? "bitflow",
+    protocol: protocol ?? "zest",
     principalSats: BigInt(val.value["principal-amount"].value),
     depositedAt: Number(val.value["deposited-at"].value),
+    isAsync: Boolean(val.value["is-async"]?.value ?? false),
+    status: statusCode === 1 ? "pending" : "active",
+    claimId: Number(val.value["claim-id"]?.value ?? 0),
   };
 }
 

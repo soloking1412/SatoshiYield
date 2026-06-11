@@ -1,0 +1,93 @@
+---
+# Mainnet deployment plan for SatoshiYields v6.
+#
+# IMPORTANT: this file is a RECORD, not an execution script. Mainnet contracts
+# are published via the Asigna 2-of-3 multi-sig UI at https://asigna.io, not by
+# `clarinet deployments apply --mainnet`. Asigna proposes each contract-publish;
+# two signers approve; Asigna broadcasts.
+#
+# Bundle: vault-v6 + 2 live adapters (Zest sync, Hermetica hBTC async) + 3 traits.
+#
+# Deploy order:
+#   Batch 0 (traits -- must confirm first):
+#     1. sip-010-trait
+#     2. yield-source-v2          (sync adapters)
+#     3. yield-source-async-v1    (async adapters)
+#   Batch 1 (vault -- uses traits above):
+#     4. vault-v6
+#   Batch 2 (adapters):
+#     5. zest-earn-adapter        <-- SYNC  LIVE: Zest Earn (SP1A27KFY...v0-vault-sbtc), principal-protected
+#     6. hermetica-hbtc-adapter   <-- ASYNC LIVE: Hermetica hBTC (SP1S1HSFH0...vault-hbtc-v1-2), ~8% managed strategy
+#
+# Post-publish initialization (via Asigna contract-call):
+#   - vault-v6.set-sbtc-token('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)
+#   - vault-v6.approve-adapter(<deployer>.zest-earn-adapter,      false)  ;; sync
+#   - vault-v6.approve-adapter(<deployer>.hermetica-hbtc-adapter, true)   ;; async
+#   - zest-earn-adapter.set-vault(<deployer>.vault-v6)        + set-oracle-at u0/u1
+#   - hermetica-hbtc-adapter.set-vault(<deployer>.vault-v6)   + set-oracle-at u0/u1
+#
+# HARD GATES before approving adapters / opening deposits:
+#   1. Independent audit of vault-v6 (async two-phase withdrawal) + both adapters.
+#   2. Mainnet-fork validation of the real Hermetica hBTC deposit/request/fund/claim path.
+#   3. Deployer / owner is the Asigna 2-of-3 multisig (NOT a single-key EOA).
+#
+# Replace REPLACE_WITH_ASIGNA_MULTISIG below with the actual SP-address and fill
+# MAINNET-DEPLOY.md with txids once Asigna confirms.
+id: 1
+name: Mainnet v6 -- Asigna 2-of-3 multi-sig deployer
+network: mainnet
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "https://bitcoin.hiro.so"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: sip-010-trait
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 100000
+            path: contracts/traits/sip-010-trait.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: yield-source-v2
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 100000
+            path: contracts/traits/yield-source-v2.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: yield-source-async-v1
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 100000
+            path: contracts/traits/yield-source-async-v1.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"
+    - id: 1
+      transactions:
+        - contract-publish:
+            contract-name: vault-v6
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 400000
+            path: contracts/vault-v6.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"
+    - id: 2
+      transactions:
+        - contract-publish:
+            contract-name: zest-earn-adapter
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 200000
+            path: contracts/adapters/zest-earn-adapter.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: hermetica-hbtc-adapter
+            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            cost: 250000
+            path: contracts/adapters/hermetica-hbtc-adapter.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

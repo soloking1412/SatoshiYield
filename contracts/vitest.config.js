@@ -21,6 +21,9 @@ import { vitestSetupFilePath, getClarinetVitestsArgv } from "@hirosystems/clarin
 
 export default defineConfig({
   test: {
+    // Scope to the main suite; fork-test/ is a separate remote-data project
+    // (run it with: cd fork-test && npx vitest run).
+    include: ["tests/**/*.test.ts"],
     environment: "clarinet", // use vitest-environment-clarinet
     pool: "forks",
     poolOptions: {

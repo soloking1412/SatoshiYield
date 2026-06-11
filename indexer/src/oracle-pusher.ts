@@ -7,36 +7,44 @@ import { readUint, exceedsDeviation } from "./fetchers/chain.js";
 import { fetchNativeApys } from "./fetchers/native-apy.js";
 import type { NativeApyResult } from "./fetchers/native-apy.js";
 
-const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]    ?? "";
-const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"]  ?? "";
+const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]     ?? "";
+const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"]   ?? "";
 const ORACLE_KEY_2    = process.env["ORACLE_PRIVATE_KEY_2"] ?? "";
-const IS_MAINNET      = process.env["STACKS_NETWORK"]      === "mainnet";
+const IS_MAINNET      = process.env["STACKS_NETWORK"]       === "mainnet";
 const STACKS_API_BASE = IS_MAINNET
   ? "https://api.hiro.so"
   : "https://api.testnet.hiro.so";
 
+// On-chain adapter contract name per protocol. Env-overridable so a renamed
+// adapter receives the APY push without a code change. MUST match the frontend's
+// VITE_*_ADAPTER and the indexer fetchers' *_ADAPTER_NAME so the displayed
+// adapter is the one funded.
 const ADAPTERS = [
-  "alex-adapter-v4",
-  "bitflow-adapter-v4",
-  "zest-adapter-v4",
-  "velar-adapter-v4",
+  process.env["ZEST_ADAPTER_NAME"] ?? "zest-earn-adapter",
+  process.env["HBTC_ADAPTER_NAME"] ?? "hermetica-hbtc-adapter",
 ] as const;
 
 type AdapterName = typeof ADAPTERS[number];
 
-const PROTOCOL_KEY: Record<AdapterName, keyof NativeApyResult> = {
-  "alex-adapter-v4":    "alex",
-  "bitflow-adapter-v4": "bitflow",
-  "zest-adapter-v4":    "zest",
-  "velar-adapter-v4":   "velar",
+// Map each (possibly overridden) adapter name back to its protocol + reference
+// rate by position, so overrides need no extra config here.
+const PROTOCOL_KEY: Record<string, keyof NativeApyResult> = {
+  [ADAPTERS[0]]: "zest",
+  [ADAPTERS[1]]: "hbtc",
 };
 
-const TARGET_BPS: Record<AdapterName, number> = {
-  "bitflow-adapter-v4": 320,
-  "alex-adapter-v4":    510,
-  "zest-adapter-v4":    280,
-  "velar-adapter-v4":   440,
+// Reference (bootstrap) APY in bps, used for the displayed on-chain rate until a
+// live value or a held on-chain value exists. hBTC has no public APY feed so its
+// ~8% target is surfaced as a reference rate in the UI (is_live_integration =
+// false) — never presented as live measured data.
+const REFERENCE_BPS: Record<string, number> = {
+  [ADAPTERS[0]]: 350, // zest - bootstrap for Zest Earn (~3.5% supply yield)
+  [ADAPTERS[1]]: 800, // hbtc - reference rate (Hermetica ~8% target)
 };
+
+// Max fraction of the current value we move per cycle. Stays inside the 50%
+// on-chain deviation guard so a push is never rejected for over-deviating.
+const MAX_STEP_PCT = 0.4;
 
 export interface PushResult {
   adapter: string;
@@ -45,10 +53,34 @@ export interface PushResult {
   reason?: string;
 }
 
+interface OracleStatus {
+  lastCycleAt: number | null;
+  lastResults: PushResult[];
+  mode: "dual" | "single" | "disabled";
+}
+
+let status: OracleStatus = { lastCycleAt: null, lastResults: [], mode: "disabled" };
+
+export function getOracleStatus(): OracleStatus & { ageSeconds: number | null } {
+  return {
+    ...status,
+    ageSeconds: status.lastCycleAt ? Math.round((Date.now() - status.lastCycleAt) / 1000) : null,
+  };
+}
+
 /** Strip anything resembling a private key (long hex run) from error text. */
 function sanitize(value: unknown): string {
   const text = value instanceof Error ? value.message : String(value);
   return text.replace(/\b[0-9a-fA-F]{64,}\b/g, "[redacted]");
+}
+
+/** Next bps to push: ramp current toward target, capped so we stay within the guard. */
+function nextBps(current: number, target: number): number {
+  if (current <= 0) return target; // bootstrap (no on-chain value yet)
+  const step = Math.max(1, Math.floor(current * MAX_STEP_PCT));
+  if (target > current) return Math.min(target, current + step);
+  if (target < current) return Math.max(target, current - step);
+  return current;
 }
 
 export async function pushApy(
@@ -112,7 +144,6 @@ export async function pushAllAdapters(
   let n1 = nonce1;
 
   // If a second oracle key is configured, fetch its nonce too.
-  // Resolve the address from the key to get the right account nonce.
   let n2 = 0;
   let addr2 = "";
   if (ORACLE_KEY_2) {
@@ -160,26 +191,25 @@ async function buildBpsMap(): Promise<Record<string, number>> {
 
   for (const name of ADAPTERS) {
     const protocolKey = PROTOCOL_KEY[name];
-    const native      = apys[protocolKey];
-    const target      = TARGET_BPS[name];
-
-    if (native !== null) {
-      map[name] = Math.round(native * 100);
-      continue;
-    }
+    const native = protocolKey ? apys[protocolKey] : null; // percent or null
 
     let current = 0;
-    try { current = await readUint(name, "get-apy"); } catch { /* unset */ }
+    try { current = await readUint(name, "get-apy"); } catch { /* stale/unset -> 0 */ }
 
-    if (current === 0 || current === target) {
-      map[name] = target;
+    // Target: live native value when available (zest via DefiLlama); otherwise
+    // hold the last-known on-chain value (no drift during a transient outage);
+    // bootstrap to the reference rate only when there is nothing on-chain yet
+    // (hBTC has no live feed, so it holds at its ~8% reference).
+    let target: number;
+    if (native !== null) {
+      target = Math.round(native * 100);
+    } else if (current > 0) {
+      target = current; // last-known-good hold — keeps the adapter fresh
     } else {
-      // Move at most 40% of current per cycle — stays within the 50% on-chain deviation guard
-      const step = Math.floor(current * 0.4);
-      map[name]  = target > current
-        ? Math.min(target, current + step)
-        : Math.max(target, current - step);
+      target = REFERENCE_BPS[name] ?? 0;
     }
+
+    map[name] = nextBps(current, target);
   }
   return map;
 }
@@ -194,23 +224,26 @@ async function runOracleCycle(): Promise<void> {
         ? console.log(`[oracle] pushed ${r.adapter} txid=${r.txid}`)
         : console.warn(`[oracle] skipped ${r.adapter} reason=${r.reason}`);
     }
+    status = { ...status, lastCycleAt: Date.now(), lastResults: results };
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
   }
 }
 
 export function startOracleScheduler(intervalMs: number): void {
+  status.mode = !ORACLE_KEY ? "disabled" : ORACLE_KEY_2 ? "dual" : "single";
+
   if (!ORACLE_KEY) {
     console.log("[oracle] ORACLE_PRIVATE_KEY not set — scheduler disabled");
     return;
   }
-  console.log(`[oracle] scheduler started interval=${intervalMs / 60_000}min`);
+  console.log(`[oracle] scheduler started interval=${Math.round(intervalMs / 60_000)}min`);
   if (ORACLE_KEY_2) {
     console.log("[oracle] dual-oracle mode — 2-of-3 consensus active");
   } else {
     console.warn(
       "[oracle] single-oracle mode — ORACLE_PRIVATE_KEY_2 not set. 2-of-3 consensus " +
-        "cannot be reached: on-chain APY goes stale after 720 blocks and deposits get blocked."
+        "cannot be reached: on-chain APY goes stale (~5.5h) and deposits get blocked."
     );
   }
   void runOracleCycle();

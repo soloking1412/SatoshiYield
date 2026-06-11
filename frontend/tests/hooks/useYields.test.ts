@@ -9,21 +9,21 @@ import type { NormalizedYield } from "../../src/types/yield.js";
 
 const MOCK_YIELDS: NormalizedYield[] = [
   {
-    protocol: "bitflow",
-    apy_percent: 22.0,
-    risk_level: "low",
+    protocol: "hbtc",
+    apy_percent: 8.0,
+    risk_level: "medium",
     lock_period_days: 0,
     reward_token: "sBTC",
-    tvl_usd: 1_200_000,
+    tvl_usd: 12_000_000,
     fetched_at: Date.now(),
   },
   {
-    protocol: "alex",
-    apy_percent: 18.0,
+    protocol: "zest",
+    apy_percent: 3.4,
     risk_level: "low",
     lock_period_days: 0,
-    reward_token: "ALEX",
-    tvl_usd: 3_500_000,
+    reward_token: "sBTC",
+    tvl_usd: 83_000_000,
     fetched_at: Date.now(),
   },
 ];
@@ -53,8 +53,8 @@ describe("useYields", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toHaveLength(2);
-    expect(result.current.data![0]!.protocol).toBe("bitflow");
-    expect(result.current.data![0]!.apy_percent).toBe(22.0);
+    expect(result.current.data![0]!.protocol).toBe("hbtc");
+    expect(result.current.data![0]!.apy_percent).toBe(8.0);
   });
 
   it("sets isError on non-200 response", async () => {

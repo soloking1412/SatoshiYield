@@ -1,78 +1,54 @@
 /**
- * Native protocol APY fetchers.
+ * Live protocol APY fetchers.
  *
- * STATUS (probed 2026-05-17): none of these endpoints return usable APY data —
- * api.bitflow.finance does not resolve (DNS), the ALEX pool_stats path 500s,
- * app.zestprotocol.com is behind a bot wall, and api.velar.co/v1/pools 404s.
- * Until working endpoints are wired in, every fetch returns null and the
- * oracle-pusher falls back to its TARGET_BPS constants — so the on-chain /
- * displayed APY is a configured target, NOT a live protocol rate.
+ * Each fetcher returns a real APY in PERCENT, or null when no reliable live
+ * source exists for that protocol's sBTC yield right now. null is honest — the
+ * UI marks those as "reference rate" (is_live_integration = false) rather than
+ * showing a fabricated number.
  *
- * To make yields genuine: confirm each protocol's real public APY endpoint and
- * update the URL + `extractApy` parsing below. Until then, surface these as
- * "reference rates" rather than "live" in the UI.
+ *   - Zest : DefiLlama zest-v2 SBTC supply pool apy.                          LIVE.
+ *   - hBTC : Hermetica publishes no public APY endpoint; we show the protocol's
+ *            ~8% target as a reference rate. (A future enhancement can derive a
+ *            realized APY from vault-hbtc-v1-2.get-share-price growth on-chain.) REFERENCE.
  */
 
-const TIMEOUT_MS = 6_000;
+import { fetchZestSbtcPool } from "./defillama.js";
 
 export interface NativeApyResult {
-  bitflow: number | null;
-  alex:    number | null;
-  zest:    number | null;
-  velar:   number | null;
+  zest: number | null;
+  hbtc: number | null;
+}
+
+/** Protocols with a genuine live APY source wired in (drives is_live_integration). */
+export const HAS_LIVE_APY: Record<keyof NativeApyResult, boolean> = {
+  zest: true,
+  hbtc: false,
+};
+
+/** Clamp to a sane display range so a bad upstream value can never show absurd APY. */
+function sane(pct: number | null): number | null {
+  if (pct === null || !Number.isFinite(pct) || pct < 0) return null;
+  return Math.min(pct, 60); // mirrors the on-chain APY-CAP (6000 bps)
+}
+
+/** Zest: DefiLlama-normalized sBTC supply APY (percent). */
+export async function fetchZestNativeApy(): Promise<number | null> {
+  const pool = await fetchZestSbtcPool();
+  return pool ? sane(pool.apyPercent) : null;
+}
+
+/** hBTC: no public APY endpoint — the ~8% target is a reference rate. */
+export async function fetchHbtcNativeApy(): Promise<number | null> {
+  return null;
 }
 
 export async function fetchNativeApys(): Promise<NativeApyResult> {
-  const [b, a, z, v] = await Promise.allSettled([
-    fetchBitflowNativeApy(),
-    fetchAlexNativeApy(),
+  const [z, h] = await Promise.allSettled([
     fetchZestNativeApy(),
-    fetchVelarNativeApy(),
+    fetchHbtcNativeApy(),
   ]);
   return {
-    bitflow: b.status === "fulfilled" ? b.value : null,
-    alex:    a.status === "fulfilled" ? a.value : null,
-    zest:    z.status === "fulfilled" ? z.value : null,
-    velar:   v.status === "fulfilled" ? v.value : null,
+    zest: z.status === "fulfilled" ? z.value : null,
+    hbtc: h.status === "fulfilled" ? h.value : null,
   };
-}
-
-export async function fetchBitflowNativeApy(): Promise<number | null> {
-  return tryHttp("https://api.bitflow.finance/v1/pools/apy");
-}
-
-export async function fetchAlexNativeApy(): Promise<number | null> {
-  return tryHttp("https://api.alexlab.co/v1/pool_stats/fwp-wstx-alex-50-50-v1-01");
-}
-
-export async function fetchZestNativeApy(): Promise<number | null> {
-  return tryHttp("https://app.zestprotocol.com/api/apy");
-}
-
-export async function fetchVelarNativeApy(): Promise<number | null> {
-  return tryHttp("https://api.velar.co/v1/pools");
-}
-
-async function tryHttp(url: string): Promise<number | null> {
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
-    if (!res.ok) return null;
-    const data: unknown = await res.json();
-    return extractApy(data);
-  } catch {
-    return null;
-  }
-}
-
-function extractApy(data: unknown): number | null {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "apy" in data &&
-    typeof (data as Record<string, unknown>)["apy"] === "number"
-  ) {
-    const apy = (data as { apy: number }).apy;
-    return Number.isFinite(apy) && apy >= 0 ? apy : null;
-  }
-  return null;
 }
