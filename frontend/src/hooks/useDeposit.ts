@@ -33,7 +33,14 @@ export function useDeposit() {
       const [vaultAddr, vaultName] = CONTRACTS.VAULT.split(".");
       const [sbtcAddr, sbtcName] = CONTRACTS.SBTC_TOKEN.split(".");
 
-      const postCondition = Pc.principal(address)
+      // Deny mode requires every sbtc-token transfer in the tx to be covered,
+      // not just the origin's. The deposit moves sBTC twice — user -> adapter,
+      // then adapter -> the underlying vault (Zest/hBTC) — both for the same
+      // amount, so both legs need their own post-condition.
+      const userLeg = Pc.principal(address)
+        .willSendEq(amountSats)
+        .ft(CONTRACTS.SBTC_TOKEN as `${string}.${string}`, SBTC_ASSET_NAME);
+      const adapterLeg = Pc.principal(adapterContract as `${string}.${string}`)
         .willSendEq(amountSats)
         .ft(CONTRACTS.SBTC_TOKEN as `${string}.${string}`, SBTC_ASSET_NAME);
 
@@ -50,7 +57,7 @@ export function useDeposit() {
           contractPrincipalCV(adapterAddr!, adapterName!),
           uintCV(amountSats),
         ],
-        postConditions: [postCondition],
+        postConditions: [userLeg, adapterLeg],
       });
     },
     onSuccess: (txid) => {
