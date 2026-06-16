@@ -1,4 +1,5 @@
-export type ProtocolId = "zest" | "hbtc";
+import type { ProtocolId } from "../constants/protocols.js";
+export type { ProtocolId };
 
 export type RiskLevel = "low" | "medium" | "high";
 

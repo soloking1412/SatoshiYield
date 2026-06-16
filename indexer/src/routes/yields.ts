@@ -1,9 +1,10 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { aggregateYields } from "../aggregator.js";
+import { ADAPTER_REGISTRY } from "../registry.js";
 import type { ProtocolId } from "../types.js";
 
-const VALID_PROTOCOLS = new Set<string>(["zest", "hbtc"]);
+const VALID_PROTOCOLS = new Set(Object.keys(ADAPTER_REGISTRY));
 
 export const yieldsRouter = Router();
 

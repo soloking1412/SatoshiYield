@@ -2,16 +2,19 @@ import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { fetchZest } from "../src/fetchers/zest.js";
-import { fetchHbtc } from "../src/fetchers/hbtc.js";
+import { __setHistory } from "../src/share-price.js";
 
 // Test-only fake principal. Must match process.env.DEPLOYER_ADDRESS in
 // vitest.config.ts; chain.ts has no defaults.
 const DEPLOYER = "SP000000000000000000002AMW42H";
 const API = "https://api.hiro.so";
-const ZEST_POOL = "f003d6df-fb8f-4a74-8cfb-aee8cc44f433";
+const ZEST_ADDR = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
 
 function okUint(n: number): string {
   return "0x0701" + n.toString(16).padStart(32, "0");
+}
+function bareUint(n: bigint): string {
+  return "0x01" + n.toString(16).padStart(32, "0");
 }
 function chainUrl(contract: string, fn: string): string {
   return `${API}/v2/contracts/call-read/${DEPLOYER}/${contract}/${fn}`;
@@ -24,39 +27,41 @@ function chainHandler(contract: string, fn: string, value: number) {
 function tvlHandler(slug: string, usd: number) {
   return http.get(`https://api.llama.fi/tvl/${slug}`, () => HttpResponse.json(usd));
 }
+// Zest vault share price (convert-to-assets of 1e8 shares) -> realized APY source.
+function sharePriceHandler(price: number) {
+  return http.post(
+    `${API}/v2/contracts/call-read/${ZEST_ADDR}/v0-vault-sbtc/convert-to-assets`,
+    () => HttpResponse.json({ okay: true, result: bareUint(BigInt(Math.round(price * 1e8))) })
+  );
+}
 
 const server = setupServer(
-  // On-chain oracle state (the displayed APY).
   chainHandler("zest-earn-adapter", "get-apy", 340),
   chainHandler("zest-earn-adapter", "get-last-updated-block", 99_999),
-  chainHandler("hermetica-hbtc-adapter", "get-apy", 800),
-  chainHandler("hermetica-hbtc-adapter", "get-last-updated-block", 99_999),
-
-  // Live protocol TVL (DefiLlama).
   tvlHandler("zest-v2", 83_000_000),
-  tvlHandler("hermetica", 12_000_000),
-
-  // Zest: DefiLlama per-pool chart, latest apy 3.4%.
-  http.get(`https://yields.llama.fi/chart/${ZEST_POOL}`, () =>
-    HttpResponse.json({ data: [{ timestamp: "t", apy: 3.4, tvlUsd: 53_000_000 }] })
-  )
+  sharePriceHandler(1.001)
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  __setHistory([]);
+});
 afterAll(() => server.close());
 
 describe("fetchZest (sync lending)", () => {
   it("returns the zest protocol id", async () => {
     expect((await fetchZest()).protocol).toBe("zest");
   });
-  it("maps apy from on-chain basis points", async () => {
+  it("maps apy from on-chain (oracle-pushed) basis points", async () => {
     expect((await fetchZest()).apy_percent).toBe(3.4);
   });
   it("uses live DefiLlama protocol TVL", async () => {
     expect((await fetchZest()).tvl_usd).toBe(83_000_000);
   });
-  it("is a live integration (Zest has a live APY source)", async () => {
+  it("is a live integration once on-chain share-price history exists", async () => {
+    // a >= 24h-old snapshot below the current price -> realized APY computes
+    __setHistory([{ t: Date.now() - 7 * 24 * 60 * 60 * 1000, p: 1.0 }]);
     expect((await fetchZest()).is_live_integration).toBe(true);
   });
   it("marks apy stale (no throw) when the chain returns a non-200", async () => {
@@ -66,20 +71,5 @@ describe("fetchZest (sync lending)", () => {
       )
     );
     expect((await fetchZest()).apy_stale).toBe(true);
-  });
-});
-
-describe("fetchHbtc (async strategy)", () => {
-  it("returns the hbtc protocol id", async () => {
-    expect((await fetchHbtc()).protocol).toBe("hbtc");
-  });
-  it("maps apy from on-chain basis points", async () => {
-    expect((await fetchHbtc()).apy_percent).toBe(8);
-  });
-  it("is a reference rate (no live APY endpoint) -> is_live_integration false", async () => {
-    expect((await fetchHbtc()).is_live_integration).toBe(false);
-  });
-  it("carries medium risk (managed strategy, not principal-guaranteed)", async () => {
-    expect((await fetchHbtc()).risk_level).toBe("medium");
   });
 });

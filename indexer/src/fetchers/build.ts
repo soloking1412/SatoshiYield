@@ -1,41 +1,24 @@
 /**
- * Shared builder for a protocol's normalized yield row. Both adapters share this
- * logic; the per-protocol modules are thin config wrappers.
- *
- * Displayed APY is the ON-CHAIN, oracle-pushed value (verifiable + consistent
- * with what vault-v6 gates deposits on). The live native APY is used as a
- * cross-source sanity check and to decide is_live_integration. TVL is the live
- * protocol TVL from DefiLlama.
+ * Generic yield-row builder. Called once per registered adapter per cycle.
+ * Takes the registry entry directly — no hardcoded per-protocol records here.
  */
 
-import type { NormalizedYield, ProtocolId, RiskLevel } from "../types.js";
+import type { AdapterEntry, ProtocolId } from "../registry.js";
+import { adapterName } from "../registry.js";
+import type { NormalizedYield } from "../types.js";
 import { readAdapterOracleState, exceedsDeviation } from "./chain.js";
 import { fetchProtocolTvlUsd } from "./defillama.js";
-import { HAS_LIVE_APY } from "./native-apy.js";
-
-// On-chain adapter contract name per protocol. Env-overridable so a renamed
-// adapter is read/displayed without a code change. Keep in sync with the
-// frontend's VITE_*_ADAPTER and the oracle pusher's *_ADAPTER_NAME.
-const ADAPTER_NAME: Record<ProtocolId, string> = {
-  zest: process.env["ZEST_ADAPTER_NAME"] ?? "zest-earn-adapter",
-  hbtc: process.env["HBTC_ADAPTER_NAME"] ?? "hermetica-hbtc-adapter",
-};
-
-const RISK: Record<ProtocolId, RiskLevel> = {
-  zest: "low",    // overcollateralized lending, principal-protected
-  hbtc: "medium", // managed delta-neutral strategy, not principal-guaranteed
-};
 
 export async function buildYield(
   protocol: ProtocolId,
-  nativeApyFetcher: () => Promise<number | null>
+  entry: AdapterEntry
 ): Promise<NormalizedYield> {
-  const adapterName = ADAPTER_NAME[protocol];
+  const name = adapterName(protocol);
 
   const [stateResult, tvlResult, nativeResult] = await Promise.allSettled([
-    readAdapterOracleState(adapterName),
-    fetchProtocolTvlUsd(protocol),
-    nativeApyFetcher(),
+    readAdapterOracleState(name),
+    fetchProtocolTvlUsd(entry.defillamaSlug),
+    entry.fetchNativeApy(),
   ]);
 
   const state =
@@ -44,19 +27,21 @@ export async function buildYield(
       : { apyBps: 0, lastUpdatedBlock: 0, isStale: true };
 
   const tvlUsd =
-    tvlResult.status === "fulfilled" && tvlResult.value !== null ? tvlResult.value : 0;
-  const nativeApy = nativeResult.status === "fulfilled" ? nativeResult.value : null;
+    tvlResult.status === "fulfilled" && tvlResult.value !== null
+      ? tvlResult.value
+      : 0;
 
-  // Live integration requires: the protocol has a live APY source AND we got a
-  // number this cycle. (hBTC has no public APY feed, so its on-chain ~8% is shown
-  // as a reference/target rate: is_live_integration = false.)
-  const is_live_integration = HAS_LIVE_APY[protocol] && nativeApy !== null;
+  const nativeApy =
+    nativeResult.status === "fulfilled" ? nativeResult.value : null;
+
+  const is_live_integration = entry.hasLiveApy && nativeApy !== null;
 
   let apy_stale = state.isStale;
   if (!apy_stale && is_live_integration) {
     if (exceedsDeviation(state.apyBps, nativeApy! * 100, 50)) {
       console.warn(
-        `[${protocol}] cross-source APY deviation: on-chain=${state.apyBps}bps native=${Math.round(nativeApy! * 100)}bps`
+        `[${protocol}] cross-source APY deviation: on-chain=${state.apyBps}bps ` +
+          `native=${Math.round(nativeApy! * 100)}bps`
       );
       apy_stale = true;
     }
@@ -65,7 +50,7 @@ export async function buildYield(
   return {
     protocol,
     apy_percent: state.apyBps / 100,
-    risk_level: RISK[protocol],
+    risk_level: entry.risk,
     lock_period_days: 0,
     reward_token: "sBTC",
     tvl_usd: tvlUsd,

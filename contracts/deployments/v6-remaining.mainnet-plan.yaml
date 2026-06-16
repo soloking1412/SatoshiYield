@@ -1,0 +1,42 @@
+---
+# Mainnet deploy of the REMAINING 2 contracts as CLARITY 3, via clarinet.
+#
+# Why this exists: mainnet wallets + the Explorer Sandbox force Clarity 4, and our
+# contracts use `as-contract` (C4 renamed it to `as-contract?`). clarinet honors the
+# clarity-version below (3), so it is the only tool that can publish these as C3.
+#
+# The 3 traits (sip-010-trait, yield-source-v2, yield-source-async-v1) are ALREADY
+# deployed (as Clarity 4) by SP31VHZ...149V — they are pure interfaces and are
+# reused as-is, so they are NOT in this plan. The C3 vault compiles against them
+# (verified: `clarinet check` clean + 28 tests green).
+#
+# Apply:  cd contracts
+#         clarinet deployments apply -p deployments/v6-remaining.mainnet-plan.yaml
+# (settings/Mainnet.toml must hold the SP31VHZ...149V deployer mnemonic; delete it after.)
+id: 0
+name: Mainnet v6 remaining -- vault-v6 + zest-earn-adapter (Clarity 3)
+network: mainnet
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "https://bitcoin.hiro.so"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: vault-v6
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
+            cost: 500000
+            path: contracts/vault-v6.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"
+    - id: 1
+      transactions:
+        - contract-publish:
+            contract-name: zest-earn-adapter
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
+            cost: 300000
+            path: contracts/adapters/zest-earn-adapter.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

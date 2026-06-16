@@ -1,6 +1,5 @@
-export type ProtocolId = "zest" | "hbtc";
-
-export type RiskLevel = "low" | "medium" | "high";
+import type { ProtocolId, RiskLevel } from "./registry.js";
+export type { ProtocolId, RiskLevel };
 
 export interface NormalizedYield {
   protocol: ProtocolId;

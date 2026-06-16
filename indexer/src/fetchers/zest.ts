@@ -1,7 +1,7 @@
 import type { NormalizedYield } from "../types.js";
 import { buildYield } from "./build.js";
-import { fetchZestNativeApy } from "./native-apy.js";
+import { ADAPTER_REGISTRY } from "../registry.js";
 
 export function fetchZest(): Promise<NormalizedYield> {
-  return buildYield("zest", fetchZestNativeApy);
+  return buildYield("zest", ADAPTER_REGISTRY.zest);
 }

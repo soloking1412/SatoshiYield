@@ -5,10 +5,13 @@ import { aggregateYields, invalidateCache } from "../src/aggregator.js";
 
 const DEPLOYER = "SP000000000000000000002AMW42H";
 const API = "https://api.hiro.so";
-const ZEST_POOL = "f003d6df-fb8f-4a74-8cfb-aee8cc44f433";
+const ZEST_ADDR = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
 
 function okUint(n: number): string {
   return "0x0701" + n.toString(16).padStart(32, "0");
+}
+function bareUint(n: bigint): string {
+  return "0x01" + n.toString(16).padStart(32, "0");
 }
 function chainUrl(contract: string, fn: string): string {
   return `${API}/v2/contracts/call-read/${DEPLOYER}/${contract}/${fn}`;
@@ -21,21 +24,18 @@ function chainHandler(contract: string, fn: string, value: number) {
 function tvlHandler(slug: string, usd: number) {
   return http.get(`https://api.llama.fi/tvl/${slug}`, () => HttpResponse.json(usd));
 }
-
-const ADAPTERS = ["zest-earn-adapter", "hermetica-hbtc-adapter"];
+function sharePriceHandler(price: number) {
+  return http.post(
+    `${API}/v2/contracts/call-read/${ZEST_ADDR}/v0-vault-sbtc/convert-to-assets`,
+    () => HttpResponse.json({ okay: true, result: bareUint(BigInt(Math.round(price * 1e8))) })
+  );
+}
 
 const server = setupServer(
   chainHandler("zest-earn-adapter", "get-apy", 340),
   chainHandler("zest-earn-adapter", "get-last-updated-block", 99_999),
-  chainHandler("hermetica-hbtc-adapter", "get-apy", 800),
-  chainHandler("hermetica-hbtc-adapter", "get-last-updated-block", 99_999),
-
   tvlHandler("zest-v2", 83_000_000),
-  tvlHandler("hermetica", 12_000_000),
-
-  http.get(`https://yields.llama.fi/chart/${ZEST_POOL}`, () =>
-    HttpResponse.json({ data: [{ timestamp: "t", apy: 3.4, tvlUsd: 53_000_000 }] })
-  )
+  sharePriceHandler(1.001)
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
@@ -46,12 +46,10 @@ afterEach(() => {
 afterAll(() => server.close());
 
 describe("aggregateYields", () => {
-  it("returns both protocols when all fetchers succeed", async () => {
+  it("returns zest protocol when fetcher succeeds", async () => {
     const yields = await aggregateYields();
-    expect(yields).toHaveLength(2);
-    const ids = yields.map((y) => y.protocol);
-    expect(ids).toContain("zest");
-    expect(ids).toContain("hbtc");
+    expect(yields).toHaveLength(1);
+    expect(yields[0]!.protocol).toBe("zest");
   });
 
   it("returns results sorted by apy_percent descending", async () => {
@@ -68,19 +66,17 @@ describe("aggregateYields", () => {
       )
     );
     const yields = await aggregateYields();
-    expect(yields).toHaveLength(2);
+    expect(yields).toHaveLength(1);
     expect(yields.find((y) => y.protocol === "zest")?.apy_stale).toBe(true);
   });
 
   it("returns stale entries when all chain reads fail", async () => {
     server.use(
-      ...ADAPTERS.flatMap((adapter) => [
-        http.post(chainUrl(adapter, "get-apy"), () => HttpResponse.error()),
-        http.post(chainUrl(adapter, "get-last-updated-block"), () => HttpResponse.error()),
-      ])
+      http.post(chainUrl("zest-earn-adapter", "get-apy"), () => HttpResponse.error()),
+      http.post(chainUrl("zest-earn-adapter", "get-last-updated-block"), () => HttpResponse.error())
     );
     const yields = await aggregateYields();
-    expect(yields).toHaveLength(2);
+    expect(yields).toHaveLength(1);
     for (const y of yields) {
       expect(y.apy_stale).toBe(true);
       expect(y.apy_percent).toBe(0);
@@ -95,6 +91,6 @@ describe("aggregateYields", () => {
       )
     );
     const second = await aggregateYields();
-    expect(second).toHaveLength(2);
+    expect(second).toHaveLength(1);
   });
 });

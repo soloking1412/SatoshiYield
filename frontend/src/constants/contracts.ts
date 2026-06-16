@@ -27,26 +27,24 @@ if (!DEPLOYER_RAW || DEPLOYER_RAW === "REPLACE_WITH_MAINNET_DEPLOYER") {
 
 export const DEPLOYER: string = DEPLOYER_RAW;
 
-// vault-v6 — sync (Zest) + async (hBTC) adapters.
 const VAULT_NAME = "vault-v6";
 
-// sBTC token: real sBTC on mainnet, mock-sbtc on testnet.
 const SBTC_TOKEN = isTestnet
   ? `${DEPLOYER_RAW}.mock-sbtc`
   : "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 
-// Adapter contract names. Env-overridable so a rename needs no code change.
-// Keep in sync with the indexer's *_ADAPTER_NAME vars.
+// Adapter contract names — env-overridable so a rename needs no code change.
+// Add one entry here when enabling a new adapter. Keep in sync with indexer ADAPTER_REGISTRY.
 const ADAPTER_NAMES = {
   zest: import.meta.env.VITE_ZEST_ADAPTER ?? "zest-earn-adapter",
-  hbtc: import.meta.env.VITE_HBTC_ADAPTER ?? "hermetica-hbtc-adapter",
+  // hbtc: import.meta.env.VITE_HBTC_ADAPTER ?? "hermetica-hbtc-adapter",
 };
 
 export const CONTRACTS = {
-  VAULT:      `${DEPLOYER}.${VAULT_NAME}`,
+  VAULT: `${DEPLOYER}.${VAULT_NAME}`,
   SBTC_TOKEN,
   ADAPTERS: {
     zest: `${DEPLOYER}.${ADAPTER_NAMES.zest}`,
-    hbtc: `${DEPLOYER}.${ADAPTER_NAMES.hbtc}`,
+    // hbtc: `${DEPLOYER}.${ADAPTER_NAMES.hbtc}`,
   },
 } as const;

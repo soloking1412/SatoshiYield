@@ -4,8 +4,7 @@ import {
   uintCV,
 } from "@stacks/transactions";
 import { readUint, exceedsDeviation } from "./fetchers/chain.js";
-import { fetchNativeApys } from "./fetchers/native-apy.js";
-import type { NativeApyResult } from "./fetchers/native-apy.js";
+import { ADAPTER_REGISTRY, adapterName, type ProtocolId } from "./registry.js";
 
 const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]     ?? "";
 const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"]   ?? "";
@@ -14,33 +13,6 @@ const IS_MAINNET      = process.env["STACKS_NETWORK"]       === "mainnet";
 const STACKS_API_BASE = IS_MAINNET
   ? "https://api.hiro.so"
   : "https://api.testnet.hiro.so";
-
-// On-chain adapter contract name per protocol. Env-overridable so a renamed
-// adapter receives the APY push without a code change. MUST match the frontend's
-// VITE_*_ADAPTER and the indexer fetchers' *_ADAPTER_NAME so the displayed
-// adapter is the one funded.
-const ADAPTERS = [
-  process.env["ZEST_ADAPTER_NAME"] ?? "zest-earn-adapter",
-  process.env["HBTC_ADAPTER_NAME"] ?? "hermetica-hbtc-adapter",
-] as const;
-
-type AdapterName = typeof ADAPTERS[number];
-
-// Map each (possibly overridden) adapter name back to its protocol + reference
-// rate by position, so overrides need no extra config here.
-const PROTOCOL_KEY: Record<string, keyof NativeApyResult> = {
-  [ADAPTERS[0]]: "zest",
-  [ADAPTERS[1]]: "hbtc",
-};
-
-// Reference (bootstrap) APY in bps, used for the displayed on-chain rate until a
-// live value or a held on-chain value exists. hBTC has no public APY feed so its
-// ~8% target is surfaced as a reference rate in the UI (is_live_integration =
-// false) — never presented as live measured data.
-const REFERENCE_BPS: Record<string, number> = {
-  [ADAPTERS[0]]: 350, // zest - bootstrap for Zest Earn (~3.5% supply yield)
-  [ADAPTERS[1]]: 800, // hbtc - reference rate (Hermetica ~8% target)
-};
 
 // Max fraction of the current value we move per cycle. Stays inside the 50%
 // on-chain deviation guard so a push is never rejected for over-deviating.
@@ -64,19 +36,19 @@ let status: OracleStatus = { lastCycleAt: null, lastResults: [], mode: "disabled
 export function getOracleStatus(): OracleStatus & { ageSeconds: number | null } {
   return {
     ...status,
-    ageSeconds: status.lastCycleAt ? Math.round((Date.now() - status.lastCycleAt) / 1000) : null,
+    ageSeconds: status.lastCycleAt
+      ? Math.round((Date.now() - status.lastCycleAt) / 1000)
+      : null,
   };
 }
 
-/** Strip anything resembling a private key (long hex run) from error text. */
 function sanitize(value: unknown): string {
   const text = value instanceof Error ? value.message : String(value);
   return text.replace(/\b[0-9a-fA-F]{64,}\b/g, "[redacted]");
 }
 
-/** Next bps to push: ramp current toward target, capped so we stay within the guard. */
 function nextBps(current: number, target: number): number {
-  if (current <= 0) return target; // bootstrap (no on-chain value yet)
+  if (current <= 0) return target;
   const step = Math.max(1, Math.floor(current * MAX_STEP_PCT));
   if (target > current) return Math.min(target, current + step);
   if (target < current) return Math.max(target, current - step);
@@ -101,11 +73,13 @@ export async function pushApy(
   }
 
   if (currentBps > 0 && exceedsDeviation(newBps, currentBps, 50)) {
-    console.error(`[oracle] deviation too large — ${contractName}: current=${currentBps} new=${newBps}`);
+    console.error(
+      `[oracle] deviation too large — ${contractName}: current=${currentBps} new=${newBps}`
+    );
     return { adapter: contractName, pushed: false, reason: "deviation_exceeded" };
   }
 
-  const network = IS_MAINNET ? "mainnet" as const : "testnet" as const;
+  const network = IS_MAINNET ? ("mainnet" as const) : ("testnet" as const);
 
   const tx = await makeContractCall({
     contractAddress: DEPLOYER,
@@ -140,10 +114,11 @@ async function fetchNonce(address: string): Promise<number> {
 export async function pushAllAdapters(
   newBpsMap: Record<string, number>
 ): Promise<PushResult[]> {
+  const names = (Object.keys(ADAPTER_REGISTRY) as ProtocolId[]).map(adapterName);
+
   const nonce1 = await fetchNonce(DEPLOYER);
   let n1 = nonce1;
 
-  // If a second oracle key is configured, fetch its nonce too.
   let n2 = 0;
   let addr2 = "";
   if (ORACLE_KEY_2) {
@@ -158,19 +133,17 @@ export async function pushAllAdapters(
 
   const results: PushResult[] = [];
 
-  for (const name of ADAPTERS) {
+  for (const name of names) {
     const bps = newBpsMap[name];
     if (bps === undefined) {
       results.push({ adapter: name, pushed: false, reason: "no_bps_provided" });
       continue;
     }
-    // Push from oracle[0]
     try {
       results.push(await pushApy(name, bps, { nonce: n1++ }));
     } catch (err) {
       results.push({ adapter: name, pushed: false, reason: sanitize(err) });
     }
-    // Push from oracle[1] when configured — triggers 2-of-3 consensus
     if (ORACLE_KEY_2 && addr2) {
       try {
         const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2 });
@@ -186,27 +159,30 @@ export async function pushAllAdapters(
 }
 
 async function buildBpsMap(): Promise<Record<string, number>> {
-  const apys = await fetchNativeApys();
   const map: Record<string, number> = {};
 
-  for (const name of ADAPTERS) {
-    const protocolKey = PROTOCOL_KEY[name];
-    const native = protocolKey ? apys[protocolKey] : null; // percent or null
+  for (const protocol of Object.keys(ADAPTER_REGISTRY) as ProtocolId[]) {
+    const entry = ADAPTER_REGISTRY[protocol];
+    const name  = adapterName(protocol);
 
-    let current = 0;
-    try { current = await readUint(name, "get-apy"); } catch { /* stale/unset -> 0 */ }
+    const [nativeResult, currentResult] = await Promise.allSettled([
+      entry.fetchNativeApy(),
+      readUint(name, "get-apy"),
+    ]);
 
-    // Target: live native value when available (zest via DefiLlama); otherwise
-    // hold the last-known on-chain value (no drift during a transient outage);
-    // bootstrap to the reference rate only when there is nothing on-chain yet
-    // (hBTC has no live feed, so it holds at its ~8% reference).
+    const native  = nativeResult.status  === "fulfilled" ? nativeResult.value  : null;
+    const current = currentResult.status === "fulfilled" ? currentResult.value : 0;
+
+    // Use live native APY when available; otherwise hold the last-known on-chain
+    // value (prevents drift during a transient upstream outage); bootstrap to the
+    // reference rate only when nothing is on-chain yet.
     let target: number;
     if (native !== null) {
       target = Math.round(native * 100);
     } else if (current > 0) {
-      target = current; // last-known-good hold — keeps the adapter fresh
+      target = current;
     } else {
-      target = REFERENCE_BPS[name] ?? 0;
+      target = entry.referenceBps;
     }
 
     map[name] = nextBps(current, target);

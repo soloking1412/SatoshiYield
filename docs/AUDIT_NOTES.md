@@ -1,85 +1,91 @@
 # SatoshiYields — Internal Audit Notes
 
-> **ARCHITECTURE UPDATE (v6, 2026-06).** Restructured to two live tiles: **Zest**
-> (sync lending, principal-protected) and **Hermetica hBTC** (async managed strategy,
-> ~8% target). ALEX/Velar/Bitflow adapters removed. The vault is now **vault-v6**,
-> adding an ASYNC two-phase withdrawal (`request-withdraw` → Hermetica funds the claim
-> after a cooldown → `claim-withdraw`, with `cancel-withdraw` as an escape hatch)
-> alongside the sync path; rebalance removed. hBTC is NOT principal-guaranteed (small
-> exit fee + a liveness dependency on Hermetica funding redemptions) — disclosed in
-> the UI. New code (vault-v6 + hermetica-hbtc-adapter) MUST be audited and fork-tested
-> against the real Hermetica contracts before approval. See
-> `contracts/deployments/v6.mainnet-plan.yaml`. Notes below predate this change.
+Internal pre-mainnet review of the `Mainnet-beta` bundle (**vault-v6** + **zest-earn-adapter**
+live; **hermetica-hbtc-adapter** built and held as coming-soon). Pairs with `docs/SECURITY.md`.
+An **external third-party audit is the remaining hard gate** before real funds — this internal
+review is audit-prep, not a substitute.
 
-Internal pre-mainnet review of the `Mainnet-beta` bundle (vault-v5 + four v4
-adapters + two traits). Pairs with `docs/SECURITY.md`. An external audit
-(e.g. Asymmetric Research) is planned before/shortly after mainnet.
+## Architecture (v6)
 
-> **Revenue path (Phase 2):** `zest-earn-adapter` adds real yield + protocol fees
-> by routing sBTC into the Zest Earn lending vault (principal-protected, no IL). It
-> is **audit-pending**: it compiles and is fully unit-tested against a yielding mock
-> (`mock-zest-vault`), but must be repointed at the verified real Zest principal and
-> fork-tested + externally audited before real funds flow. Launch ships on the
-> principal-protected v4 stubs; the revenue adapter is the gated upgrade. See
-> `MAINNET-DEPLOY.md` "Phase 2".
->
-> **AMM path (Phase 3):** `bitflow-amm-adapter` / `alex-amm-adapter` /
-> `velar-amm-adapter` route sBTC into AMM pools via `amm-pool-trait`. They are
-> **audit-pending AND NOT principal-protected** — AMM positions carry impermanent
-> loss, so a withdrawal can return less sBTC than deposited. Unit-tested against
-> `mock-amm-pool` including an explicit IL case (user receives < principal; vault
-> charges zero fee on a loss). The UI shows an IL warning on every AMM deposit plus
-> a global risk banner. Each protocol needs its own interface verification +
-> fork-test + external audit before activation. See `MAINNET-DEPLOY.md` "Phase 3".
+Two-tile design: **Zest** (sync lending, principal-protected) ships live; **Hermetica hBTC**
+(async managed strategy, ~8% target, NOT principal-guaranteed) and **Dual Stacking (PoX)** are
+coming-soon tiles. The vault is **vault-v6**: a sync path (`deposit`/`withdraw`) plus an async
+two-phase path (`deposit-async` → `request-withdraw` → `claim-withdraw`, with `cancel-withdraw`).
+Rebalance and the former ALEX/Velar/Bitflow AMM adapters + v4 stubs were removed in the v6
+restructure.
 
-## Findings & resolutions
+## v6 findings & resolutions
 
 | # | Sev | Finding | Resolution |
 |---|-----|---------|------------|
-| 1 | Critical | `scripts/init-v5.js` registered `mock-sbtc` in the one-shot `set-sbtc-token` — on mainnet this permanently bricks the vault. | Script now binds the **real** sBTC on mainnet and **hard-refuses** any `mock` token when `NETWORK=mainnet`. Mainnet init runs via Asigna with the real principal (see `MAINNET-DEPLOY.md`). |
-| 2 | Critical | Stale-yields outage: 720-block window (~1.8h) was **shorter** than the 2h push interval → APY went stale every cycle and blocked deposits. | Stale window raised to **2160 blocks (~5.5h)**; indexer pushes every **30 min** and holds last-known-good on outage; indexer moved to an always-on plan. |
-| 3 | High | Displayed APY was not live — all native endpoints were dead, so values fell back to hardcoded constants. | Rewrote fetchers to pull **live** data: ALEX (`api.alexgo.io`), Zest (DefiLlama pool), TVL for all four via DefiLlama. Bitflow/Velar have no live APY source today → shown as labeled **reference** rates. |
-| 4 | High | Mainnet build showed "TESTNET · SIMULATED" badges and testnet explorer links. | All chain references now derive from `networkName`; copy reframed to live mainnet. |
-| 5 | High | Misleading UX: fabricated "7D APY" sparkline, "Earning X%", "Estimated yearly yield" while realized yield is 0. | Removed the fake sparkline; realized earnings shown as 0; APY relabeled as **market rate**; principal-protected disclosure added to the deposit flow. |
-| 6 | Med | Launch TVL cap defaulted to 1.5 sBTC (~$125K), over the promised $25–50K. | Default lowered to `u50000000` (~0.5 sBTC); owner-raisable via `set-tvl-cap`. |
-| 7 | Med | Indexer on Render free tier (sleeps) with no external cron → unreliable pushes. | Switched to always-on `starter` plan, single instance (single-writer); `/api/health` surfaces oracle mode + last-push age. |
-| 8 | Med | `is_live_integration` / `isLive` hardcoded inconsistently. | Now derived per-fetch from whether a live APY was actually obtained; static `isLive` removed from the frontend. |
-| 9 | Med | `APY-CAP` was 100000 bps (1000%). | Lowered to **6000 bps (60%)**; off-chain fetchers also clamp to 60%. |
-| 10 | Low | Missing `docs/SECURITY.md` / `docs/AUDIT_NOTES.md`; no HTTP security headers; thin tests; corrupted `index.html`. | Docs added; CSP + X-Frame-Options/HSTS/etc. added to `vercel.json`; contract tests expanded to 34 and indexer to 24; `index.html` rebuilt. |
+| C1 | **Critical** | hBTC async `claim-withdraw` forwarded the adapter's **full** sBTC balance. Since the adapter is pooled and `redeem` is permissionless, two users' redeemed sBTC co-mingle → first claimant sweeps both, second stranded. | Forward **exactly** `redeem`'s return value for that claim (removed the balance read). Added a 2-user no-sweep regression test. |
+| V6-1 | High | hBTC blacklist strands **both** `redeem` AND `cancel` — "cancel always works" only while not blacklisted. | Documented as a partner-trust limitation; UI discloses it; **hBTC held as coming-soon** pending a written Hermetica blacklist policy. |
+| V6-2 | Med | hBTC deposit-cap blocks deposits when full (`u103001`). | `useHbtcCapacity` reads the live cap; the deposit modal blocks + explains before the tx reverts. (Moot at launch — hBTC is coming-soon.) |
+| V6-3 | Med | 3-day async cooldown must be disclosed concretely, not hand-waved. | Stated in the deposit disclosure copy (`constants/protocols.ts`). |
+
+## Historical fixes (pre-v6 review, still in force)
+
+Verified still-correct against vault-v6 (the guards carried forward unchanged):
+
+| # | Sev | Finding | Resolution |
+|---|-----|---------|------------|
+| 1 | Critical | A deploy script registered `mock-sbtc` in the one-shot `set-sbtc-token` — on mainnet this permanently bricks the vault. | Mainnet init runs via Asigna with the **real** sBTC principal (`SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token`); deploy scripts removed. |
+| 2 | Critical | Stale-yields window was shorter than the push interval → APY went stale every cycle and blocked deposits. | Stale window set to **2160 blocks**; indexer pushes every **30 min** and holds last-known-good on outage; indexer on an always-on plan. |
+| 3 | High | Displayed APY fell back to hardcoded constants. | Live data: Zest via DefiLlama pool; TVL via DefiLlama. No-live-feed adapters are shown as labeled **reference** rates (`is_live_integration=false`). |
+| 4 | High | Mainnet build showed "TESTNET · SIMULATED" badges / testnet links. | All chain references derive from `networkName`; copy reframed to live mainnet. |
+| 5 | High | Misleading UX (fake sparkline, "earning X%" while realized yield 0). | Removed; realized earnings shown honestly; principal-protected disclosure in the deposit flow. |
+| 6 | Med | TVL cap defaulted too high. | Default `u50000000` (~0.5 sBTC); owner-raisable via `set-tvl-cap`. |
+| 7 | Med | Indexer on a sleeping free tier. | Always-on `starter`, single instance; `/api/health` surfaces oracle mode + last-push age. |
+| 9 | Med | `APY-CAP` was 1000%. | Lowered to **6000 bps (60%)**; off-chain fetchers also clamp to 60%. |
 
 ### Verified-correct (defense reviewed, no change required)
+- Non-custodial: funds forward straight to the adapter; the vault only ever holds accrued fees.
 - One-shot `set-sbtc-token` with per-call token validation (`err-bad-token`).
-- Withdraw never gated by pause/global-pause/oracle (withdrawals always open).
+- Withdraw / claim-withdraw never gated by pause/approval/oracle — **withdrawals always open**.
 - Fee charged on **yield only**, with an overflow guard; never on principal.
 - Per-adapter fund isolation; adapter mutations gated to the authorized vault.
 - Fee-bps / fee-collector changes timelocked (~1 day); fee ≤ 10%.
+- Reentrancy lock on all six funds-touching entry points.
 
 ## Formal risk assessment
 
-(Replaces the application's "None known" placeholder.)
-
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
-| Smart-contract bug in vault/adapter logic | Low | High | Internal audit; 71 unit tests (34 contract + 24 indexer + 13 frontend); immutable, minimal surface; deposit cap; external audit planned. |
-| Owner key compromise | Low | Medium | Asigna 2-of-3 multi-sig; owner cannot seize principal; fee changes timelocked. |
-| Oracle key compromise | Low | Low | Keys only move a display value within ±50%/2-of-3; rotatable; no fund access. |
+| Smart-contract bug in vault/adapter logic | Low | High | Internal review (2 passes; C1 found+fixed); 44 unit tests (24 contract + 12 indexer + 8 frontend); immutable, minimal surface; deposit cap; **external audit required before launch**. |
+| Owner key compromise | Low | Medium | Asigna 2-of-3 multi-sig; owner cannot seize principal or force-move positions; fee changes timelocked. |
+| Oracle key compromise | Low | Low | Keys only move a display value within ±50% / 2-of-3; rotatable; no fund access. |
 | Indexer downtime > stale window | Low | Low | Always-on plan + health monitoring; only blocks *new* deposits; withdrawals unaffected. |
-| Upstream protocol exploit (Bitflow/ALEX/Zest/Velar) | Med | None (v1) | v1 holds no funds in those protocols; per-adapter emergency pause; live routing deferred to a post-audit phase. |
-| User confusion about yield | Med | Low | Honest UI: market-reference labeling, realized-earnings display, principal-protected disclosures. |
-| Low early TVL reduces optimizer value | Med | Low | Standalone live dashboard utility; deposit/rebalance flows; staged cap. |
+| Upstream protocol exploit (Zest) | Low | Medium | Per-adapter emergency pause; non-custodial vault; principal-protected lending (no IL). |
+| hBTC partner liveness (when enabled) | Med | Med | Held coming-soon pending written SLA + blacklist policy; `cancel-withdraw` fallback; UI disclosure. |
 
-## Grant committee questions — mapped to code
+## Migration & upgrade model
 
-1. **External audit?** Yes — Asymmetric Research (or another Stacks-familiar
-   auditor) before/shortly after mainnet. This internal review is audit-prep.
-2. **Deposit caps?** Yes — `vault-v5` `tvl-cap` default `u50000000` (~0.5 sBTC),
-   owner-adjustable via `set-tvl-cap`; per-user min `u1000`.
-3. **Rebalancing in v1?** Fully manual, user-triggered, one transaction
-   (`vault-v5.rebalance`); no keepers/automation.
-4. **Vault architecture / isolation?** One router vault + **separate** per-protocol
-   adapter contracts; each adapter holds only its own funds (see SECURITY.md).
-5. **Upstream protocol risk?** v1 holds no funds in upstream protocols; deposits
-   are gated by per-adapter pause + oracle freshness; owner has per-adapter
-   emergency pause; **withdrawals always remain open**.
-6. **Known risks?** See the formal risk assessment above (the prior "None known"
-   was an erroneous placeholder).
+The vault is immutable. A fix = deploy a new contract; existing users are migrated off the
+old one in one of two ways, **both of which keep funds non-custodial**:
+
+- **Admin-driven (`admin-exit`).** The owner force-exits each user's (sync) position on
+  demand — proceeds always go to the **position owner's own wallet**, never an owner-chosen
+  address. The owner controls *when*, never *where*. This evacuates the old vault as a pure
+  admin operation (no user action, no UI), at any scale, and a compromised owner key still
+  cannot redirect or seize funds. Users then re-deposit into the new vault (a normal
+  deposit). Async positions are excluded (mid-redemption) — let pending claims settle, then
+  exit the now-active ones.
+- **User-driven.** Withdrawals never freeze, so any user can always withdraw → re-deposit
+  themselves.
+
+For an **adapter** fix the vault is untouched: deploy the new adapter, `approve-adapter` it,
+`set-adapter-paused` the old one, re-point the env flags; users (or `admin-exit`) move over.
+See `MAINNET-DEPLOY.md` → "Rollback / incident".
+
+> **Deliberately NOT built:** an admin function that deposits user funds into an
+> owner-specified destination contract. That is a critical rug vector (a compromised owner
+> picks a malicious destination and drains everyone). `admin-exit` gives the same
+> operational power — bulk evacuation — without the destination ever being attacker-controllable.
+
+## Pre-launch gates (must clear)
+
+1. **External third-party audit** of `vault-v6` + `zest-earn-adapter` + traits.
+2. **Owner = Asigna 2-of-3 multisig** for deployer, `VITE_DEPLOYER_MAINNET`, indexer
+   `DEPLOYER_ADDRESS`.
+3. Audit confirms the Zest `redeem(shares, min-out, recipient)` integration assumption
+   (pays the vault directly, returns exact gross) on a mainnet fork.

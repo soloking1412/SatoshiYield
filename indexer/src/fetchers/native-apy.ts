@@ -1,54 +1,31 @@
 /**
- * Live protocol APY fetchers.
+ * Per-protocol native APY fetchers.
  *
- * Each fetcher returns a real APY in PERCENT, or null when no reliable live
- * source exists for that protocol's sBTC yield right now. null is honest — the
- * UI marks those as "reference rate" (is_live_integration = false) rather than
- * showing a fabricated number.
+ * Each function returns the real APY in PERCENT, or null when no reliable
+ * live source exists. null is honest — the oracle holds the last on-chain
+ * value instead of pushing a fabricated number.
  *
- *   - Zest : DefiLlama zest-v2 SBTC supply pool apy.                          LIVE.
- *   - hBTC : Hermetica publishes no public APY endpoint; we show the protocol's
- *            ~8% target as a reference rate. (A future enhancement can derive a
- *            realized APY from vault-hbtc-v1-2.get-share-price growth on-chain.) REFERENCE.
+ * Add a new fetchXxxNativeApy() here for each new adapter, then wire it
+ * into ADAPTER_REGISTRY in registry.ts.
  */
 
-import { fetchZestSbtcPool } from "./defillama.js";
+import { fetchZestRealizedApy } from "../share-price.js";
 
-export interface NativeApyResult {
-  zest: number | null;
-  hbtc: number | null;
-}
-
-/** Protocols with a genuine live APY source wired in (drives is_live_integration). */
-export const HAS_LIVE_APY: Record<keyof NativeApyResult, boolean> = {
-  zest: true,
-  hbtc: false,
-};
-
-/** Clamp to a sane display range so a bad upstream value can never show absurd APY. */
 function sane(pct: number | null): number | null {
   if (pct === null || !Number.isFinite(pct) || pct < 0) return null;
   return Math.min(pct, 60); // mirrors the on-chain APY-CAP (6000 bps)
 }
 
-/** Zest: DefiLlama-normalized sBTC supply APY (percent). */
+/**
+ * Zest: realized sBTC supply APY from the live vault's on-chain share-price
+ * growth (exact + trustless, tied to the exact vault we deposit into). Returns
+ * null until >= 24h of history exists (caller holds last-known-good / reference).
+ */
 export async function fetchZestNativeApy(): Promise<number | null> {
-  const pool = await fetchZestSbtcPool();
-  return pool ? sane(pool.apyPercent) : null;
+  return sane(await fetchZestRealizedApy());
 }
 
-/** hBTC: no public APY endpoint — the ~8% target is a reference rate. */
+/** hBTC: no public APY endpoint — ~8% target is a reference rate. */
 export async function fetchHbtcNativeApy(): Promise<number | null> {
   return null;
-}
-
-export async function fetchNativeApys(): Promise<NativeApyResult> {
-  const [z, h] = await Promise.allSettled([
-    fetchZestNativeApy(),
-    fetchHbtcNativeApy(),
-  ]);
-  return {
-    zest: z.status === "fulfilled" ? z.value : null,
-    hbtc: h.status === "fulfilled" ? h.value : null,
-  };
 }

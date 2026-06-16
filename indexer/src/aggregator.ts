@@ -1,7 +1,7 @@
-import type { NormalizedYield } from "./types.js";
+import type { NormalizedYield, ProtocolId } from "./types.js";
+import { ADAPTER_REGISTRY } from "./registry.js";
 import { cache } from "./cache.js";
-import { fetchZest } from "./fetchers/zest.js";
-import { fetchHbtc } from "./fetchers/hbtc.js";
+import { buildYield } from "./fetchers/build.js";
 
 const CACHE_KEY = "yields";
 
@@ -9,7 +9,10 @@ export async function aggregateYields(): Promise<NormalizedYield[]> {
   const cached = cache.get<NormalizedYield[]>(CACHE_KEY);
   if (cached !== undefined) return cached;
 
-  const results = await Promise.allSettled([fetchZest(), fetchHbtc()]);
+  const protocols = Object.keys(ADAPTER_REGISTRY) as ProtocolId[];
+  const results = await Promise.allSettled(
+    protocols.map((p) => buildYield(p, ADAPTER_REGISTRY[p]))
+  );
 
   const yields = results
     .filter(

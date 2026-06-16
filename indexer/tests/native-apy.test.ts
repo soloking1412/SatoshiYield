@@ -4,48 +4,63 @@ import { setupServer } from "msw/node";
 import {
   fetchZestNativeApy,
   fetchHbtcNativeApy,
-  fetchNativeApys,
 } from "../src/fetchers/native-apy.js";
+import { __setHistory } from "../src/share-price.js";
 
-const ZEST_POOL = "f003d6df-fb8f-4a74-8cfb-aee8cc44f433";
+const API = "https://api.hiro.so";
+const ZEST_ADDR = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
+const SHARE_UNIT = 100_000_000;
 
-// One consistent mocked Zest apy across the file — defillama.ts caches the pool
-// for 60s, so all reads within a run see the same value.
-const server = setupServer(
-  http.get(`https://yields.llama.fi/chart/${ZEST_POOL}`, () =>
-    HttpResponse.json({ data: [{ apy: 3.4, tvlUsd: 53_000_000 }] })
-  )
-);
+// convert-to-assets returns a BARE Clarity uint (type byte 01) + 16-byte BE value.
+function uintHex(n: bigint): string {
+  return "0x01" + n.toString(16).padStart(32, "0");
+}
+function convertToAssets(price: number) {
+  const assets = BigInt(Math.round(price * SHARE_UNIT));
+  return http.post(
+    `${API}/v2/contracts/call-read/${ZEST_ADDR}/v0-vault-sbtc/convert-to-assets`,
+    () => HttpResponse.json({ okay: true, result: uintHex(assets) })
+  );
+}
+
+const server = setupServer();
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  __setHistory([]); // reset rolling history between tests
+});
 afterAll(() => server.close());
 
-describe("fetchZestNativeApy", () => {
-  it("reads the latest Zest sBTC supply pool apy (percent)", async () => {
+describe("fetchZestNativeApy (on-chain share-price growth)", () => {
+  it("returns null until >= 24h of history exists", async () => {
+    server.use(convertToAssets(1.04));
+    expect(await fetchZestNativeApy()).toBeNull();
+  });
+
+  it("derives a realized APY once a >= 24h-old snapshot exists", async () => {
+    const p0 = 1.0;
+    __setHistory([{ t: Date.now() - 7 * 24 * 60 * 60 * 1000, p: p0 }]);
+    const p1 = p0 * Math.pow(1.05, 7 / 365); // 7 days of 5%-APY growth
+    server.use(convertToAssets(p1));
+    const apy = await fetchZestNativeApy();
+    expect(apy).not.toBeNull();
+    expect(apy!).toBeCloseTo(5.0, 0);
+  });
+
+  it("returns null when the chain read fails", async () => {
+    __setHistory([{ t: Date.now() - 2 * 24 * 60 * 60 * 1000, p: 1.0 }]);
     server.use(
-      http.get(`https://yields.llama.fi/chart/${ZEST_POOL}`, () =>
-        HttpResponse.json({ data: [{ apy: 3.4, tvlUsd: 53_000_000 }] })
+      http.post(
+        `${API}/v2/contracts/call-read/${ZEST_ADDR}/v0-vault-sbtc/convert-to-assets`,
+        () => HttpResponse.json({ okay: false, result: "0x08000000000000000000000000000000007b" })
       )
     );
-    expect(await fetchZestNativeApy()).toBeCloseTo(3.4, 2);
+    expect(await fetchZestNativeApy()).toBeNull();
   });
 });
 
 describe("fetchHbtcNativeApy", () => {
   it("returns null — no public APY feed (the ~8% target is a reference rate)", async () => {
     expect(await fetchHbtcNativeApy()).toBeNull();
-  });
-});
-
-describe("fetchNativeApys", () => {
-  it("returns a live zest rate and a null (reference) hbtc rate", async () => {
-    server.use(
-      http.get(`https://yields.llama.fi/chart/${ZEST_POOL}`, () =>
-        HttpResponse.json({ data: [{ apy: 3.4, tvlUsd: 53_000_000 }] })
-      )
-    );
-    const r = await fetchNativeApys();
-    expect(r.zest).toBeCloseTo(3.4, 2);
-    expect(r.hbtc).toBeNull();
   });
 });

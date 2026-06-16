@@ -82,6 +82,73 @@ export async function readUint(
   return decodeUint(result);
 }
 
+/**
+ * Decode a Clarity read-only uint result that may be either a bare `uint`
+ * (type byte 01) or an `(ok uint)` response (07 01). Throws on `(err …)`.
+ */
+function decodeUintFlexible(hex: string): number {
+  const raw = (hex.startsWith("0x") ? hex.slice(2) : hex).toLowerCase();
+  let valueHex: string;
+  if (raw.startsWith("07")) {
+    const inner = raw.slice(2);
+    if (!inner.startsWith("01")) throw new Error("ok-response inner is not a uint");
+    valueHex = inner.slice(2);
+  } else if (raw.startsWith("08")) {
+    throw new Error("Clarity call returned err response");
+  } else if (raw.startsWith("01")) {
+    valueHex = raw.slice(2);
+  } else {
+    throw new Error("Unexpected Clarity type prefix");
+  }
+  if (valueHex.length === 0) throw new Error("empty uint payload");
+  const value = BigInt(`0x${valueHex}`);
+  if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error("Chain uint exceeds JS safe-integer range");
+  }
+  return Number(value);
+}
+
+/**
+ * Read-only call to an ARBITRARY contract (any issuer address) with serialized
+ * Clarity arguments — used to read foreign protocols (e.g. the Zest vault's
+ * convert-to-assets). `args` are hex-encoded Clarity values (see cvToHex).
+ */
+export async function readUintFromContract(
+  address: string,
+  contractName: string,
+  functionName: string,
+  args: string[] = []
+): Promise<number> {
+  assertSafeName(contractName, "contractName");
+  assertSafeName(functionName, "functionName");
+  if (!/^[A-Z0-9]+$/.test(address)) throw new Error(`Invalid address: ${address}`);
+
+  const url = `${STACKS_API}/v2/contracts/call-read/${address}/${contractName}/${functionName}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sender: DEPLOYER, arguments: args }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Chain read ${address}.${contractName}.${functionName} returned ${res.status}`);
+  }
+
+  const json: unknown = await res.json();
+  if (
+    typeof json !== "object" || json === null ||
+    !("okay" in json) || !("result" in json) ||
+    typeof (json as Record<string, unknown>)["result"] !== "string"
+  ) {
+    throw new Error(`Unexpected chain response shape for ${contractName}.${functionName}`);
+  }
+  const { okay, result } = json as { okay: boolean; result: string };
+  if (!okay) throw new Error(`Contract error for ${contractName}.${functionName}`);
+
+  return decodeUintFlexible(result);
+}
+
 export interface AdapterOracleState {
   apyBps: number;
   lastUpdatedBlock: number;

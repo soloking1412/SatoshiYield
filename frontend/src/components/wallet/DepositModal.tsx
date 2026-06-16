@@ -5,6 +5,7 @@ import { useDeposit } from "../../hooks/useDeposit.js";
 import { useBalance } from "../../hooks/useBalance.js";
 import { usePositions } from "../../hooks/usePositions.js";
 import { useHbtcCapacity } from "../../hooks/useHbtcCapacity.js";
+import { SBTC_BRIDGE_URL } from "../../constants/links.js";
 import { networkName } from "../../lib/stacksClient.js";
 
 function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?: number }) {
@@ -139,7 +140,8 @@ export function DepositModal({ data, onClose }: Props) {
   const { data: balanceSats = 0n } = useBalance();
   const { data: existingPosition } = usePositions();
   const meta = PROTOCOLS[data.protocol];
-  const isHbtc = data.protocol === "hbtc";
+  // hBTC capacity check — re-enable when "hbtc" is added back to PROTOCOLS.
+  const isHbtc = false;
   const { data: hbtcCap } = useHbtcCapacity(isHbtc);
 
   useEffect(() => {
@@ -428,8 +430,20 @@ export function DepositModal({ data, onClose }: Props) {
           >
             AMOUNT
           </label>
-          <span style={{ fontSize: 11, color: balanceSats === 0n ? "var(--neg)" : "var(--muted)" }}>
-            Balance: {formatBtc(balanceSats)} sBTC
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 11, color: balanceSats === 0n ? "var(--neg)" : "var(--muted)" }}>
+              Balance: {formatBtc(balanceSats)} sBTC
+            </span>
+            {(balanceSats === 0n || amountError === "Insufficient balance") && (
+              <a
+                href={SBTC_BRIDGE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", textDecoration: "none", whiteSpace: "nowrap" }}
+              >
+                Get sBTC ↗
+              </a>
+            )}
           </span>
         </div>
         <div

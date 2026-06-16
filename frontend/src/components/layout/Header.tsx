@@ -3,6 +3,8 @@ import { useWallet } from "../../context/WalletContext.js";
 import { useTheme } from "../../context/ThemeContext.js";
 import { useConnectModal } from "../../context/ConnectModalContext.js";
 import { MarkSC } from "../shared/MarkSC.js";
+import { GetSbtcButton } from "../wallet/GetSbtcButton.js";
+import { FaucetButton } from "../wallet/FaucetButton.js";
 import { networkName } from "../../lib/stacksClient.js";
 
 function truncate(address: string): string {
@@ -169,6 +171,9 @@ export function Header() {
 
         {/* Wallet area — desktop only */}
         <div className="hidden sm:flex" style={{ alignItems: "center", gap: 9 }}>
+          {/* Onboarding: mainnet -> bridge link; testnet -> faucet (each self-gates) */}
+          <GetSbtcButton />
+          <FaucetButton />
           {isConnected && address ? (
             <div
               style={{

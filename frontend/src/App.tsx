@@ -14,6 +14,7 @@ import { Dashboard } from "./pages/Dashboard.js";
 import { TVL } from "./pages/TVL.js";
 import { Portfolio } from "./pages/Portfolio.js";
 import { NotFound } from "./pages/NotFound.js";
+import { DeployPanel } from "./_deploy/DeployPanel.js"; // TEMP — remove after launch
 
 function AppShell() {
   const { pathname } = useLocation();
@@ -30,6 +31,7 @@ function AppShell() {
           <Route path="/yields" element={<Dashboard />} />
           <Route path="/tvl" element={<TVL />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/deploy" element={<DeployPanel />} /> {/* TEMP — remove after launch */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

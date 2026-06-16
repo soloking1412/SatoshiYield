@@ -43,6 +43,8 @@ const deposit = (amount: bigint, sender: string) =>
   simnet.callPublicFn("vault-v6", "deposit", [SBTC, adapterCV, Cl.uint(amount)], sender);
 const withdraw = (sender: string) =>
   simnet.callPublicFn("vault-v6", "withdraw", [SBTC, adapterCV], sender);
+const adminExit = (user: string, sender: string) =>
+  simnet.callPublicFn("vault-v6", "admin-exit", [Cl.principal(user), adapterCV, SBTC], sender);
 const addYield = (amount: bigint) => {
   simnet.callPublicFn(ZEST_SHIM, "add-yield", [Cl.uint(amount)], deployer);
   simnet.callPublicFn("mock-sbtc", "mint",
@@ -112,5 +114,47 @@ describe("zest-earn-adapter (sync) — access control", () => {
     simnet.callPublicFn("vault-v6", "set-adapter-paused", [adapterCV, Cl.bool(true)], deployer);
     expect(deposit(DEPOSIT, wallet1).result).toBeErr(Cl.uint(102));
     expect(withdraw(wallet1).result).toBeOk(Cl.uint(DEPOSIT));
+  });
+});
+
+describe("vault-v6 — admin migration (forced exit to the position OWNER)", () => {
+  it("SECURITY: owner triggers the exit, but funds go to the USER — never the owner", () => {
+    const userBefore = sbtcBalance(wallet1);
+    deposit(DEPOSIT, wallet1);
+    const YIELD = 1_000_000n;
+    addYield(YIELD);
+    const fee = YIELD * 500n / 10000n;
+    const expectedPayout = DEPOSIT + (YIELD - fee);
+
+    const ownerBefore = sbtcBalance(deployer);
+    // deployer (the contract owner) triggers the exit of wallet1's position
+    expect(adminExit(wallet1, deployer).result).toBeOk(Cl.uint(expectedPayout));
+    // the USER receives principal + net yield
+    expect(sbtcBalance(wallet1)).toBe(userBefore + (YIELD - fee));
+    // the OWNER receives NOTHING from the exit (the fee only accrues to fee-balance)
+    expect(sbtcBalance(deployer)).toBe(ownerBefore);
+    expect(simnet.callReadOnlyFn("vault-v6", "get-fee-balance", [], deployer).result).toBeUint(fee);
+  });
+
+  it("PRINCIPAL PROTECTED: zero-yield admin-exit returns exactly the principal to the user", () => {
+    const userBefore = sbtcBalance(wallet1);
+    deposit(DEPOSIT, wallet1);
+    expect(adminExit(wallet1, deployer).result).toBeOk(Cl.uint(DEPOSIT));
+    expect(sbtcBalance(wallet1)).toBe(userBefore);
+  });
+
+  it("is owner-only — the position owner themselves cannot call it", () => {
+    deposit(DEPOSIT, wallet1);
+    expect(adminExit(wallet1, wallet1).result).toBeErr(Cl.uint(100));
+  });
+
+  it("clears the position (no double-exit) and frees the TVL for re-entry", () => {
+    deposit(DEPOSIT, wallet1);
+    expect(adminExit(wallet1, deployer).result).toBeOk(Cl.uint(DEPOSIT));
+    // position is gone — a second exit fails with no-position
+    expect(adminExit(wallet1, deployer).result).toBeErr(Cl.uint(105));
+    expect(simnet.callReadOnlyFn("vault-v6", "get-total-deposited", [], deployer).result).toBeUint(0n);
+    // user can immediately re-deposit (e.g. into the migrated vault)
+    expect(deposit(DEPOSIT, wallet1).result).toBeOk(Cl.uint(DEPOSIT));
   });
 });

@@ -1,12 +1,10 @@
-import type { ProtocolId } from "../types/yield.js";
-
 export type YieldKind = "lending" | "strategy";
 
 // "live-yield" — adapter routes funds into the real protocol; users earn now.
 export type ProtocolStatus = "live-yield";
 
 export interface ProtocolMeta {
-  id: ProtocolId;
+  id: string;
   abbr: string;
   name: string;
   color: string;
@@ -19,7 +17,19 @@ export interface ProtocolMeta {
   blurb: string;
 }
 
-export const PROTOCOLS: Record<ProtocolId, ProtocolMeta> = {
+// Helper preserves specific key types (prevents ProtocolId circularity).
+function defineProtocols<T extends Record<string, ProtocolMeta>>(p: T): T {
+  return p;
+}
+
+/**
+ * Live adapters — one entry here registers a protocol across the whole app.
+ * ProtocolId is auto-derived; never edit it manually.
+ *
+ * To add an adapter: add one entry here.
+ * To move to "coming soon": cut the entry from PROTOCOLS, paste into COMING_SOON.
+ */
+export const PROTOCOLS = defineProtocols({
   zest: {
     id: "zest",
     abbr: "ZE",
@@ -32,22 +42,28 @@ export const PROTOCOLS: Record<ProtocolId, ProtocolMeta> = {
     blurb:
       "Overcollateralized sBTC lending. Principal-protected, withdraw any time — you earn the supply interest and keep 95% of the yield.",
   },
-  hbtc: {
-    id: "hbtc",
-    abbr: "hB",
-    name: "Hermetica hBTC",
-    color: "oklch(70% .17 55)",
-    kind: "strategy",
-    principalProtected: false,
-    async: true,
-    status: "live-yield",
-    blurb:
-      "Managed Bitcoin yield vault (~8% target). NOT principal-guaranteed: a small exit fee may apply and withdrawals are processed in two steps — you request a redemption, Hermetica funds it after a cooldown of about 3 days, then you claim. You can cancel an unfunded request any time (unless the vault has been blacklisted). Deposits are subject to Hermetica's vault capacity.",
-  },
-};
 
-// Static "more yields coming soon" tiles — not driven by the indexer. The next
-// integration is native Dual Stacking (PoX).
+  // ── To enable Hermetica hBTC: uncomment + audit pass + SLA confirmed ─────
+  // hbtc: {
+  //   id: "hbtc",
+  //   abbr: "hB",
+  //   name: "Hermetica hBTC",
+  //   color: "oklch(70% .17 55)",
+  //   kind: "strategy",
+  //   principalProtected: false,
+  //   async: true,
+  //   status: "live-yield",
+  //   blurb:
+  //     "Managed Bitcoin yield vault (~8% target). NOT principal-guaranteed: a small exit fee may apply " +
+  //     "and withdrawals are processed in two steps — request, Hermetica funds after ~3 days, then claim. " +
+  //     "Cancel an unfunded request any time. Deposits subject to vault capacity.",
+  // },
+});
+
+/** Auto-derived from PROTOCOLS — never edit manually, just add to PROTOCOLS. */
+export type ProtocolId = keyof typeof PROTOCOLS;
+
+// Static "more yields coming soon" tiles — not driven by the indexer.
 export interface ComingSoonMeta {
   abbr: string;
   name: string;
@@ -56,6 +72,13 @@ export interface ComingSoonMeta {
 }
 
 export const COMING_SOON: ComingSoonMeta[] = [
+  {
+    abbr: "hB",
+    name: "Hermetica hBTC",
+    color: "oklch(70% .17 55)",
+    blurb:
+      "Managed Bitcoin yield vault (~8% target). Pending partner SLA confirmation and independent audit — launching soon.",
+  },
   {
     abbr: "DS",
     name: "Dual Stacking (PoX)",

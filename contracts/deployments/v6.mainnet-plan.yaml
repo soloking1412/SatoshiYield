@@ -2,13 +2,19 @@
 # Mainnet deployment plan for SatoshiYields v6.
 #
 # IMPORTANT: this file is a RECORD, not an execution script. Mainnet contracts
-# are published via the Asigna 2-of-3 multi-sig UI at https://asigna.io, not by
-# `clarinet deployments apply --mainnet`. Asigna proposes each contract-publish;
-# two signers approve; Asigna broadcasts.
+# are published one-by-one through the Stacks Explorer Sandbox (explorer.hiro.so
+# /sandbox -> Deploy), signed by the single-key deployer wallet below. Do NOT run
+# `clarinet deployments apply --mainnet` (it reads a plaintext mnemonic from
+# settings/Mainnet.toml -- a key-on-disk leak).
 #
-# Bundle: vault-v6 + 2 live adapters (Zest sync, Hermetica hBTC async) + 3 traits.
+# Deployer / owner (single-key, beta): SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
+# Ownership is IMMUTABLE (CONTRACT-OWNER = tx-sender, no transfer fn), so this
+# address is the permanent owner of every contract below. Upgrade path to a
+# Ledger / native multisig later = deploy vault-v7 + vault-v6.admin-exit migration.
 #
-# Deploy order:
+# Bundle: vault-v6 + 1 live adapter (Zest sync) + 3 traits.
+#
+# Deploy order (publish one at a time, wait for each to confirm):
 #   Batch 0 (traits -- must confirm first):
 #     1. sip-010-trait
 #     2. yield-source-v2          (sync adapters)
@@ -17,24 +23,25 @@
 #     4. vault-v6
 #   Batch 2 (adapters):
 #     5. zest-earn-adapter        <-- SYNC  LIVE: Zest Earn (SP1A27KFY...v0-vault-sbtc), principal-protected
-#     6. hermetica-hbtc-adapter   <-- ASYNC LIVE: Hermetica hBTC (SP1S1HSFH0...vault-hbtc-v1-2), ~8% managed strategy
+#     (hermetica-hbtc-adapter is COMING SOON -- deploy in a future batch once partner SLA + audit clear)
 #
-# Post-publish initialization (via Asigna contract-call):
-#   - vault-v6.set-sbtc-token('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)
-#   - vault-v6.approve-adapter(<deployer>.zest-earn-adapter,      false)  ;; sync
-#   - vault-v6.approve-adapter(<deployer>.hermetica-hbtc-adapter, true)   ;; async
-#   - zest-earn-adapter.set-vault(<deployer>.vault-v6)        + set-oracle-at u0/u1
-#   - hermetica-hbtc-adapter.set-vault(<deployer>.vault-v6)   + set-oracle-at u0/u1
+# Post-publish initialization (Explorer Sandbox -> Call a function, from the deployer wallet):
+#   - vault-v6.set-sbtc-token('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)   ;; one-shot, irreversible
+#   - vault-v6.approve-adapter(<deployer>.zest-earn-adapter, false)  ;; false = sync
+#   - zest-earn-adapter.set-vault(<deployer>.vault-v6)
+#   - zest-earn-adapter.set-oracle-at u0 <oracle-1> / u1 <oracle-2>
+#   - vault-v6.set-tvl-cap(u5000000)   ;; 0.05 sBTC beta cap
 #
-# HARD GATES before approving adapters / opening deposits:
-#   1. Independent audit of vault-v6 (async two-phase withdrawal) + both adapters.
-#   2. Mainnet-fork validation of the real Hermetica hBTC deposit/request/fund/claim path.
-#   3. Deployer / owner is the Asigna 2-of-3 multisig (NOT a single-key EOA).
+# hermetica-hbtc-adapter: deploy in a future batch (coming soon) once partner SLA + audit pass.
 #
-# Replace REPLACE_WITH_ASIGNA_MULTISIG below with the actual SP-address and fill
-# MAINNET-DEPLOY.md with txids once Asigna confirms.
+# HARD GATES / risk posture for this beta:
+#   1. Independent audit of vault-v6 + zest-earn-adapter runs IN PARALLEL with the beta (user's risk call).
+#   2. Tiny TVL cap (u5000000 = 0.05 sBTC) held until audit sign-off.
+#   3. Single-key SOFTWARE deployer (no Ledger yet) -- acceptable only because the vault is
+#      NON-CUSTODIAL (owner can never move user funds; worst case = grief-pause + small fee).
+#      Migrate to a hardware/multisig owner via vault-v7 + admin-exit when available.
 id: 1
-name: Mainnet v6 -- Asigna 2-of-3 multi-sig deployer
+name: Mainnet v6 -- single-key deployer SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
 network: mainnet
 stacks-node: "https://api.hiro.so"
 bitcoin-node: "https://bitcoin.hiro.so"
@@ -44,21 +51,21 @@ plan:
       transactions:
         - contract-publish:
             contract-name: sip-010-trait
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
             cost: 100000
             path: contracts/traits/sip-010-trait.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: yield-source-v2
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
             cost: 100000
             path: contracts/traits/yield-source-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
             contract-name: yield-source-async-v1
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
             cost: 100000
             path: contracts/traits/yield-source-async-v1.clar
             anchor-block-only: true
@@ -68,7 +75,7 @@ plan:
       transactions:
         - contract-publish:
             contract-name: vault-v6
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
             cost: 400000
             path: contracts/vault-v6.clar
             anchor-block-only: true
@@ -78,16 +85,9 @@ plan:
       transactions:
         - contract-publish:
             contract-name: zest-earn-adapter
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
+            expected-sender: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
             cost: 200000
             path: contracts/adapters/zest-earn-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
-        - contract-publish:
-            contract-name: hermetica-hbtc-adapter
-            expected-sender: REPLACE_WITH_ASIGNA_MULTISIG
-            cost: 250000
-            path: contracts/adapters/hermetica-hbtc-adapter.clar
             anchor-block-only: true
             clarity-version: 3
       epoch: "3.2"

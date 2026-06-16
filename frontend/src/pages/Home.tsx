@@ -219,7 +219,7 @@ export function Home() {
             {
               n: "02",
               title: "See live rates",
-              desc: "SatoshiYield fetches real-time APY from 4 Stacks protocols and ranks them for you. We highlight the best.",
+              desc: "SatoshiYield fetches real-time APY from vetted Stacks protocols and ranks them for you. We highlight the best.",
               icon: (
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   <path d="M4 16l5-5 4 3 6-7" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -255,7 +255,7 @@ export function Home() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 26px", borderBottom: "1px solid var(--border)", flexWrap: "wrap", gap: 10 }}>
             <div>
               <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em" }}>Live rates right now</div>
-              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 3 }}>4 sBTC protocols on Stacks · refreshed every 5 min</div>
+              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 3 }}>Live sBTC yield on Stacks · refreshed every 5 min</div>
             </div>
             <LiveDot />
           </div>
@@ -292,7 +292,7 @@ export function Home() {
           <div style={{ padding: "16px 26px", display: "flex", justifyContent: "center" }}>
             <button onClick={() => navigate("/yields")}
               style={{ background: "var(--bg3)", border: "1px solid var(--border)", color: "var(--muted)", borderRadius: "var(--r)", fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 500, padding: "10px 22px", cursor: "pointer" }}>
-              See all 4 protocols →
+              See all yields →
             </button>
           </div>
         </div>
@@ -303,7 +303,7 @@ export function Home() {
         <div style={{ maxWidth: 920, margin: "0 auto", padding: "clamp(48px,6vw,64px) 24px" }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
             <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: ".14em", color: "var(--accent)", marginBottom: 10 }}>SUPPORTED PROTOCOLS</div>
-            <h2 style={{ fontSize: "clamp(24px,4vw,34px)", fontWeight: 700, letterSpacing: "-0.035em", margin: 0 }}>Four Stacks protocols, one vault</h2>
+            <h2 style={{ fontSize: "clamp(24px,4vw,34px)", fontWeight: 700, letterSpacing: "-0.035em", margin: 0 }}>Vetted Stacks protocols, one vault</h2>
             <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 10, maxWidth: 480, margin: "10px auto 0" }}>
               SatoshiYield routes through Clarity contracts deployed on Stacks mainnet.
               Pick one and switch anytime — no lock-ups.

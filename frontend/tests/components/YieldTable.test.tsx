@@ -28,15 +28,6 @@ const mockUseYields = vi.mocked(useYields);
 
 const FIXTURES: NormalizedYield[] = [
   {
-    protocol: "hbtc",
-    apy_percent: 8.0,
-    risk_level: "medium",
-    lock_period_days: 0,
-    reward_token: "sBTC",
-    tvl_usd: 12_000_000,
-    fetched_at: Date.now(),
-  },
-  {
     protocol: "zest",
     apy_percent: 3.4,
     risk_level: "low",
@@ -57,7 +48,7 @@ describe("YieldTable", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the two live tiles (Zest, Hermetica hBTC) and a coming-soon tile", () => {
+  it("renders Zest live tile and coming-soon tiles (Hermetica hBTC, Dual Stacking)", () => {
     mockUseYields.mockReturnValue({
       data: FIXTURES,
       isLoading: false,
@@ -67,12 +58,12 @@ describe("YieldTable", () => {
     render(<YieldTable />, { wrapper });
 
     expect(screen.getAllByText("Zest").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Hermetica hBTC").length).toBeGreaterThanOrEqual(1);
-    // The removed AMM/stub protocols must NOT be rendered.
+    // Removed protocols must NOT appear as live tiles.
     expect(screen.queryByText("ALEX Lab")).toBeNull();
     expect(screen.queryByText("Velar")).toBeNull();
     expect(screen.queryByText("Bitflow")).toBeNull();
-    // "More yields coming soon" tile (Dual Stacking) is shown.
+    // hBTC and Dual Stacking are coming-soon tiles.
+    expect(screen.getByText("Hermetica hBTC")).toBeInTheDocument();
     expect(screen.getByText("Dual Stacking (PoX)")).toBeInTheDocument();
   });
 

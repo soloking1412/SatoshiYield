@@ -67,7 +67,7 @@ export function Dashboard() {
             lineHeight: 1.8,
           }}
         >
-          4 protocols
+          Live rates
           <br />
           sorted by APY
         </div>
