@@ -86,7 +86,7 @@ export function Dashboard() {
           color: "var(--muted)",
         }}
       >
-        <strong style={{ color: "var(--neg)" }}>Audit-pending beta — deposit at your own risk.</strong>{" "}
+        <strong style={{ color: "var(--neg)" }}>Audit-pending.</strong>{" "}
         Zest is a lending market (principal-protected: you get your sBTC + interest back).
         Hermetica hBTC is a{" "}
         <strong style={{ color: "var(--text)" }}>

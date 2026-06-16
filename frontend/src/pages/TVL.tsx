@@ -108,9 +108,6 @@ export function TVL() {
   const tvlSatsAnimated = useCountUp(onChainSats, 1100, 150);
   const tvlUsdAnimated = useCountUp(indexerTvlUsd, 1100, 150);
 
-  const first = slice[0] ?? 0, last = slice[slice.length - 1] ?? 0;
-  const growthPct = first > 0 ? ((last - first) / first) * 100 : 0;
-
   const sorted = [...(yields ?? [])].sort((a, b) => b.tvl_usd - a.tvl_usd);
   const maxTvl = Math.max(...(yields ?? []).map(y => y.tvl_usd), 1);
 
@@ -132,13 +129,13 @@ export function TVL() {
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--muted)", letterSpacing: ".05em" }}>LIVE</span>
           </div>
         </div>
-        <p style={{ color: "var(--muted)", fontSize: 14, maxWidth: 520, margin: 0 }}>
-          Real-time sBTC deposited across SatoshiYield's vault-v6 on Stacks mainnet.
-          On-chain data read directly from{" "}
+        <p style={{ color: "var(--muted)", fontSize: 14, maxWidth: 560, margin: 0 }}>
+          Live total value locked in Zest Earn — the Stacks lending protocol SatoshiYield
+          routes your sBTC into. Your deposits are held non-custodially in{" "}
           <a href={explorerUrl(CONTRACTS.VAULT)} target="_blank" rel="noopener noreferrer"
             style={{ color: "var(--accent)", textDecoration: "none" }}>
             {CONTRACTS.VAULT.slice(0, 8)}…vault-v6 ↗
-          </a>
+          </a>.
         </p>
       </div>
 
@@ -146,28 +143,22 @@ export function TVL() {
       <div style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)", overflow: "hidden", boxShadow: "0 0 50px -16px var(--glow)", marginBottom: 24 }}>
         <div style={{ padding: "28px 28px 10px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
           <div>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--lo)", letterSpacing: ".12em", marginBottom: 8 }}>ON-CHAIN TVL</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--lo)", letterSpacing: ".12em", marginBottom: 8 }}>ZEST EARN · PROTOCOL TVL</div>
             {isLoading ? (
               <div style={{ fontSize: 48, fontWeight: 700, color: "var(--muted)", letterSpacing: "-0.04em", lineHeight: 1 }}>—</div>
             ) : (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+              <>
                 <div style={{ fontSize: "clamp(32px,6vw,52px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-                  {onChainSats > 0
-                    ? <>{satsToBtc(tvlSatsAnimated, 4)} <span style={{ fontSize: "0.45em", color: "var(--muted)", fontWeight: 500 }}>sBTC</span></>
-                    : formatTvl(tvlUsdAnimated)
-                  }
+                  {indexerTvlUsd > 0 ? formatTvl(tvlUsdAnimated) : "—"}
                 </div>
-                {growthPct > 0 && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 5, background: "var(--accent2D)", border: "1px solid color-mix(in oklch, var(--accent2) 30%, transparent)", borderRadius: "var(--r-pill)", padding: "4px 12px", whiteSpace: "nowrap" }}>
-                    <span style={{ color: "var(--pos)", fontSize: 14 }}>▲</span>
-                    <span style={{ color: "var(--pos)", fontWeight: 700, fontSize: 14 }}>+{growthPct.toFixed(1)}%</span>
-                    <span style={{ color: "var(--muted)", fontSize: 12 }}>· {range}</span>
-                  </div>
-                )}
-                {onChainSats > 0 && indexerTvlUsd > 0 && (
-                  <span style={{ fontSize: 14, color: "var(--muted)" }}>≈ {formatTvl(tvlUsdAnimated)}</span>
-                )}
-              </div>
+                <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 9.5, color: "var(--lo)", letterSpacing: ".08em" }}>VIA SATOSHIYIELD</span>
+                  <span style={{ color: "var(--text)", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                    {satsToBtc(tvlSatsAnimated, 4)} sBTC
+                  </span>
+                  {onChainSats === 0 && <span style={{ color: "var(--lo)" }}>· no deposits yet</span>}
+                </div>
+              </>
             )}
           </div>
           {/* range toggle */}
@@ -194,7 +185,7 @@ export function TVL() {
         </div>
         <div style={{ padding: "10px 28px 16px", display: "flex", alignItems: "center", gap: 8, borderTop: "1px solid var(--border)" }}>
           <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--lo)", letterSpacing: ".06em" }}>
-            Chart shows simulated growth trend ending at live on-chain TVL. Historical snapshots coming in v2.
+            Chart tracks SatoshiYield vault deposits — a simulated trend to the live on-chain total until historical snapshots land in v2.
           </span>
         </div>
       </div>
