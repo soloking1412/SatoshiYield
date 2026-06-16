@@ -1,4 +1,4 @@
-// Supports "mainnet" (production Asigna deployer, real sBTC) and
+// Supports "mainnet" (production single-key deployer, real sBTC) and
 // "testnet" (smoke-test, testnet deployer, mock-sbtc).
 // VITE_NETWORK is validated in lib/stacksClient.ts; this file mirrors it so
 // the contract addresses are always derived from the correct deployer.
@@ -12,7 +12,7 @@ if (network !== "mainnet" && network !== "testnet") {
 
 const isTestnet = network === "testnet";
 
-// Deployer: Asigna 2-of-3 multi-sig on mainnet; testnet dev wallet otherwise.
+// Deployer: single-key software wallet on mainnet; testnet dev wallet otherwise.
 const DEPLOYER_RAW = isTestnet
   ? import.meta.env.VITE_DEPLOYER_TESTNET
   : import.meta.env.VITE_DEPLOYER_MAINNET;
@@ -21,7 +21,7 @@ if (!DEPLOYER_RAW || DEPLOYER_RAW === "REPLACE_WITH_MAINNET_DEPLOYER") {
   throw new Error(
     isTestnet
       ? "VITE_DEPLOYER_TESTNET must be set to the testnet deployer address (ST...)."
-      : "VITE_DEPLOYER_MAINNET must be set to the mainnet deployer (Asigna multi-sig) address."
+      : "VITE_DEPLOYER_MAINNET must be set to the mainnet deployer address."
   );
 }
 

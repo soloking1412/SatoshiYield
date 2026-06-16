@@ -23,7 +23,7 @@ if (network !== "mainnet") {
 
 if (!deployer || deployer === "REPLACE_WITH_MAINNET_DEPLOYER") {
   errors.push(
-    `VITE_DEPLOYER_MAINNET must be the Asigna multi-sig address (got ${JSON.stringify(deployer)}).`
+    `VITE_DEPLOYER_MAINNET must be the mainnet deployer address (got ${JSON.stringify(deployer)}).`
   );
 } else if (!/^SP[A-Z0-9]{38,39}$/.test(deployer)) {
   errors.push(

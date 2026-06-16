@@ -1,13 +1,35 @@
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { SBTC_BRIDGE_URL, SBTC_BRIDGE_DOMAIN } from "../../constants/links.js";
 
 /**
  * Onboarding helper for visitors who don't yet hold sBTC. We are non-custodial
  * and never bridge/swap funds ourselves — this just points users at the official
  * Stacks bridge (BTC -> sBTC) and explains the path. Opens in a new tab.
+ *
+ * Rendered via a portal to document.body: this modal is triggered from inside the
+ * Header, whose `backdrop-filter` makes it the containing block for any fixed
+ * descendant — without the portal, `inset: 0` resolves to the 60px nav (the modal
+ * gets clipped to the top), not the viewport.
  */
 export function GetSbtcModal({ onClose }: { onClose: () => void }) {
-  return (
+  // Close on Escape and lock background scroll while the modal is open.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return createPortal(
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Get sBTC"
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{
         position: "fixed",
@@ -89,6 +111,7 @@ export function GetSbtcModal({ onClose }: { onClose: () => void }) {
           Stacks DEX. Bridging needs a connected Stacks wallet (Xverse or Leather).
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

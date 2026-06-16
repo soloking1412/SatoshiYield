@@ -42,8 +42,6 @@ interface WalletState {
   connect: (walletId: WalletId) => Promise<void>;
   disconnect: () => void;
   callContract: (options: ContractCallOptions) => Promise<string>;
-  /** TEMP one-time Clarity-version-selectable deploy (remove after launch). */
-  deployContract: (name: string, clarityCode: string, clarityVersion: number) => Promise<string>;
 }
 
 const WalletContext = createContext<WalletState | null>(null);
@@ -293,44 +291,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  // TEMP: one-time wallet-signed contract deploy with an explicit Clarity version.
-  // Powers the /deploy panel to publish vault-v6 + zest-earn-adapter as Clarity 3
-  // (the Sandbox is C4-only). Remove this, the /deploy route, src/_deploy, and
-  // public/_contracts after launch. Key never leaves the wallet.
-  const deployContract = useCallback(
-    async (name: string, clarityCode: string, clarityVersion: number): Promise<string> => {
-      if (connectorRef.current === "leather") {
-        const provider = leatherProvider();
-        if (!provider) {
-          throw new Error("Leather wallet unavailable — reconnect your wallet.");
-        }
-        const res = await stacksRequest(
-          { provider: provider as never },
-          "stx_deployContract",
-          { name, clarityCode, clarityVersion, network: networkName }
-        );
-        const txid = (res as { txid?: unknown }).txid;
-        if (typeof txid !== "string" || txid.length === 0) {
-          throw new Error("Wallet returned no transaction id");
-        }
-        return txid;
-      }
-      const res = await Wallet.request("stx_deployContract", {
-        name,
-        clarityCode,
-        clarityVersion,
-      });
-      if (res.status === "error") {
-        throw new Error(res.error?.message ?? "Wallet rejected the transaction");
-      }
-      if (!res.result?.txid) {
-        throw new Error("Wallet returned no transaction id");
-      }
-      return res.result.txid;
-    },
-    []
-  );
-
   return (
     <WalletContext.Provider
       value={{
@@ -341,7 +301,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         connect: handleConnect,
         disconnect: handleDisconnect,
         callContract,
-        deployContract,
       }}
     >
       {children}
