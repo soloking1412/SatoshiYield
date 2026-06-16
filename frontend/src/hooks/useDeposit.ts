@@ -6,8 +6,12 @@ import { CONTRACTS } from "../constants/contracts.js";
 import { PROTOCOLS } from "../constants/protocols.js";
 import type { ProtocolId } from "../types/yield.js";
 
-// Mainnet sBTC fungible-token name (SM3K…sbtc-token defines "sbtc").
-const SBTC_ASSET_NAME = "sbtc";
+// Mainnet sBTC fungible-token name — SM3K…sbtc-token's `define-fungible-token`
+// identifier is literally "sbtc-token", not "sbtc" (that's just the contract
+// name / SIP-010 display name). Post-conditions are scoped to this exact
+// (contract, asset-name) pair, so getting this wrong silently makes the
+// post-condition watch an asset that never moves, aborting every deposit.
+const SBTC_ASSET_NAME = "sbtc-token";
 
 export function useDeposit() {
   const { callContract, address } = useWallet();

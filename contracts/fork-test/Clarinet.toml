@@ -1,6 +1,6 @@
 [project]
 name = "hbtc-fork-test"
-description = "Mainnet-fork validation of the real Hermetica hBTC flow"
+description = "Mainnet-fork validation of the real Hermetica hBTC + Zest flows"
 authors = []
 telemetry = false
 cache_dir = "./.cache"
@@ -9,11 +9,38 @@ cache_dir = "./.cache"
 contract_id = "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
 [[project.requirements]]
 contract_id = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"
+[[project.requirements]]
+contract_id = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc"
+
+[contracts.sip-010-trait]
+path = "../contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source-v2]
+path = "../contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source-async-v1]
+path = "../contracts/traits/yield-source-async-v1.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault-v6]
+path = "../contracts/vault-v6.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-earn-adapter]
+path = "../contracts/adapters/zest-earn-adapter.clar"
+clarity_version = 3
+epoch = "latest"
 
 [repl.remote_data]
 enabled = true
 api_url = "https://api.hiro.so"
-initial_height = 8244077
+initial_height = 8304646
 
 [repl.settings]
 initial_epoch = "3.2"
