@@ -86,15 +86,13 @@ export function Dashboard() {
           color: "var(--muted)",
         }}
       >
-        <strong style={{ color: "var(--neg)" }}>Audit-pending.</strong>{" "}
+        <strong style={{ color: "var(--neg)" }}>Audit-Ongoing.</strong>{" "}
         Zest is a lending market (principal-protected: you get your sBTC + interest back).
-        Hermetica hBTC is a{" "}
+        As we are currently in the beta phase, you may encounter bugs, UI issues, or unexpected behavior. If you find any issues, please report them to 
         <strong style={{ color: "var(--text)" }}>
-          managed strategy (not principal-guaranteed)
+          support@satoshiyields.com
         </strong>{" "}
-        — a small exit fee applies, withdrawals are funded by Hermetica after a cooldown, and a
-        redemption can return less sBTC than you deposited. The vault and adapters are not yet
-        externally audited. Only deposit what you can afford to lose.
+        with relevant details, screenshots, or steps to reproduce the problem.
       </div>
 
       <YieldTable />
