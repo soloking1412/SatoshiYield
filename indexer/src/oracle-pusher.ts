@@ -116,15 +116,30 @@ export async function pushAllAdapters(
 ): Promise<PushResult[]> {
   const names = (Object.keys(ADAPTER_REGISTRY) as ProtocolId[]).map(adapterName);
 
-  const nonce1 = await fetchNonce(DEPLOYER);
+  // Each oracle's nonce MUST come from its own account. ORACLE_KEY is a
+  // standalone oracle wallet (NOT the deployer — the deployer key never lives
+  // here), so resolve its address and read its own nonce. Falling back to
+  // DEPLOYER would sign with a foreign (too-high) nonce, leaving the tx stuck
+  // in the mempool forever and starving 2-of-3 consensus.
+  const network = IS_MAINNET ? ("mainnet" as const) : ("testnet" as const);
+  const { getAddressFromPrivateKey } = await import("@stacks/transactions");
+
+  let addr1 = DEPLOYER;
+  if (ORACLE_KEY) {
+    try {
+      addr1 = getAddressFromPrivateKey(ORACLE_KEY, network);
+    } catch {
+      console.warn("[oracle] could not resolve oracle-1 address — falling back to DEPLOYER nonce");
+    }
+  }
+  const nonce1 = await fetchNonce(addr1);
   let n1 = nonce1;
 
   let n2 = 0;
   let addr2 = "";
   if (ORACLE_KEY_2) {
     try {
-      const { getAddressFromPrivateKey } = await import("@stacks/transactions");
-      addr2 = getAddressFromPrivateKey(ORACLE_KEY_2, IS_MAINNET ? "mainnet" : "testnet");
+      addr2 = getAddressFromPrivateKey(ORACLE_KEY_2, network);
       n2    = await fetchNonce(addr2);
     } catch {
       console.warn("[oracle] could not resolve oracle-2 address — skipping second oracle");
