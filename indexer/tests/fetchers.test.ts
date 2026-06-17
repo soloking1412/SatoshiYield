@@ -72,4 +72,31 @@ describe("fetchZest (sync lending)", () => {
     );
     expect((await fetchZest()).apy_stale).toBe(true);
   });
+
+  it("does NOT false-flag stale on immaterial low-APY divergence (regression)", async () => {
+    // Live mainnet bug: on-chain APY is low (17 bps) and the freshly-recomputed
+    // native realized APY is a hair higher (~30 bps). That is a >50% deviation but
+    // only ~0.13% apart — immaterial — and must NOT be flagged stale (a false flag
+    // here greys out the whole yields table via YieldTable `allStale`).
+    server.use(
+      chainHandler("zest-earn-adapter", "get-apy", 17),
+      sharePriceHandler(1.003) // vs a 1.0 anchor ~1yr old -> ~0.3% realized APY (~30 bps)
+    );
+    __setHistory([{ t: Date.now() - 365 * 24 * 60 * 60 * 1000, p: 1.0 }]);
+    const y = await fetchZest();
+    expect(y.is_live_integration).toBe(true);
+    expect(y.apy_stale).toBe(false);
+    expect(y.apy_percent).toBe(0.17);
+  });
+
+  it("still flags stale on a MATERIAL on-chain/native divergence (broken oracle)", async () => {
+    // Guard preserved: on-chain 50 bps vs native ~8% (800 bps) is a real, material
+    // divergence (>= 100 bps gap AND > 50%) -> flagged so the UI can warn.
+    server.use(
+      chainHandler("zest-earn-adapter", "get-apy", 50),
+      sharePriceHandler(1.08) // vs a 1.0 anchor ~1yr old -> ~8% realized APY (~800 bps)
+    );
+    __setHistory([{ t: Date.now() - 365 * 24 * 60 * 60 * 1000, p: 1.0 }]);
+    expect((await fetchZest()).apy_stale).toBe(true);
+  });
 });

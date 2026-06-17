@@ -36,12 +36,29 @@ export async function buildYield(
 
   const is_live_integration = entry.hasLiveApy && nativeApy !== null;
 
+  // Cross-source sanity guard: flag stale only when the on-chain (oracle-pushed)
+  // APY MATERIALLY diverges from the live native feed. A percentage-only check
+  // false-positives at low APY — e.g. 17 vs 30 bps reads as "76% deviation" but
+  // is only 0.13% apart, immaterial to users — and the on-chain value legitimately
+  // lags the native feed because the oracle steps <=40%/cycle (oracle-pusher
+  // nextBps). That false "stale" then greys out the whole table (YieldTable
+  // `allStale`). Require BOTH a >50% deviation AND a >=100 bps (1% APY) absolute
+  // gap, so a genuinely broken/diverged oracle (e.g. 0.5% on-chain vs 8% native)
+  // still trips while normal low-rate jitter never does. True on-chain staleness
+  // (get-apy returns err once past the staleness window) is handled by
+  // `state.isStale` above and is unaffected.
+  const MIN_MATERIAL_DEVIATION_BPS = 100;
+
   let apy_stale = state.isStale;
   if (!apy_stale && is_live_integration) {
-    if (exceedsDeviation(state.apyBps, nativeApy! * 100, 50)) {
+    const nativeBps = nativeApy! * 100;
+    if (
+      exceedsDeviation(state.apyBps, nativeBps, 50) &&
+      Math.abs(state.apyBps - nativeBps) >= MIN_MATERIAL_DEVIATION_BPS
+    ) {
       console.warn(
         `[${protocol}] cross-source APY deviation: on-chain=${state.apyBps}bps ` +
-          `native=${Math.round(nativeApy! * 100)}bps`
+          `native=${Math.round(nativeBps)}bps`
       );
       apy_stale = true;
     }
