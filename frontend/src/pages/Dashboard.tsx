@@ -86,13 +86,13 @@ export function Dashboard() {
           color: "var(--muted)",
         }}
       >
-        <strong style={{ color: "var(--neg)" }}>Audit-Ongoing.</strong>{" "}
+        {/* <strong style={{ color: "var(--neg)" }}>Audit-Ongoing.</strong>{" "}
         Zest is a lending market (principal-protected: you get your sBTC + interest back).
         As we are currently in the beta phase, you may encounter bugs, UI issues, or unexpected behavior. If you find any issues, please report them to 
         <strong style={{ color: "var(--text)" }}>
           support@satoshiyields.com
         </strong>{" "}
-        with relevant details, screenshots, or steps to reproduce the problem.
+        with relevant details, screenshots, or steps to reproduce the problem. */}
       </div>
 
       <YieldTable />
