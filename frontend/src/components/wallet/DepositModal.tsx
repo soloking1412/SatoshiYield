@@ -6,6 +6,7 @@ import { useBalance } from "../../hooks/useBalance.js";
 import { usePositions } from "../../hooks/usePositions.js";
 import { useHbtcCapacity } from "../../hooks/useHbtcCapacity.js";
 import { SBTC_BRIDGE_URL } from "../../constants/links.js";
+import { formatApy } from "../../lib/format.js";
 import { networkName } from "../../lib/stacksClient.js";
 
 function PIcon({ abbr, color, size = 38 }: { abbr: string; color: string; size?: number }) {
@@ -209,8 +210,8 @@ export function DepositModal({ data, onClose }: Props) {
           </div>
           <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 24 }}>
             {meta.kind === "lending"
-              ? `Earning ~${data.apy_percent.toFixed(1)}% APY · real sBTC yield via ${meta.name} lending.`
-              : `Earning ~${data.apy_percent.toFixed(1)}% target · ${meta.name} managed strategy. Withdrawals are processed in two steps.`}
+              ? `Earning ~${formatApy(data.apy_percent)}% APY · real sBTC yield via ${meta.name} lending.`
+              : `Earning ~${formatApy(data.apy_percent)}% target · ${meta.name} managed strategy. Withdrawals are processed in two steps.`}
           </div>
           {deposit.data && (
             <div
@@ -303,7 +304,7 @@ export function DepositModal({ data, onClose }: Props) {
           {[
             ["Protocol", <div style={{ display: "flex", alignItems: "center", gap: 8 }}><PIcon abbr={meta.abbr} color={meta.color} size={22} /><span style={{ fontWeight: 600 }}>{meta.name}</span></div>],
             ["Amount",   <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>{amount} sBTC</span>],
-            ["Market APY", <span style={{ color: "var(--pos)", fontWeight: 700 }}>{data.apy_percent.toFixed(1)}%</span>],
+            ["Market APY", <span style={{ color: "var(--pos)", fontWeight: 700 }}>{formatApy(data.apy_percent)}%</span>],
             ["At market rate / yr", <span style={{ color: "var(--pos)" }}>~{yearly} sBTC</span>],
             ["Risk",     <RiskBadgeInline risk={data.risk_level} />],
           ].map(([k, v], i) => (
@@ -413,7 +414,7 @@ export function DepositModal({ data, onClose }: Props) {
           <div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>Deposit to {meta.name}</div>
             <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
-              {data.apy_percent.toFixed(1)}% APY · sBTC reward
+              {formatApy(data.apy_percent)}% APY · sBTC reward
             </div>
           </div>
         </div>

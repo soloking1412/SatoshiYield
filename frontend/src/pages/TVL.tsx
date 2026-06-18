@@ -5,6 +5,7 @@ import { useCountUp } from "../hooks/useCountUp.js";
 import { MarkSC } from "../components/shared/MarkSC.js";
 import { PROTOCOLS } from "../constants/protocols.js";
 import { CONTRACTS } from "../constants/contracts.js";
+import { formatApy } from "../lib/format.js";
 
 /* ── helpers ──────────────────────────────────────────── */
 
@@ -261,7 +262,7 @@ export function TVL() {
                   <div style={{ width: 36, height: 36, borderRadius: "50%", background: meta.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{meta.abbr}</div>
                   <div style={{ minWidth: 90 }}>
                     <div style={{ fontWeight: 600, fontSize: 14 }}>{meta.name}</div>
-                    <div style={{ fontSize: 11, color: "var(--pos)", marginTop: 2 }}>{y.apy_percent.toFixed(1)}% APY</div>
+                    <div style={{ fontSize: 11, color: "var(--pos)", marginTop: 2 }}>{formatApy(y.apy_percent)}% APY</div>
                   </div>
                   <div style={{ flex: 1, height: 10, background: "var(--bg3)", borderRadius: "var(--r-pill)", overflow: "hidden", minWidth: 60 }}>
                     <div style={{ height: "100%", width: `${(y.tvl_usd / maxTvl) * 100}%`, background: "linear-gradient(90deg, var(--accentB), var(--accent))", borderRadius: "var(--r-pill)", transformOrigin: "left", animation: `growBar .9s ${i * 0.1}s cubic-bezier(.6,.05,.2,1) both` }}/>

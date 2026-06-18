@@ -8,6 +8,7 @@ import {
 } from "../../hooks/useAsyncWithdraw.js";
 import { useYields } from "../../hooks/useYields.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
+import { formatApy } from "../../lib/format.js";
 
 function formatSats(sats: bigint): string {
   return (Number(sats) / 1e8).toFixed(6);
@@ -114,7 +115,7 @@ export function PositionCard({ position }: { position: UserPosition }) {
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4">
         {[
-          ["APY",    apy ? `${apy.toFixed(1)}%` : "—",  "var(--pos)", "border-r border-b sm:border-b-0 [border-color:var(--border)]"],
+          ["APY",    apy ? `${formatApy(apy)}%` : "—",  "var(--pos)", "border-r border-b sm:border-b-0 [border-color:var(--border)]"],
           ["REALIZED", `+${earned.toFixed(6)} sBTC`,     "var(--pos)", "border-b sm:border-r sm:border-b-0 [border-color:var(--border)]"],
           ["RISK",   riskLabel,                          riskColor,      "border-r [border-color:var(--border)]"],
           ["TVL",    formatTvl(tvl),                     "var(--text)",  ""],

@@ -6,6 +6,7 @@ import { useYields } from "../hooks/useYields.js";
 import { useVaultStats } from "../hooks/useVaultStats.js";
 import { useCountUp } from "../hooks/useCountUp.js";
 import { MarkSC } from "../components/shared/MarkSC.js";
+import { formatApy } from "../lib/format.js";
 import { PROTOCOLS } from "../constants/protocols.js";
 import type { RiskLevel } from "../types/yield.js";
 
@@ -122,7 +123,7 @@ export function Home() {
   const ctaLabel = isConnected ? "View live yields →" : "Start earning →";
 
   const stats: [string, string | null, string][] = [
-    ["Best APY right now",  best ? `${best.apy_percent.toFixed(1)}%` : null, "var(--pos)"],
+    ["Best APY right now",  best ? `${formatApy(best.apy_percent)}%` : null, "var(--pos)"],
     ["Total value locked",  totalTvlUsd > 0 ? formatTvl(totalTvlUsdAnimated) : null, "var(--text)"],
     ["Protocols tracked",   "2",          "var(--text)"],
     [`Fee (yield only)`,    `${feePct}%`, "var(--accent2)"],
@@ -143,7 +144,7 @@ export function Home() {
                 <div style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--pos)", animation: "pulseDot 1.8s ease-in-out infinite" }} />
                 <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: ".04em", color: "var(--muted)" }}>
                   Best rate today:{" "}
-                  <strong style={{ color: "var(--pos)" }}>{best.apy_percent.toFixed(1)}% APY</strong>{" "}
+                  <strong style={{ color: "var(--pos)" }}>{formatApy(best.apy_percent)}% APY</strong>{" "}
                   on {PROTOCOLS[best.protocol].name}
                 </span>
               </div>
@@ -281,7 +282,7 @@ export function Home() {
                   </div>
                   <div className="hidden sm:block"><Sparkline apy={y.apy_percent} /></div>
                   <div style={{ textAlign: "right", minWidth: 64 }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: "var(--pos)", lineHeight: 1 }}>{y.apy_percent.toFixed(1)}%</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: "var(--pos)", lineHeight: 1 }}>{formatApy(y.apy_percent)}%</div>
                     <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, color: "var(--muted)", marginTop: 3, letterSpacing: ".06em" }}>APY</div>
                   </div>
                 </div>
@@ -324,7 +325,7 @@ export function Home() {
                     <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.55, marginBottom: 10 }}>{detail.desc}</div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                       <RiskPill level={y.risk_level} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "var(--pos)" }}>{y.apy_percent.toFixed(1)}% APY</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "var(--pos)" }}>{formatApy(y.apy_percent)}% APY</span>
                       {y.tvl_usd > 0 && <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--lo)" }}>{formatTvl(y.tvl_usd)} TVL</span>}
                     </div>
                   </div>
@@ -384,7 +385,7 @@ export function Home() {
         </div>
 
         {/* audit-pending disclosure */}
-        <div style={{ marginTop: 16, display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: "var(--r)", background: "color-mix(in oklch, var(--warn) 7%, transparent)", border: "1px solid color-mix(in oklch, var(--warn) 25%, transparent)" }}>
+        {/* <div style={{ marginTop: 16, display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: "var(--r)", background: "color-mix(in oklch, var(--warn) 7%, transparent)", border: "1px solid color-mix(in oklch, var(--warn) 25%, transparent)" }}>
           <span style={{ fontSize: 14, marginTop: 1, flexShrink: 0 }}>⚠️</span>
           <span style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>
             <strong style={{ color: "var(--warn)" }}>Audit pending.</strong>{" "}
@@ -393,7 +394,7 @@ export function Home() {
             a small exit fee applies, withdrawals are funded by Hermetica after a cooldown, and a redemption may
             return <em>less</em> sBTC than deposited. Only deposit what you can afford to lose.
           </span>
-        </div>
+        </div> */}
       </section>
 
       {/* ── FINAL CTA ───────────────────────────────────── */}
@@ -404,7 +405,7 @@ export function Home() {
           </div>
           <h2 style={{ fontSize: "clamp(28px,5vw,42px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 16 }}>
             Your sBTC could be earning{" "}
-            <span style={{ color: "var(--pos)" }}>{best ? `${best.apy_percent.toFixed(1)}%` : "yield"}</span>{" "}
+            <span style={{ color: "var(--pos)" }}>{best ? `${formatApy(best.apy_percent)}%` : "yield"}</span>{" "}
             today.
           </h2>
           <p style={{ fontSize: 16, color: "var(--muted)", maxWidth: 440, margin: "0 auto 30px", lineHeight: 1.6 }}>

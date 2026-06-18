@@ -6,6 +6,7 @@ import { useWallet } from "../../context/WalletContext.js";
 import { useConnectModal } from "../../context/ConnectModalContext.js";
 import { DepositModal } from "../wallet/DepositModal.js";
 import { useCountUp } from "../../hooks/useCountUp.js";
+import { apyDecimals } from "../../lib/format.js";
 
 function formatTvl(usd: number): string {
   if (usd >= 1_000_000) return `$${(usd / 1_000_000).toFixed(1)}M`;
@@ -99,6 +100,10 @@ function ApyNum({
   label?: string;
 }) {
   const val = useCountUp(apy, 900, delay);
+  // Decimals come from the target `apy` (stable) so the count-up animates cleanly;
+  // a tiny-but-real rate (e.g. 0.03%) shows honestly instead of as "0.0%".
+  const display =
+    apy <= 0 ? "0" : apy < 0.01 ? "<0.01" : val.toFixed(apyDecimals(apy));
   return (
     <div style={{ minWidth: 76 }}>
       <div
@@ -111,7 +116,7 @@ function ApyNum({
           fontVariantNumeric: "tabular-nums",
         }}
       >
-        {val.toFixed(1)}%
+        {display}%
       </div>
       <div
         style={{

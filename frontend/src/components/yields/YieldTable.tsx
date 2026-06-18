@@ -3,6 +3,7 @@ import { useYields } from "../../hooks/useYields.js";
 import { YieldRow } from "./YieldRow.js";
 import { MarkSC } from "../shared/MarkSC.js";
 import { PROTOCOLS, COMING_SOON } from "../../constants/protocols.js";
+import { formatApy } from "../../lib/format.js";
 
 export function YieldTable() {
   const { data, isLoading, isError } = useYields();
@@ -167,7 +168,7 @@ export function YieldTable() {
               whiteSpace: "nowrap",
             }}
           >
-            {top.apy_percent.toFixed(1)}% APY
+            {formatApy(top.apy_percent)}% APY
           </span>
         </div>
       )}
