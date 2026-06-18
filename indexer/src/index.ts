@@ -5,6 +5,7 @@ import { yieldsRouter } from "./routes/yields.js";
 import { healthRouter } from "./routes/health.js";
 import { faucetRouter } from "./routes/faucet.js";
 import { startOracleScheduler } from "./oracle-pusher.js";
+import { galxeRouter } from "./routes/galxe.js";
 
 /**
  * Validate environment at startup: print the network banner, warn on missing
@@ -123,6 +124,7 @@ setInterval(() => {
 app.use("/api/yields", yieldsRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/faucet", faucetRouter);
+app.use("/api/galxe", galxeRouter);
 
 // --- Global error handler: never leak stack traces ---
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
