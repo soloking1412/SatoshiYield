@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { getAddressFromPrivateKey } from "@stacks/transactions";
+import {
+  getAddressFromPrivateKey,
+  serializeCV,
+  tupleCV,
+  uintCV,
+  boolCV,
+  someCV,
+  contractPrincipalCV,
+} from "@stacks/transactions";
 
 // Must match vitest.config.ts env
 const DEPLOYER = "SP000000000000000000002AMW42H";
@@ -23,64 +31,29 @@ function positionUrl(): string {
 }
 
 /**
- * Build a minimal `(some { ... })` hex stub. We only need the first byte to
- * be 0a (some) for the eligibility check and a syntactically valid tuple body
- * for the decodePrincipalAmount helper. This mirrors what the Stacks API
- * returns for a real position.
- *
- * Layout (binary, then hex):
- *   0a        – (some)
- *   0c        – tuple
- *   00000006  – 6 fields
- *   07 "adapter" 05 01 <20 zero bytes>  – principal (type 05, version 01)
- *   08 "claim-id" 01 <16 zero bytes>    – uint
- *   0c "deposited-at" 01 <16 zero bytes>
- *   08 "is-async" 03                    – bool false
- *   10 "principal-amount" 01 <15 zero bytes + amount byte>
- *   06 "status" 01 <16 zero bytes>
+ * Build a real `(some { ... })` position serialization using the Stacks lib —
+ * matching vault-v6's user-position tuple shape exactly (the adapter is a
+ * CONTRACT principal, mirroring SP....zest-earn-adapter on mainnet).
  */
+// A valid mainnet principal for the adapter contract in the position tuple.
+// (The synthetic DEPLOYER burn address fails c32 validation in contractPrincipalCV.)
+const ADAPTER_OWNER = getAddressFromPrivateKey(
+  "0303030303030303030303030303030303030303030303030303030303030303",
+  "mainnet"
+);
+
 function somePosition(sats: number): string {
-  const b: number[] = [];
-  const push = (...bytes: number[]) => b.push(...bytes);
-  const pushStr = (s: string) => push(s.length, ...Array.from(s).map((c) => c.charCodeAt(0)));
-  const uint128 = (n: number) => {
-    const arr = new Array(16).fill(0);
-    arr[15] = n & 0xff;
-    arr[14] = (n >> 8) & 0xff;
-    arr[13] = (n >> 16) & 0xff;
-    arr[12] = (n >> 24) & 0xff;
-    return arr;
-  };
-
-  push(0x0a);         // (some)
-  push(0x0c);         // tuple
-  push(0, 0, 0, 6);  // 6 fields
-
-  // Field 1: adapter (principal)
-  pushStr("adapter");
-  push(0x05, 0x01, ...new Array(20).fill(0));
-
-  // Field 2: claim-id (uint)
-  pushStr("claim-id");
-  push(0x01, ...uint128(0));
-
-  // Field 3: deposited-at (uint)
-  pushStr("deposited-at");
-  push(0x01, ...uint128(0));
-
-  // Field 4: is-async (bool false)
-  pushStr("is-async");
-  push(0x03);
-
-  // Field 5: principal-amount (uint) — the value we want
-  pushStr("principal-amount");
-  push(0x01, ...uint128(sats));
-
-  // Field 6: status (uint)
-  pushStr("status");
-  push(0x01, ...uint128(1));
-
-  return "0x" + b.map((x) => x.toString(16).padStart(2, "0")).join("");
+  const cv = someCV(
+    tupleCV({
+      adapter: contractPrincipalCV(ADAPTER_OWNER, "zest-earn-adapter"),
+      "claim-id": uintCV(0),
+      "deposited-at": uintCV(8_304_829),
+      "is-async": boolCV(false),
+      "principal-amount": uintCV(sats),
+      status: uintCV(0),
+    })
+  );
+  return "0x" + serializeCV(cv);
 }
 
 /** `none` — address has no position */
