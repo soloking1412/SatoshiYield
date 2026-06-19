@@ -3,7 +3,7 @@ import {
   broadcastTransaction,
   uintCV,
 } from "@stacks/transactions";
-import { readUint, exceedsDeviation } from "./fetchers/chain.js";
+import { readAnchorApyBps, exceedsDeviation } from "./fetchers/chain.js";
 import { ADAPTER_REGISTRY, adapterName, type ProtocolId } from "./registry.js";
 
 const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]     ?? "";
@@ -65,12 +65,10 @@ export async function pushApy(
     return { adapter: contractName, pushed: false, reason: "missing_env" };
   }
 
-  let currentBps = 0;
-  try {
-    currentBps = await readUint(contractName, "get-apy");
-  } catch {
-    currentBps = 0;
-  }
+  // Anchor must be the REAL committed value (stale-tolerant), not get-apy —
+  // which errors when stale and would let a push that the on-chain deviation
+  // guard rejects (err u109) slip through, wasting a tx and staying stale.
+  const currentBps = (await readAnchorApyBps(contractName)) ?? 0;
 
   if (currentBps > 0 && exceedsDeviation(newBps, currentBps, 50)) {
     console.error(
@@ -180,17 +178,23 @@ async function buildBpsMap(): Promise<Record<string, number>> {
     const entry = ADAPTER_REGISTRY[protocol];
     const name  = adapterName(protocol);
 
-    const [nativeResult, currentResult] = await Promise.allSettled([
+    // `anchor` is the REAL committed APY even when stale (reconstructed from
+    // oracle reports). Using get-apy here was the stale-trap bug: a stale read
+    // returned 0, so a native outage jumped `target` to referenceBps and the
+    // on-chain deviation guard aborted every push (err u109) — stale forever.
+    const [nativeResult, anchorResult] = await Promise.allSettled([
       entry.fetchNativeApy(),
-      readUint(name, "get-apy"),
+      readAnchorApyBps(name),
     ]);
 
-    const native  = nativeResult.status  === "fulfilled" ? nativeResult.value  : null;
-    const current = currentResult.status === "fulfilled" ? currentResult.value : 0;
+    const native  = nativeResult.status === "fulfilled" ? nativeResult.value : null;
+    const anchor  = anchorResult.status === "fulfilled" ? anchorResult.value : null;
+    const current = anchor ?? 0;
 
-    // Use live native APY when available; otherwise hold the last-known on-chain
-    // value (prevents drift during a transient upstream outage); bootstrap to the
-    // reference rate only when nothing is on-chain yet.
+    // Use live native APY when available; otherwise HOLD the real anchor (this
+    // re-pushes the existing value, refreshing the staleness timestamp without
+    // tripping the deviation guard); bootstrap to the reference rate only when
+    // nothing at all is on-chain yet.
     let target: number;
     if (native !== null) {
       target = Math.round(native * 100);

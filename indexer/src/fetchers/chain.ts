@@ -3,6 +3,7 @@
  * Config is fully driven by environment variables. There are no fallbacks
  * to testnet — running this without explicit env vars is always a misconfig.
  */
+import { serializeCV, deserializeCV, uintCV } from "@stacks/transactions";
 
 const STACKS_API = process.env["STACKS_API_URL"];
 const DEPLOYER = process.env["DEPLOYER_ADDRESS"];
@@ -190,4 +191,91 @@ export function exceedsDeviation(
 ): boolean {
   if (currentBps === 0) return false;
   return (Math.abs(newBps - currentBps) / currentBps) * 100 > maxPct;
+}
+
+// Consensus tolerance the adapter uses to agree two oracle reports (CONSENSUS-TOL-PCT).
+const CONSENSUS_TOL_PCT = 10;
+
+interface OracleReport {
+  idx: number;
+  bps: number;
+  block: number;
+}
+
+/** Read one oracle slot's last report: (ok { bps, block }). Null on any error. */
+async function readOracleReport(
+  contractName: string,
+  idx: number
+): Promise<OracleReport | null> {
+  assertSafeName(contractName, "contractName");
+  const arg = "0x" + serializeCV(uintCV(idx));
+  const url = `${STACKS_API}/v2/contracts/call-read/${DEPLOYER}/${contractName}/get-oracle-report`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: DEPLOYER, arguments: [arg] }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { okay: boolean; result: string };
+    if (!json.okay) return null;
+    const cv = deserializeCV(json.result);
+    // (ok { bps, block }) -> unwrap response, then tuple
+    if (cv.type !== "ok") return null;
+    const tuple = cv.value;
+    if (tuple.type !== "tuple") return null;
+    const fields = tuple.value as Record<string, { value: bigint } | undefined>;
+    const bps = Number(fields["bps"]?.value ?? 0n);
+    const block = Number(fields["block"]?.value ?? 0n);
+    return { idx, bps, block };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns the adapter's real committed APY anchor in bps — even when the oracle
+ * is STALE (get-apy returns err). The on-chain deviation guard compares any new
+ * report against the live `current-apy-bps` var (not get-apy), so the pusher
+ * MUST know that real value to stay inside the guard; otherwise a stale read
+ * (current=0) makes it jump to the bootstrap reference and the contract aborts
+ * every push (err u109), trapping the APY stale forever.
+ *
+ * Fresh path: get-apy succeeds -> that's the anchor.
+ * Stale path: reconstruct from the oracle reports the same way the contract
+ * commits — the average of a consensus pair (within CONSENSUS-TOL-PCT), else
+ * the most recently reported value. Returns null when nothing is on-chain yet.
+ */
+export async function readAnchorApyBps(
+  contractName: string
+): Promise<number | null> {
+  try {
+    return await readUint(contractName, "get-apy");
+  } catch {
+    // stale — fall through and reconstruct from reports
+  }
+
+  const raw = await Promise.all(
+    [0, 1, 2].map((i) => readOracleReport(contractName, i))
+  );
+  const reports = raw.filter(
+    (r): r is OracleReport => r !== null && r.block > 0 && r.bps > 0
+  );
+  if (reports.length === 0) return null;
+
+  // Mirror try-commit-consensus: average of the first pair within tolerance.
+  for (let i = 0; i < reports.length; i++) {
+    for (let j = i + 1; j < reports.length; j++) {
+      const a = reports[i]!.bps;
+      const b = reports[j]!.bps;
+      if (b > 0 && Math.abs(a - b) * 100 <= CONSENSUS_TOL_PCT * b) {
+        return Math.floor((a + b) / 2);
+      }
+    }
+  }
+
+  // No consensus pair — anchor to the most recent report.
+  reports.sort((x, y) => y.block - x.block);
+  return reports[0]!.bps;
 }
