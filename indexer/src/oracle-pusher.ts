@@ -18,6 +18,17 @@ const STACKS_API_BASE = IS_MAINNET
 // on-chain deviation guard so a push is never rejected for over-deviating.
 const MAX_STEP_PCT = 0.4;
 
+// Conservative gas cost of one `set-apy` tx per oracle wallet, in µSTX. Observed
+// fee is ~2,140 µSTX; padded up so runway is never over-estimated. Each wallet
+// signs one tx per registered adapter per cycle.
+const PER_PUSH_USTX = 3_000;
+
+// A wallet is "low gas" once it can't cover this many more cycles. At the 30-min
+// cadence, 96 cycles ≈ 2 days — days of lead time to refill BEFORE the on-chain
+// APY can go stale (~5.5h window) and block deposits. Surfaced in /api/health so
+// a drain is caught early instead of silently trapping the APY stale.
+const LOW_GAS_CYCLES = 96;
+
 export interface PushResult {
   adapter: string;
   pushed:  boolean;
@@ -25,13 +36,30 @@ export interface PushResult {
   reason?: string;
 }
 
+export interface OracleGas {
+  /** Oracle wallet address (public — it signs set-apy on-chain). */
+  address: string;
+  /** STX balance in µSTX. */
+  ustx: number;
+  /** Whole push cycles this balance still affords. */
+  runwayCycles: number;
+  /** True once runway drops below LOW_GAS_CYCLES — refill signal. */
+  lowGas: boolean;
+}
+
 interface OracleStatus {
   lastCycleAt: number | null;
   lastResults: PushResult[];
+  lastGas: OracleGas[];
   mode: "dual" | "single" | "disabled";
 }
 
-let status: OracleStatus = { lastCycleAt: null, lastResults: [], mode: "disabled" };
+let status: OracleStatus = {
+  lastCycleAt: null,
+  lastResults: [],
+  lastGas: [],
+  mode: "disabled",
+};
 
 export function getOracleStatus(): OracleStatus & { ageSeconds: number | null } {
   return {
@@ -40,6 +68,47 @@ export function getOracleStatus(): OracleStatus & { ageSeconds: number | null } 
       ? Math.round((Date.now() - status.lastCycleAt) / 1000)
       : null,
   };
+}
+
+/** Read a wallet's STX balance (µSTX). Null on any error — never throws. */
+async function readBalanceUstx(address: string): Promise<number | null> {
+  try {
+    const res = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`);
+    if (!res.ok) return null;
+    const data = (await res.json()) as { balance: string };
+    return Number(BigInt(data.balance)); // balance is a hex µSTX string
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read every configured oracle wallet's gas balance and compute remaining
+ * runway. This is the early-warning that a wallet is draining: an out-of-gas
+ * oracle can't broadcast set-apy, so the on-chain APY goes stale and deposits
+ * block — exactly the silent failure this surfaces before it happens.
+ */
+async function collectOracleGas(): Promise<OracleGas[]> {
+  const network = IS_MAINNET ? ("mainnet" as const) : ("testnet" as const);
+  const { getAddressFromPrivateKey } = await import("@stacks/transactions");
+  const keys = [ORACLE_KEY, ORACLE_KEY_2].filter((k) => k.length > 0);
+  const adapterCount = Math.max(1, Object.keys(ADAPTER_REGISTRY).length);
+  const perCycleUstx = PER_PUSH_USTX * adapterCount;
+
+  const gas: OracleGas[] = [];
+  for (const key of keys) {
+    let address: string;
+    try {
+      address = getAddressFromPrivateKey(key, network);
+    } catch {
+      continue;
+    }
+    const ustx = await readBalanceUstx(address);
+    if (ustx === null) continue;
+    const runwayCycles = Math.floor(ustx / perCycleUstx);
+    gas.push({ address, ustx, runwayCycles, lowGas: runwayCycles < LOW_GAS_CYCLES });
+  }
+  return gas;
 }
 
 function sanitize(value: unknown): string {
@@ -219,7 +288,19 @@ async function runOracleCycle(): Promise<void> {
         ? console.log(`[oracle] pushed ${r.adapter} txid=${r.txid}`)
         : console.warn(`[oracle] skipped ${r.adapter} reason=${r.reason}`);
     }
-    status = { ...status, lastCycleAt: Date.now(), lastResults: results };
+
+    // Read oracle gas AFTER pushing so the warning reflects the post-tx balance.
+    const gas = await collectOracleGas();
+    for (const g of gas) {
+      if (g.lowGas) {
+        console.warn(
+          `[oracle] LOW GAS ${g.address}: ${g.ustx}uSTX (~${g.runwayCycles} cycles left). ` +
+            `Refill STX or set-apy will fail and on-chain APY will go stale.`
+        );
+      }
+    }
+
+    status = { ...status, lastCycleAt: Date.now(), lastResults: results, lastGas: gas };
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
   }

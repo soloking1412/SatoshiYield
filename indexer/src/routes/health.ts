@@ -2,45 +2,54 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import { isCached } from "../aggregator.js";
 import { getOracleStatus } from "../oracle-pusher.js";
+import { evaluateOracleHealth } from "../oracle-health.js";
 
 export const healthRouter = Router();
 
-/**
- * Health + oracle observability. Surfaces oracle mode and the age of the last
- * push cycle so single-oracle degradation or a stalled pusher (which lets the
- * on-chain APY go stale and blocks deposits) is visible without log access.
- */
-// Cycle is considered degraded once the last push is older than this. The
-// scheduler runs every 30 min, so 70 min (> 2 cycles) flags a stalled pusher
-// well before the on-chain APY hits the ~5.5h staleness window that blocks
-// deposits. Alert on `degraded: true`.
-const STALE_CYCLE_SECONDS = 70 * 60;
+/** Mask an address for a public endpoint: keep enough to identify, not to dox. */
+function maskAddress(a: string): string {
+  return a.length > 12 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a;
+}
 
+/**
+ * Health + oracle observability. Surfaces oracle mode, the age of the last push
+ * cycle, whether pushes are landing, and per-wallet gas runway — so a stalled
+ * pusher, a failing push, or a draining oracle wallet (each of which lets the
+ * on-chain APY go stale and blocks deposits) is visible without log access.
+ * Alert on `degraded: true`.
+ */
 healthRouter.get("/", (_req: Request, res: Response) => {
   const oracle = getOracleStatus();
-  const pushed = oracle.lastResults.filter((r) => r.pushed).length;
-
-  // Degraded = the oracle cannot sustain 2-of-3 consensus (single/disabled mode)
-  // or the push cycle has stalled. Either leads to on-chain APY going stale and
-  // deposits being blocked, so it warrants an alert.
   const isMainnet = process.env["STACKS_NETWORK"] === "mainnet";
-  const cycleStalled =
-    oracle.ageSeconds === null || oracle.ageSeconds > STALE_CYCLE_SECONDS;
-  const degraded = oracle.mode !== "dual" || cycleStalled;
+
+  const h = evaluateOracleHealth({
+    mode: oracle.mode,
+    ageSeconds: oracle.ageSeconds,
+    lastResults: oracle.lastResults,
+    lastGas: oracle.lastGas,
+  });
 
   // Always 200 so platform liveness probes don't kill a still-serving indexer
-  // in single-oracle mode; alert on the `degraded` field instead.
+  // in a degraded mode; alert on the `degraded` field instead.
   res.json({
-    status: degraded ? "degraded" : "ok",
-    degraded,
+    status: h.degraded ? "degraded" : "ok",
+    degraded: h.degraded,
     cached: isCached(),
     network: isMainnet ? "mainnet" : "testnet",
     oracle: {
       mode: oracle.mode,
       lastCycleAgeSeconds: oracle.ageSeconds,
-      lastCyclePushed: pushed,
-      lastCycleTotal: oracle.lastResults.length,
-      cycleStalled,
+      lastCyclePushed: h.pushed,
+      lastCycleTotal: h.total,
+      cycleStalled: h.cycleStalled,
+      pushFailing: h.pushFailing,
+      lowGas: h.lowGas,
+      wallets: oracle.lastGas.map((g) => ({
+        address: maskAddress(g.address),
+        ustx: g.ustx,
+        runwayCycles: g.runwayCycles,
+        lowGas: g.lowGas,
+      })),
     },
   });
 });
