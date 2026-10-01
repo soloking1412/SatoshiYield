@@ -1,0 +1,204 @@
+{
+  "generatedAt": "2026-10-01T07:45:19.339779+00:00",
+  "sourceSha256": "c6c03c59a012f8e686c577da446f3536321595a6faefda47291eb7fcc2884e08",
+  "frozenVaultSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+  "command": "npm run test:hermetica:v7:report",
+  "result": "19 tests passed",
+  "testEnvironment": "Principal substitutions only in adapter. Local token-moving upstream semantic model; NOT real protocol/fork evidence.",
+  "bindingSubstitutions": {
+    "warning": "Local token-moving model only; source modified by listed principal substitutions only.",
+    "sourceSha256": "c6c03c59a012f8e686c577da446f3536321595a6faefda47291eb7fcc2884e08",
+    "generatedSha256": "55620173d41fe5f235ddf3d3e887dd6495ebe703c1d6ba4015a8e149056eb6a5",
+    "replacements": {
+      "'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2": ".mock-hermetica-upstream-v7",
+      "'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.hq-v1": ".mock-hermetica-hq-v7",
+      "'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.state-hbtc-v1": ".mock-hermetica-state-v7",
+      "'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": ".mock-sbtc"
+    }
+  },
+  "fuzz": {
+    "seeds": [
+      305419896,
+      2271560481,
+      3735928559
+    ],
+    "actionsPerSeed": 200,
+    "totalActions": 600,
+    "generator": "xorshift32",
+    "assertions": "Every one of eight action classes must execute per seed. All user receipt liabilities, total tracked principal, vault total principal and global minted token conservation checked after every action."
+  },
+  "coverage": {
+    "lines": {
+      "covered": 225,
+      "total": 242,
+      "percent": 92.98
+    },
+    "branches": {
+      "covered": 59,
+      "total": 113,
+      "percent": 52.21
+    },
+    "functions": {
+      "covered": 32,
+      "total": 38,
+      "percent": 84.21
+    },
+    "uncoveredLines": [
+      170,
+      194,
+      197,
+      200,
+      252,
+      260,
+      281,
+      283,
+      296,
+      297,
+      312,
+      325,
+      327,
+      328,
+      329,
+      331,
+      332
+    ],
+    "uncoveredFunctions": [
+      "get-claim-id",
+      "get-receipt-liability",
+      "get-total-shares",
+      "get-last-updated-block",
+      "get-oracle-report",
+      "get-oracle"
+    ]
+  },
+  "namedCoverageRecords": 19,
+  "maxAdapterSimnetCostByMethod": {
+    "set-oracle-at": {
+      "write_length": 95,
+      "write_count": 4,
+      "read_length": 17583,
+      "read_count": 10,
+      "runtime": 35856
+    },
+    "set-apy": {
+      "write_length": 108,
+      "write_count": 4,
+      "read_length": 17923,
+      "read_count": 23,
+      "runtime": 66036
+    },
+    "set-paused": {
+      "write_length": 2,
+      "write_count": 1,
+      "read_length": 17483,
+      "read_count": 4,
+      "runtime": 20115
+    },
+    "deposit": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17483,
+      "read_count": 3,
+      "runtime": 19008
+    },
+    "request-withdraw": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17483,
+      "read_count": 3,
+      "runtime": 19008
+    },
+    "claim-withdraw": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17483,
+      "read_count": 3,
+      "runtime": 19591
+    },
+    "cancel-withdraw": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17483,
+      "read_count": 3,
+      "runtime": 19008
+    },
+    "settle-pending": {
+      "write_length": 362,
+      "write_count": 11,
+      "read_length": 45414,
+      "read_count": 74,
+      "runtime": 178395
+    },
+    "get-accounting": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 19418,
+      "read_count": 10,
+      "runtime": 26078
+    },
+    "get-receipt": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17524,
+      "read_count": 4,
+      "runtime": 19273
+    },
+    "preview-deposit": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 22702,
+      "read_count": 7,
+      "runtime": 24246
+    },
+    "preview-withdraw": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 30287,
+      "read_count": 23,
+      "runtime": 78094
+    },
+    "get-shares": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17524,
+      "read_count": 4,
+      "runtime": 19557
+    },
+    "get-pending": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17574,
+      "read_count": 4,
+      "runtime": 18141
+    },
+    "get-apy": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17503,
+      "read_count": 5,
+      "runtime": 20140
+    },
+    "get-total-deposited": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 17501,
+      "read_count": 4,
+      "runtime": 18283
+    }
+  },
+  "limitations": [
+    "Local models do not establish current mainnet funding, protocol economics, production costs, or full upstream safety.",
+    "The test model measures cooldown in burn blocks; the actual upstream uses seconds and a 259200-second cooldown.",
+    "600 finite randomized actions are not exhaustive proof; coverage is execution evidence only.",
+    "Upstream true zero-value claims cannot currently be funded; adapter preserves them rather than inventing a zero receipt.",
+    "Current mainnet deposits are disabled and the candidate remains unreleased."
+  ],
+  "separateRealSourceFork": {
+    "evidence": "../../../integrations/hermetica/evidence/mainnet-fork.json",
+    "passed": true,
+    "pinnedHeight": 9101467,
+    "mainnetWrites": false,
+    "candidateSourceMatches": true,
+    "note": "One funded real-source lifecycle including H01 recovery; not counted in19 local tests."
+  }
+}

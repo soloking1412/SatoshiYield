@@ -1,0 +1,68 @@
+# UNIT TESTS ONLY. Both external dependencies resolve to tracked accounting shims.
+# No canonical mainnet token dependency or real-protocol correctness claim.
+[project]
+name = "satoshi-yield-legacy-simnet"
+description = "Non-custodial sBTC yield optimizer on Stacks (mainnet)"
+authors = []
+telemetry = false
+cache_dir = "./.cache-legacy-simnet"
+
+
+[[project.requirements]]
+contract_id = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc"
+
+
+[[project.requirements]]
+contract_id = "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+
+[contracts.sip-010-trait]
+path = "contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source-v2]
+path = "contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.yield-source-async-v1]
+path = "contracts/traits/yield-source-async-v1.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.mock-sbtc]
+path = "contracts/token/mock-sbtc.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-sbtc-vault-trait]
+path = "contracts/traits/zest-sbtc-vault-trait.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.mock-zest-vault]
+path = "contracts/token/mock-zest-vault.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.vault-v6]
+path = "contracts/vault-v6.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.zest-earn-adapter]
+path = "contracts/adapters/zest-earn-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[contracts.hermetica-hbtc-adapter]
+path = "contracts/adapters/hermetica-hbtc-adapter.clar"
+clarity_version = 3
+epoch = "latest"
+
+[repl.settings]
+initial_epoch = "3.2"
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = true, trusted_caller = true, callee_filter = false }

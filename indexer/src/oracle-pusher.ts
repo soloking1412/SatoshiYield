@@ -5,18 +5,14 @@ import {
 } from "@stacks/transactions";
 import { readAnchorApyBps, exceedsDeviation } from "./fetchers/chain.js";
 import { ADAPTER_REGISTRY, adapterName, type ProtocolId } from "./registry.js";
+import { chainNetwork } from "./network.js";
 
-const DEPLOYER        = process.env["DEPLOYER_ADDRESS"]     ?? "";
+const DEPLOYER        = chainNetwork.deployer;
 const ORACLE_KEY      = process.env["ORACLE_PRIVATE_KEY"]   ?? "";
 const ORACLE_KEY_2    = process.env["ORACLE_PRIVATE_KEY_2"] ?? "";
-const IS_MAINNET      = process.env["STACKS_NETWORK"]       === "mainnet";
-const STACKS_API_BASE = IS_MAINNET
-  ? "https://api.hiro.so"
-  : "https://api.testnet.hiro.so";
-
-// Max fraction of the current value we move per cycle. Stays inside the 50%
-// on-chain deviation guard so a push is never rejected for over-deviating.
-const MAX_STEP_PCT = 0.4;
+const IS_MAINNET      = chainNetwork.name === "mainnet";
+const STACKS_API_BASE = chainNetwork.api;
+const WRITES_ENABLED = process.env["ORACLE_WRITES_ENABLED"] === "true";
 
 // Conservative gas cost of one `set-apy` tx per oracle wallet, in µSTX. Observed
 // fee is ~2,140 µSTX; padded up so runway is never over-estimated. Each wallet
@@ -73,10 +69,13 @@ export function getOracleStatus(): OracleStatus & { ageSeconds: number | null } 
 /** Read a wallet's STX balance (µSTX). Null on any error — never throws. */
 async function readBalanceUstx(address: string): Promise<number | null> {
   try {
-    const res = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`);
+    const res = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`, {
+      signal: AbortSignal.timeout(8_000),
+    });
     if (!res.ok) return null;
     const data = (await res.json()) as { balance: string };
-    return Number(BigInt(data.balance)); // balance is a hex µSTX string
+    const amount = Number(BigInt(data.balance));
+    return Number.isSafeInteger(amount) && amount >= 0 ? amount : null;
   } catch {
     return null;
   }
@@ -116,19 +115,18 @@ function sanitize(value: unknown): string {
   return text.replace(/\b[0-9a-fA-F]{64,}\b/g, "[redacted]");
 }
 
-function nextBps(current: number, target: number): number {
-  if (current <= 0) return target;
-  const step = Math.max(1, Math.floor(current * MAX_STEP_PCT));
-  if (target > current) return Math.min(target, current + step);
-  if (target < current) return Math.max(target, current - step);
-  return current;
-}
-
 export async function pushApy(
   contractName: string,
   newBps: number,
   options?: { nonce?: number; senderKey?: string }
 ): Promise<PushResult> {
+  if (!WRITES_ENABLED) return { adapter: contractName, pushed: false, reason: "writes_disabled" };
+  if (!(Object.keys(ADAPTER_REGISTRY) as ProtocolId[]).some((p) => adapterName(p) === contractName)) {
+    return { adapter: contractName, pushed: false, reason: "unregistered_adapter" };
+  }
+  if (!Number.isSafeInteger(newBps) || newBps < 0 || newBps > 6000) {
+    return { adapter: contractName, pushed: false, reason: "invalid_apy" };
+  }
   const key = options?.senderKey ?? ORACLE_KEY;
   if (!DEPLOYER || !key) {
     return { adapter: contractName, pushed: false, reason: "missing_env" };
@@ -137,7 +135,8 @@ export async function pushApy(
   // Anchor must be the REAL committed value (stale-tolerant), not get-apy —
   // which errors when stale and would let a push that the on-chain deviation
   // guard rejects (err u109) slip through, wasting a tx and staying stale.
-  const currentBps = (await readAnchorApyBps(contractName)) ?? 0;
+  const currentBps = await readAnchorApyBps(contractName);
+  if (currentBps === null) return { adapter: contractName, pushed: false, reason: "anchor_unavailable" };
 
   if (currentBps > 0 && exceedsDeviation(newBps, currentBps, 50)) {
     console.error(
@@ -155,10 +154,11 @@ export async function pushApy(
     functionArgs:    [uintCV(newBps)],
     senderKey:       key,
     network,
+    client: { baseUrl: STACKS_API_BASE },
     nonce: options?.nonce !== undefined ? BigInt(options.nonce) : undefined,
   });
 
-  const result = await broadcastTransaction({ transaction: tx, network });
+  const result = await broadcastTransaction({ transaction: tx, network, client: { baseUrl: STACKS_API_BASE } });
 
   if ("error" in result) {
     console.error(`[oracle] broadcast failed for ${contractName}:`, result.error);
@@ -169,13 +169,17 @@ export async function pushApy(
 }
 
 async function fetchNonce(address: string): Promise<number> {
-  try {
-    const res  = await fetch(`${STACKS_API_BASE}/v2/accounts/${address}?proof=0`);
-    const data = await res.json() as { nonce: number };
-    return data.nonce;
-  } catch {
-    return 0;
+  const res = await fetch(`${STACKS_API_BASE}/extended/v1/address/${address}/nonces`, {
+    signal: AbortSignal.timeout(8_000),
+  });
+  if (!res.ok) throw new Error("Oracle nonce unavailable");
+  const data: unknown = await res.json();
+  if (typeof data !== "object" || data === null || !("possible_next_nonce" in data) ||
+      typeof data.possible_next_nonce !== "number" ||
+      !Number.isSafeInteger(data.possible_next_nonce) || data.possible_next_nonce < 0) {
+    throw new Error("Invalid oracle nonce");
   }
+  return data.possible_next_nonce;
 }
 
 export async function pushAllAdapters(
@@ -183,102 +187,80 @@ export async function pushAllAdapters(
 ): Promise<PushResult[]> {
   const names = (Object.keys(ADAPTER_REGISTRY) as ProtocolId[]).map(adapterName);
 
-  // Each oracle's nonce MUST come from its own account. ORACLE_KEY is a
-  // standalone oracle wallet (NOT the deployer — the deployer key never lives
-  // here), so resolve its address and read its own nonce. Falling back to
-  // DEPLOYER would sign with a foreign (too-high) nonce, leaving the tx stuck
-  // in the mempool forever and starving 2-of-3 consensus.
-  const network = IS_MAINNET ? ("mainnet" as const) : ("testnet" as const);
+  if (!WRITES_ENABLED) return names.map((adapter) => ({ adapter, pushed: false, reason: "writes_disabled" }));
+
+  // Refuse the wrong chain or an unsynced node before signing any transaction.
+  const infoRes = await fetch(`${STACKS_API_BASE}/v2/info`, { signal: AbortSignal.timeout(8_000) });
+  if (!infoRes.ok) throw new Error("Oracle network identity unavailable");
+  const info = await infoRes.json() as { network_id?: unknown; is_fully_synced?: unknown };
+  if (info.network_id !== (IS_MAINNET ? 1 : 2147483648) || info.is_fully_synced !== true) {
+    throw new Error("Oracle network identity mismatch or node not synced");
+  }
   const { getAddressFromPrivateKey } = await import("@stacks/transactions");
-
-  let addr1 = DEPLOYER;
-  if (ORACLE_KEY) {
-    try {
-      addr1 = getAddressFromPrivateKey(ORACLE_KEY, network);
-    } catch {
-      console.warn("[oracle] could not resolve oracle-1 address — falling back to DEPLOYER nonce");
-    }
-  }
-  const nonce1 = await fetchNonce(addr1);
-  let n1 = nonce1;
-
-  let n2 = 0;
-  let addr2 = "";
-  if (ORACLE_KEY_2) {
-    try {
-      addr2 = getAddressFromPrivateKey(ORACLE_KEY_2, network);
-      n2    = await fetchNonce(addr2);
-    } catch {
-      console.warn("[oracle] could not resolve oracle-2 address — skipping second oracle");
-    }
-  }
-
   const results: PushResult[] = [];
-
-  for (const name of names) {
-    const bps = newBpsMap[name];
-    if (bps === undefined) {
-      results.push({ adapter: name, pushed: false, reason: "no_bps_provided" });
+  const seen = new Set<string>();
+  for (const key of [ORACLE_KEY, ORACLE_KEY_2].filter(Boolean)) {
+    let nonce: number;
+    let address: string;
+    try {
+      address = getAddressFromPrivateKey(key, chainNetwork.name);
+      if (seen.has(address)) throw new Error("Duplicate oracle signer");
+      seen.add(address);
+      nonce = await fetchNonce(address);
+    } catch (err) {
+      for (const name of names) results.push({ adapter: name, pushed: false, reason: sanitize(err) });
       continue;
     }
-    try {
-      results.push(await pushApy(name, bps, { nonce: n1++ }));
-    } catch (err) {
-      results.push({ adapter: name, pushed: false, reason: sanitize(err) });
-    }
-    if (ORACLE_KEY_2 && addr2) {
+    for (const name of names) {
+      const bps = newBpsMap[name];
+      if (bps === undefined) {
+        results.push({ adapter: name, pushed: false, reason: "fresh_feed_unavailable" });
+        continue;
+      }
       try {
-        const r = await pushApy(name, bps, { nonce: n2++, senderKey: ORACLE_KEY_2 });
-        if (!r.pushed) {
-          console.warn(`[oracle] oracle-2 push skipped for ${name}: ${r.reason}`);
-        }
+        const result = await pushApy(name, bps, { nonce, senderKey: key });
+        results.push(result);
+        if (result.pushed) nonce++;
+        // A rejected broadcast must not leave a nonce gap for the next adapter.
       } catch (err) {
-        console.warn(`[oracle] oracle-2 push failed for ${name}: ${sanitize(err)}`);
+        results.push({ adapter: name, pushed: false, reason: sanitize(err) });
+        // Broadcast completion may be uncertain. Stop this signer to avoid
+        // accidentally reusing a nonce with a different payload.
+        break;
       }
     }
   }
   return results;
 }
 
-async function buildBpsMap(): Promise<Record<string, number>> {
+export async function buildBpsMap(): Promise<Record<string, number>> {
   const map: Record<string, number> = {};
-
   for (const protocol of Object.keys(ADAPTER_REGISTRY) as ProtocolId[]) {
     const entry = ADAPTER_REGISTRY[protocol];
-    const name  = adapterName(protocol);
-
-    // `anchor` is the REAL committed APY even when stale (reconstructed from
-    // oracle reports). Using get-apy here was the stale-trap bug: a stale read
-    // returned 0, so a native outage jumped `target` to referenceBps and the
-    // on-chain deviation guard aborted every push (err u109) — stale forever.
+    const name = adapterName(protocol);
     const [nativeResult, anchorResult] = await Promise.allSettled([
-      entry.fetchNativeApy(),
-      readAnchorApyBps(name),
+      entry.fetchNativeApy(), readAnchorApyBps(name),
     ]);
-
-    const native  = nativeResult.status === "fulfilled" ? nativeResult.value : null;
-    const anchor  = anchorResult.status === "fulfilled" ? anchorResult.value : null;
-    const current = anchor ?? 0;
-
-    // Use live native APY when available; otherwise HOLD the real anchor (this
-    // re-pushes the existing value, refreshing the staleness timestamp without
-    // tripping the deviation guard); bootstrap to the reference rate only when
-    // nothing at all is on-chain yet.
-    let target: number;
-    if (native !== null) {
-      target = Math.round(native * 100);
-    } else if (current > 0) {
-      target = current;
-    } else {
-      target = entry.referenceBps;
-    }
-
-    map[name] = nextBps(current, target);
+    const native = nativeResult.status === "fulfilled" ? nativeResult.value : null;
+    const anchor = anchorResult.status === "fulfilled" ? anchorResult.value : null;
+    // Neither a reference target nor a stale anchor constitutes a new sample.
+    // Feed failure must age out the on-chain oracle instead of freshening it.
+    if (native === null || !Number.isFinite(native) || native < 0 || native > 60 ||
+        anchor === null || !Number.isSafeInteger(anchor) || anchor < 0 || anchor > 6000) continue;
+    const measuredBps = Math.round(native * 100);
+    // A large discontinuity requires investigation. Walking synthetic values
+    // through the deviation guard labels unobserved APYs as fresh evidence.
+    if (exceedsDeviation(measuredBps, anchor, 50)) continue;
+    map[name] = measuredBps;
   }
   return map;
 }
 
+let cycleRunning = false;
+
 async function runOracleCycle(): Promise<void> {
+  if (cycleRunning) return;
+  cycleRunning = true;
   console.log(`[oracle] cycle ${new Date().toISOString()}`);
   try {
     const bpsMap  = await buildBpsMap();
@@ -303,14 +285,16 @@ async function runOracleCycle(): Promise<void> {
     status = { ...status, lastCycleAt: Date.now(), lastResults: results, lastGas: gas };
   } catch (err) {
     console.error("[oracle] cycle error:", sanitize(err));
+  } finally {
+    cycleRunning = false;
   }
 }
 
 export function startOracleScheduler(intervalMs: number): void {
-  status.mode = !ORACLE_KEY ? "disabled" : ORACLE_KEY_2 ? "dual" : "single";
+  status.mode = !WRITES_ENABLED || !ORACLE_KEY ? "disabled" : ORACLE_KEY_2 ? "dual" : "single";
 
-  if (!ORACLE_KEY) {
-    console.log("[oracle] ORACLE_PRIVATE_KEY not set — scheduler disabled");
+  if (!WRITES_ENABLED || !ORACLE_KEY) {
+    console.log("[oracle] scheduler disabled; explicit ORACLE_WRITES_ENABLED and signing key required");
     return;
   }
   console.log(`[oracle] scheduler started interval=${Math.round(intervalMs / 60_000)}min`);

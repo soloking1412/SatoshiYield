@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-09-30T20:26:34.273Z",
+  "network": "mainnet",
+  "mode": "read-only",
+  "results": [
+    {
+      "route": "/api/health",
+      "status": 200,
+      "body": {
+        "status": "degraded",
+        "degraded": true,
+        "cached": false,
+        "network": "mainnet",
+        "oracle": {
+          "mode": "disabled",
+          "lastCycleAgeSeconds": null,
+          "lastCyclePushed": 0,
+          "lastCycleTotal": 0,
+          "cycleStalled": true,
+          "pushFailing": false,
+          "lowGas": false,
+          "wallets": []
+        }
+      }
+    },
+    {
+      "route": "/api/yields",
+      "status": 200,
+      "body": [
+        {
+          "protocol": "zest",
+          "apy_percent": 0,
+          "risk_level": "medium",
+          "lock_period_days": 0,
+          "reward_token": "sBTC",
+          "tvl_usd": 72263689.73613283,
+          "fetched_at": 1790800001829,
+          "last_updated_block": 8764855,
+          "apy_stale": true,
+          "is_live_integration": false,
+          "integration_status": "review-required",
+          "market_type": "sbtc-lending",
+          "withdrawal_type": "liquidity-dependent",
+          "risk_assessment": "unreviewed",
+          "risk_factors": [
+            "smart-contract",
+            "sbtc-peg",
+            "lending-liquidity",
+            "governance",
+            "rpc-and-oracle"
+          ],
+          "apy_source": "on-chain-share-price",
+          "native_apy_percent": null,
+          "data_status": "stale",
+          "tvl_scope": "protocol",
+          "tvl_available": true
+        }
+      ]
+    }
+  ]
+}

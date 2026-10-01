@@ -1,46 +1,54 @@
 # SatoshiYields
 
-Non-custodial **sBTC yield optimizer** on [Stacks](https://www.stacks.co/) (Bitcoin L2).
-Deposit sBTC into one vault; it routes your funds into vetted yield sources and returns
-principal + yield on withdrawal. Funds are never custodial — they live in the underlying
-protocols' contracts, not ours. A performance fee is taken on **yield only**.
+> **2026-10-01 rebuild candidate:** see [the rebuild plan](docs/REBUILD-PLAN.md), [validation summary](docs/validation/REBUILD-VALIDATION.md), [security findings](contracts/reports/SECURITY-REVIEW.md), and [testnet evidence](docs/validation/testnet-v7.json). V7 is a separate testnet candidate; new vault mainnet deposits are disabled in the rebuilt frontend. Direct Stacks routes and funded protocol fork proofs are implemented; external Bitcoin execution, public economics checks, and an independent audit remain release gates.
 
-> **Status:** pre-launch (Preparing Launch). Nothing is deployed to mainnet yet. The
-> contracts are simnet- and mainnet-fork-tested and have had two internal security
-> reviews, but a **professional third-party audit** and a **full node-fork redeem run**
-> are required before real funds. See [Security](#security).
+An **sBTC yield protocol** on [Stacks](https://www.stacks.co/), being rebuilt with
+isolated strategy accounting, bounded wallet transactions, and explicit custody and
+withdrawal terms. Returns and principal depend on the underlying strategy. A performance
+fee applies to realized profit; neither principal nor yield is guaranteed.
+
+The immutable `vault-v6` is already deployed on mainnet. The new `vault-v7` and two
+mock adapters are deployed on testnet; public sync/async deposit and withdrawal lifecycles passed. The fee-change test is waiting for burn block 22731.
+This branch does not update the live website, migrate balances, or upgrade v6.
+See the [pinned mainnet snapshot](docs/validation/mainnet-snapshot.json).
 
 ## Yield tiles
 
 | Tile | Type | Risk | Notes |
 |---|---|---|---|
-| **Zest** | Lending (sync) | Principal-protected | Routes sBTC into Zest Earn; withdraw any time. |
-| **Hermetica hBTC** | Strategy (async) | **Not** principal-guaranteed | ~8% target. Two-phase withdrawal (request → Hermetica funds after a ~3-day cooldown → claim), small exit fee, subject to vault capacity. |
-| *Dual Stacking (PoX)* | — | — | Coming soon. |
+| **Zest** | Lending (sync) | Contract, liquidity, bad-debt and asset risks | Legacy adapter deployed and approved; APY was stale at the inspected block. Current direct lending route has funded real-state fork validation; legacy and new vault routes are separate. |
+| **Hermetica hBTC** | Strategy (async) | Strategy, counterparty and redemption risks | Configured mainnet adapter absent and unapproved. Legacy repository adapter has a claim-attribution defect. A separate serialized v7 replacement has local and funded fork recovery tests; upstream public deposits remain disabled. |
+| **Stacking DAO stBTC** | Direct sBTC deposit / idle exit / NFT claim | Governance, liquidity, bond and redemption risks | Funded real-source fork validation. New queued exits require the reviewed guard to be deployed; existing claims remain supported. |
+| **Native PoX-5 / Babylon / Lombard / Solv** | Distinct native BTC, staking and custody flows | Product-specific | PoX-5 eligibility/recovery planning; Babylon Signet PSBT planning; Lombard sandbox preparation with an upstream authorization blocker; Solv official handoff. No external BTC funded round trip is claimed. See [protocol research](docs/PROTOCOL-RESEARCH.md). |
 
 ## Architecture
 
-A single **vault** holds no pooled capital itself — on deposit it forwards sBTC straight
-into the chosen **adapter**. The vault enforces one position per user, a TVL cap, a
-reentrancy guard, timelocked fee changes, and an owner-controlled allowlist of approved
-adapters. It supports two adapter kinds behind a common trait:
+The legacy vault forwards deposits to an adapter and maintains one position per user.
+V7 instead keys positions by user and adapter, with separate caps, 144 Bitcoin-block
+admission delays, frozen entry fees, and minimum share/payout limits. It checks actual
+redemption balance changes and permits exits while new deposits are paused. Both versions
+support two adapter kinds behind traits:
 
 - **Sync** (`yield-source-v2`) — atomic `deposit` / `withdraw` (Zest).
 - **Async** (`yield-source-async-v1`) — atomic deposit, but a two-phase
   `request-withdraw` → `claim-withdraw` (with `cancel-withdraw` as an escape hatch),
   for yield sources whose redemption isn't instant (Hermetica hBTC).
 
-Each adapter carries a 3-of-N oracle APY feed used only to gate deposits on freshness.
+Production adapters have additional protocol and oracle assumptions; the public testnet
+fixtures establish only vault mechanics and do not earn real yield.
 
 ```
-user ──▶ vault-v6 ──▶ zest-earn-adapter ──▶ Zest Earn vault        (sync)
-                  └──▶ hermetica-hbtc-adapter ──▶ Hermetica hBTC   (async)
+mainnet: user ──▶ vault-v6 ──▶ zest-earn-adapter ──▶ legacy Zest Earn
+testnet: user ──▶ vault-v7 ──▶ mock-sync-v7 / mock-async-v7
 ```
 
 **Key contracts** (`contracts/contracts/`):
 - `vault-v6.clar` — deposits, sync + two-phase async withdrawals, fee-on-yield, adapter allowlist
-- `adapters/zest-earn-adapter.clar` — Zest Earn (sync, principal-protected)
-- `adapters/hermetica-hbtc-adapter.clar` — Hermetica hBTC (async)
+- `vault-v7.clar` — new candidate; isolated positions and stricter settlement/authorization
+- `adapters/zest-earn-adapter.clar` — legacy Zest Earn (sync)
+- `adapters/zest-earn-adapter-v7.clar` — paused candidate requiring further protocol validation
+- `adapters/hermetica-hbtc-adapter.clar` — legacy async adapter; blocked by unresolved finding H-01
+- `adapters/hermetica-hbtc-adapter-v7.clar` — separate serialized-claim candidate with durable user receipts
 - `traits/{sip-010-trait,yield-source-v2,yield-source-async-v1}.clar`
 
 ## Repository layout
@@ -48,52 +56,55 @@ user ──▶ vault-v6 ──▶ zest-earn-adapter ──▶ Zest Earn vault   
 ```
 contracts/   Clarity smart contracts + Clarinet/Vitest tests
   fork-test/ standalone mainnet-fork harness (real Hermetica contracts)
-indexer/     Node/TS service: aggregates APY/TVL, pushes oracle APY on-chain
+indexer/     Node/TS service: validated feeds; oracle writes disabled by default
 frontend/    React + Vite dApp
+integrations/ Source-pinned Stacks, Bitcoin and PoX-5 clients plus real-state fork proofs
+scripts/     Locked dependency bootstrap
 docs/        SECURITY.md, AUDIT_NOTES.md
 MAINNET-DEPLOY.md   Asigna deploy runbook
 ```
 
 ## Getting started
 
-Prerequisites: **Node 22**, **Clarinet 3.x** (`brew install clarinet`).
+Prerequisites: **Node 24**. Install every package from its lockfile, including the sibling integration packages imported by the frontend:
 
 ```bash
-# Contracts
-cd contracts && npm install && clarinet check && npm test     # 24 tests
-
-# Indexer
-cd indexer && npm install && npm test                          # 17 tests
-
-# Frontend
-cd frontend && npm install && npm test && npm run build        # 8 tests
-
-# Mainnet-fork validation (real Hermetica contracts; needs network)
-cd contracts/fork-test && cp settings/Devnet.toml.example settings/Devnet.toml && npx vitest run
+node scripts/bootstrap-rebuild.mjs
+npm --prefix contracts test
+npm --prefix contracts run test:v7:report
+npm --prefix contracts run test:v7:adapters
+npm --prefix contracts run test:hermetica:v7:report
+npm --prefix indexer test
+npm --prefix indexer run build
+npm --prefix integrations/stacks test
+npm --prefix integrations/bitcoin test
+npm --prefix integrations/pox5 test
+npm --prefix frontend test
+npm --prefix frontend run build
 ```
+
+The bootstrap copies only documented public development-wallet fixtures when absent. It never creates or reads production signing credentials. For read-only remote fork proofs and network configuration, follow the [Stacks](docs/integrations/stacks.md), [Hermetica](integrations/hermetica/README.md), [Bitcoin](docs/integrations/bitcoin.md), and [PoX-5](docs/integrations/pox5.md) guides.
 
 Copy each `.env.example` to the appropriate local env file before running the
 indexer/frontend (`frontend/.env.test` ships with public test values).
 
 ## Security
 
-- **Two internal reviews** (CSO-style audit + an independent cold review). The cold pass
-  found a **critical** issue (`claim-withdraw` could sweep co-mingled funds in the pooled
-  async adapter) — **fixed** (it now forwards only the exact redeemed amount) with a
-  regression test.
-- **Mainnet-fork tested** against the live Hermetica contracts (`contracts/fork-test/`):
-  real deposit, request-redeem, and manager-funded claim accounting validated.
-- **Required before mainnet (hard gates):** independent professional audit · full
-  real-ledger redeem on a Stacks-node fork · contract owner = an Asigna 2-of-3 multisig.
+The current internal review, reproducible findings, test scope and remaining risks are
+in [SECURITY-REVIEW.md](contracts/reports/SECURITY-REVIEW.md). Passing a test that
+reproduces Hermetica's third-party redemption defect does not mean it is fixed.
+Local accounting shims are not evidence of a funded real-protocol redemption.
+Production requires an independent audit of the exact release, verified external
+integration round trips, reviewed multisignature administration, monitoring, and incident procedures.
 
-**Risk note:** Zest is principal-protected lending; **Hermetica hBTC is a managed strategy
-— not principal-guaranteed** (exit fee, ~3-day async withdrawal, and a liveness/trust
-dependency on Hermetica funding redemptions). See `docs/SECURITY.md`.
+**Risk note:** Lending is not a guarantee of principal. Smart-contract defects, bad debt, liquidity constraints, governance and sBTC peg risks can cause loss.
 
 ## Deployment
 
-Mainnet contracts are published and initialized via the **Asigna 2-of-3 multisig** UI per
-`contracts/deployments/v6.mainnet-plan.yaml`. Step-by-step runbook in `MAINNET-DEPLOY.md`.
+The new candidate is deployed only on testnet. Resume its verification with the
+[testnet runbook](docs/validation/testnet-runbook.md). The existing v6 deployment
+plan and `MAINNET-DEPLOY.md` remain historical operational references; they are not
+authorization or evidence of a v7 production release.
 
 ## License
 

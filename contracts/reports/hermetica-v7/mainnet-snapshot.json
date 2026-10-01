@@ -1,0 +1,295 @@
+{
+  "fetchedAt": "2026-10-01T07:26:53.642Z",
+  "info": {
+    "peer_version": 402653200,
+    "pox_consensus": "30b675a398c8baa6ba7b5e233be8ef5d2232abe4",
+    "burn_block_height": 969415,
+    "stable_pox_consensus": "caa903d9d5b8053ee1b294fadf886463a874023a",
+    "stable_burn_block_height": 969408,
+    "server_version": "stacks-node 4.0.4 (10474cd, release build, linux [x86_64])",
+    "network_id": 1,
+    "parent_network_id": 3652501241,
+    "stacks_tip_height": 9101467,
+    "stacks_tip": "0d32048fdfb5fb32eb94debb4c6a7ccef39b581b99ba49ddf1ab5f4f698f36d7",
+    "stacks_tip_consensus_hash": "30b675a398c8baa6ba7b5e233be8ef5d2232abe4",
+    "genesis_chainstate_hash": "74237aa39aa50a83de11a4f53e9d3bb7d43461d1de9873f402e5453ae60bc59b",
+    "unanchored_tip": null,
+    "unanchored_seq": null,
+    "tenure_height": 257635,
+    "exit_at_block_height": null,
+    "is_fully_synced": true,
+    "node_public_key": "02e26717b2eda51c5bd9192e0e7680fce95df4364e38cf6b50272f4e771faddd8a",
+    "node_public_key_hash": "be8713636cb8ef656afe2acf8b31a4df71e1c645",
+    "last_pox_anchor": {
+      "anchor_block_hash": "95a2754d165e51464396940b3e5f2ee80db8748c593f851c9bf20a9bbd4f58d2",
+      "anchor_block_txid": "03302c062b6e7ff581642b0fda49dfe7c3ba29c70b3e40636452cbb844a56712"
+    },
+    "stackerdbs": []
+  },
+  "block": {
+    "canonical": true,
+    "height": 9101467,
+    "hash": "0x0d32048fdfb5fb32eb94debb4c6a7ccef39b581b99ba49ddf1ab5f4f698f36d7",
+    "block_time": 1790839551,
+    "block_time_iso": "2026-10-01T07:25:51.000Z",
+    "tenure_height": 257635,
+    "index_block_hash": "0xb60699a21bfeaa4ddd725da2bbfee0457bde43f0d0c05730ad27cd6c36aff079",
+    "parent_block_hash": "0x8c3d851d2476aff11f8acaa9d6d84ad87e46feca204fa339e943fd440a52fe00",
+    "burn_block_time": 1790839416,
+    "burn_block_time_iso": "2026-10-01T07:23:36.000Z",
+    "burn_block_hash": "0x00000000000000000001685e3b359ca766dee24bf416456ebea83e76d7ed08de",
+    "burn_block_height": 969415,
+    "miner_txid": "0x8b31e8e137c99e90c810989426538bf70089664ce8e51ba4f184e128d04888f3",
+    "execution_cost_read_count": 8631,
+    "execution_cost_read_length": 61468251,
+    "execution_cost_runtime": 112916963,
+    "execution_cost_write_count": 19,
+    "execution_cost_write_length": 168,
+    "txs": [
+      "0xd655fb5bebc26a9daac829d209fdeb430a5fe00def4c64b48e354a429da83ae3",
+      "0x100993138543312d9132351faf1676a3f03f8a7bfdab3c92b69c61910c080b47",
+      "0xaf629993c34b0f50a044967940b0f69742f107771b4a5c0d4a2670cc80eed5ef",
+      "0xebf6b4d085b10e74b89a0738ae13acbbd3641a2be817a436e00a7779a5353be4",
+      "0x3a4758a44521bbda14a7fb1bd6461ee48a13c53bf67615fe4241f7b662030c85"
+    ],
+    "parent_microblock_hash": "",
+    "parent_microblock_sequence": -1,
+    "microblocks_accepted": [],
+    "microblocks_streamed": [],
+    "microblock_tx_count": {}
+  },
+  "readings": [
+    {
+      "contract": "hq-v1",
+      "fn": "get-owner",
+      "arguments": [],
+      "value": {
+        "type": "principal",
+        "value": "SMJSVT0J9K2DKM8QWXSHXPVTYPJBV4CC5P1ZXAW0"
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-timelock",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "86400"
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol-enabled",
+      "arguments": [],
+      "value": {
+        "type": "bool",
+        "value": true
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol",
+      "arguments": [
+        {
+          "type": "principal",
+          "value": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1"
+        }
+      ],
+      "value": {
+        "type": "bool",
+        "value": false
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol",
+      "arguments": [
+        {
+          "type": "principal",
+          "value": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-1"
+        }
+      ],
+      "value": {
+        "type": "bool",
+        "value": false
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol",
+      "arguments": [
+        {
+          "type": "principal",
+          "value": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+        }
+      ],
+      "value": {
+        "type": "bool",
+        "value": true
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol",
+      "arguments": [
+        {
+          "type": "principal",
+          "value": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-3"
+        }
+      ],
+      "value": {
+        "type": "bool",
+        "value": false
+      },
+      "okay": true
+    },
+    {
+      "contract": "hq-v1",
+      "fn": "get-protocol",
+      "arguments": [
+        {
+          "type": "principal",
+          "value": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-4"
+        }
+      ],
+      "value": {
+        "type": "bool",
+        "value": false
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-vault-enabled",
+      "arguments": [],
+      "value": {
+        "type": "bool",
+        "value": true
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-deposit-enabled",
+      "arguments": [],
+      "value": {
+        "type": "bool",
+        "value": false
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-redeem-enabled",
+      "arguments": [],
+      "value": {
+        "type": "bool",
+        "value": true
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-request-redeem-enabled",
+      "arguments": [],
+      "value": {
+        "type": "bool",
+        "value": true
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-deposit-cap",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "5000000000"
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-min-deposit",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "100"
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-min-redeem",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "100"
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-cooldown",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "259200"
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-net-assets",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "4693223632"
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-fees",
+      "arguments": [],
+      "value": {
+        "type": "(tuple (exit-fee uint) (express-fee uint) (mgmt-fee uint) (perf-fee uint))",
+        "value": {
+          "exit-fee": {
+            "type": "uint",
+            "value": "0"
+          },
+          "express-fee": {
+            "type": "uint",
+            "value": "50"
+          },
+          "mgmt-fee": {
+            "type": "uint",
+            "value": "0"
+          },
+          "perf-fee": {
+            "type": "uint",
+            "value": "0"
+          }
+        }
+      },
+      "okay": true
+    },
+    {
+      "contract": "state-hbtc-v1",
+      "fn": "get-share-price",
+      "arguments": [],
+      "value": {
+        "type": "uint",
+        "value": "101997157"
+      },
+      "okay": true
+    }
+  ]
+}

@@ -9,7 +9,16 @@
     "pretest": "node tests/_shims/apply-shims.mjs",
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
-    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\""
+    "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
+    "test:v7": "vitest run --config vitest.v7.config.js -- --manifest ./Clarinet.v7.toml",
+    "test:v7:report": "vitest run --config vitest.v7.config.js -- --manifest ./Clarinet.v7.toml --coverage --costs",
+    "test:v7:adapters": "vitest run --config vitest.v7-adapters.config.js -- --manifest ./Clarinet.v7-adapter-analysis.toml",
+    "pretest:v7:adapters": "node tests/_shims/apply-shims.mjs",
+    "pretest:hermetica:v7": "node tests/hermetica-v7/prepare.mjs",
+    "test:hermetica:v7": "vitest run --config vitest.hermetica-v7.config.js -- --manifest ./Clarinet.hermetica-v7.toml",
+    "pretest:hermetica:v7:report": "node tests/hermetica-v7/prepare.mjs",
+    "test:hermetica:v7:report": "vitest run --config vitest.hermetica-v7.config.js -- --manifest ./Clarinet.hermetica-v7.toml --coverage --costs",
+    "verify:hermetica:v7": "node tests/hermetica-v7/verify-upstream.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -22,7 +31,7 @@
     "bitcoinjs-lib": "^7.0.1",
     "chokidar-cli": "^3.0.0",
     "ed25519-hd-key": "^1.3.0",
-    "vitest": "^3.1.3",
-    "vitest-environment-clarinet": "^2.3.0"
+    "vitest": "4.1.11",
+    "vitest-environment-clarinet": "^2.6.0"
   }
 }

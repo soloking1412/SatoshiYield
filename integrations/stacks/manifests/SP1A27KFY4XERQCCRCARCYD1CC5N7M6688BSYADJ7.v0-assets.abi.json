@@ -1,0 +1,1119 @@
+{
+  "functions": [
+    {
+      "name": "call-get-decimals",
+      "access": "private",
+      "args": [
+        {
+          "name": "ft",
+          "type": "trait_reference"
+        }
+      ],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "check-dao-auth",
+      "access": "private",
+      "args": [],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "increment",
+      "access": "private",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "iter-uint-to-list-u64",
+      "access": "private",
+      "args": [
+        {
+          "name": "i",
+          "type": "uint128"
+        },
+        {
+          "name": "acc",
+          "type": {
+            "tuple": [
+              {
+                "name": "result",
+                "type": {
+                  "list": {
+                    "type": "uint128",
+                    "length": 64
+                  }
+                }
+              },
+              {
+                "name": "val",
+                "type": "uint128"
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "tuple": [
+            {
+              "name": "result",
+              "type": {
+                "list": {
+                  "type": "uint128",
+                  "length": 64
+                }
+              }
+            },
+            {
+              "name": "val",
+              "type": "uint128"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "mask-pos",
+      "access": "private",
+      "args": [
+        {
+          "name": "pos",
+          "type": "uint128"
+        },
+        {
+          "name": "collateral",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "status",
+      "access": "private",
+      "args": [
+        {
+          "name": "id",
+          "type": "uint128"
+        },
+        {
+          "name": "enabled-mask",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "collateral",
+                  "type": "bool"
+                },
+                {
+                  "name": "debt",
+                  "type": "bool"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "subset",
+      "access": "private",
+      "args": [
+        {
+          "name": "sub",
+          "type": "uint128"
+        },
+        {
+          "name": "super",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "uint-to-buff1",
+      "access": "private",
+      "args": [
+        {
+          "name": "v",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "buffer": {
+            "length": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "uint-to-list-u64",
+      "access": "private",
+      "args": [
+        {
+          "name": "val",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "list": {
+            "type": "uint128",
+            "length": 64
+          }
+        }
+      }
+    },
+    {
+      "name": "unwrap-status",
+      "access": "private",
+      "args": [
+        {
+          "name": "id",
+          "type": "uint128"
+        },
+        {
+          "name": "enabled-mask",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "tuple": [
+            {
+              "name": "addr",
+              "type": "principal"
+            },
+            {
+              "name": "collateral",
+              "type": "bool"
+            },
+            {
+              "name": "debt",
+              "type": "bool"
+            },
+            {
+              "name": "decimals",
+              "type": "uint128"
+            },
+            {
+              "name": "id",
+              "type": "uint128"
+            },
+            {
+              "name": "oracle",
+              "type": {
+                "tuple": [
+                  {
+                    "name": "callcode",
+                    "type": {
+                      "optional": {
+                        "buffer": {
+                          "length": 1
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "ident",
+                    "type": {
+                      "buffer": {
+                        "length": 32
+                      }
+                    }
+                  },
+                  {
+                    "name": "max-staleness",
+                    "type": "uint128"
+                  },
+                  {
+                    "name": "type",
+                    "type": {
+                      "buffer": {
+                        "length": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "disable",
+      "access": "public",
+      "args": [
+        {
+          "name": "asset",
+          "type": "principal"
+        },
+        {
+          "name": "collateral",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "enable",
+      "access": "public",
+      "args": [
+        {
+          "name": "asset",
+          "type": "principal"
+        },
+        {
+          "name": "collateral",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "insert",
+      "access": "public",
+      "args": [
+        {
+          "name": "ft",
+          "type": "trait_reference"
+        },
+        {
+          "name": "oracle-data",
+          "type": {
+            "tuple": [
+              {
+                "name": "callcode",
+                "type": {
+                  "optional": {
+                    "buffer": {
+                      "length": 1
+                    }
+                  }
+                }
+              },
+              {
+                "name": "ident",
+                "type": {
+                  "buffer": {
+                    "length": 32
+                  }
+                }
+              },
+              {
+                "name": "max-staleness",
+                "type": "uint128"
+              },
+              {
+                "name": "type",
+                "type": {
+                  "buffer": {
+                    "length": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "update",
+      "access": "public",
+      "args": [
+        {
+          "name": "asset",
+          "type": "principal"
+        },
+        {
+          "name": "oracle-data",
+          "type": {
+            "tuple": [
+              {
+                "name": "callcode",
+                "type": {
+                  "optional": {
+                    "buffer": {
+                      "length": 1
+                    }
+                  }
+                }
+              },
+              {
+                "name": "ident",
+                "type": {
+                  "buffer": {
+                    "length": 32
+                  }
+                }
+              },
+              {
+                "name": "max-staleness",
+                "type": "uint128"
+              },
+              {
+                "name": "type",
+                "type": {
+                  "buffer": {
+                    "length": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "enabled",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "mask",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "find",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "asset",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": {
+                    "buffer": {
+                      "length": 1
+                    }
+                  }
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-asset-status",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "address",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "collateral",
+                  "type": "bool"
+                },
+                {
+                  "name": "debt",
+                  "type": "bool"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-bitmap",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-nonce",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "none"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-reverse",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "asset",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "buffer": {
+                "length": 1
+              }
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-status",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "collateral",
+                  "type": "bool"
+                },
+                {
+                  "name": "debt",
+                  "type": "bool"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "lookup",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": {
+                    "buffer": {
+                      "length": 1
+                    }
+                  }
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "status-multi",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "ids",
+          "type": {
+            "list": {
+              "type": "uint128",
+              "length": 64
+            }
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "list": {
+            "type": {
+              "tuple": [
+                {
+                  "name": "addr",
+                  "type": "principal"
+                },
+                {
+                  "name": "collateral",
+                  "type": "bool"
+                },
+                {
+                  "name": "debt",
+                  "type": "bool"
+                },
+                {
+                  "name": "decimals",
+                  "type": "uint128"
+                },
+                {
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "name": "oracle",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "callcode",
+                        "type": {
+                          "optional": {
+                            "buffer": {
+                              "length": 1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "ident",
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        }
+                      },
+                      {
+                        "name": "max-staleness",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "type",
+                        "type": {
+                          "buffer": {
+                            "length": 1
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "length": 64
+          }
+        }
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "DEBT-OFFSET",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "ERR-ALREADY-ENABLED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-ALREADY-REGISTERED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-AUTH",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-INVALID-ASSET",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-INVALID-ID",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-INVALID-STALENESS",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-LIMIT-REACHED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR-NOT-ENABLED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ITER-UINT-64",
+      "type": {
+        "list": {
+          "type": "uint128",
+          "length": 64
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "MAX-ASSETS",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "U128-BUFF-LEN",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "U32-BUFF-OFFSET",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "U8-BUFF-OFFSET",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "bitmap",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "nonce",
+      "type": "uint128",
+      "access": "variable"
+    }
+  ],
+  "maps": [
+    {
+      "name": "registry",
+      "key": {
+        "buffer": {
+          "length": 1
+        }
+      },
+      "value": {
+        "tuple": [
+          {
+            "name": "addr",
+            "type": "principal"
+          },
+          {
+            "name": "decimals",
+            "type": "uint128"
+          },
+          {
+            "name": "id",
+            "type": {
+              "buffer": {
+                "length": 1
+              }
+            }
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "tuple": [
+                {
+                  "name": "callcode",
+                  "type": {
+                    "optional": {
+                      "buffer": {
+                        "length": 1
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "ident",
+                  "type": {
+                    "buffer": {
+                      "length": 32
+                    }
+                  }
+                },
+                {
+                  "name": "max-staleness",
+                  "type": "uint128"
+                },
+                {
+                  "name": "type",
+                  "type": {
+                    "buffer": {
+                      "length": 1
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "reverse",
+      "key": "principal",
+      "value": {
+        "buffer": {
+          "length": 1
+        }
+      }
+    }
+  ],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch33",
+  "clarity_version": "Clarity4"
+}

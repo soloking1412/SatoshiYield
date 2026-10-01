@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { aggregateYields, invalidateCache } from "../src/aggregator.js";
 
-const DEPLOYER = "SP000000000000000000002AMW42H";
+const DEPLOYER = "SP000000000000000000002Q6VF78";
 const API = "https://api.hiro.so";
 const ZEST_ADDR = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
 

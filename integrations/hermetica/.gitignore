@@ -1,0 +1,4 @@
+node_modules/
+fork/.cache/
+fork/deployments/
+fork/settings/Devnet.toml

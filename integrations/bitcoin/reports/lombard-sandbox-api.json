@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-01T08:02:44.458Z",
+  "endpoint": "https://gastald-testnet.prod.lombard-fi.com/api/v1/claimer/get-user-signature?user_destination_address=0xF38699B59ACAB779641cD07c56a2e8e10516d3D0&chain_id=11155111&token_address=0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+  "status": 200,
+  "contentType": "application/json",
+  "redirected": false,
+  "finalUrl": "https://gastald-testnet.prod.lombard-fi.com/api/v1/claimer/get-user-signature?user_destination_address=0xF38699B59ACAB779641cD07c56a2e8e10516d3D0&chain_id=11155111&token_address=0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+  "bodySample": "{}",
+  "sdkMappedHasSignature": "undefined",
+  "transactionsBroadcast": 0
+}

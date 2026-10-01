@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-01T08:18:13.358Z",
+  "method": "Read-only review of the real public testnet mock position; no wallet provider or signing invoked.",
+  "text": "Withdraw position\n\nReview the action for Zest on Stacks testnet.\n\nWallet\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX\nRecorded principal\n0.001 sBTC\nAdapter\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7\nContract version\nv7\nEstimated net payout\n0.001095 sBTC\nOn-chain minimum payout\n0.00108953 sBTC\nPosition performance fee\n5.00% of yield\n\nThe minimum allows up to 0.5% below this net quote, rounded up to a whole satoshi. This review keeps that minimum fixed. A lower payout makes the transaction fail; network fees may still apply.\n\nBack\nReview in wallet",
+  "enabled": true,
+  "restored": "Review withdrawal ",
+  "failure": "Withdraw position\n\nReview the action for Zest on Stacks testnet.\n\nWallet\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX\nRecorded principal\n0.001 sBTC\nAdapter\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7\nContract version\nv7\nRedemption quote unavailable. Failed to fetch No payout has been assumed. Retry quote\nBack\nReview in wallet",
+  "blocked": true,
+  "errors": [],
+  "transactionSigningPerformed": false
+}

@@ -1,0 +1,89 @@
+name: Validate rebuild
+on:
+  pull_request:
+  push:
+    branches: [Mainnet-beta, 'codex/**']
+permissions:
+  contents: read
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: contracts/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:v7:report
+      - run: npm run test:v7:adapters
+      - run: npm run test:hermetica:v7:report
+  app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        package: [frontend, indexer]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: ${{ matrix.package }}/package-lock.json
+      - run: npm ci
+      - if: matrix.package == 'frontend'
+        run: |
+          npm ci --ignore-scripts --prefix ../integrations/stacks
+          npm ci --ignore-scripts --prefix ../integrations/bitcoin
+          npm ci --ignore-scripts --prefix ../integrations/pox5
+          npm run build --prefix ../integrations/bitcoin
+      - run: npm test
+      - run: npm audit --omit=dev
+      - run: npm run build
+        env:
+          VITE_NETWORK: mainnet
+          VITE_DEPLOYER_MAINNET: SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V
+          VITE_VAULT_CONTRACT_NAME: vault-v6
+      - if: matrix.package == 'frontend'
+        run: npm run build:testnet
+        env:
+          VITE_NETWORK: testnet
+          VITE_DEPLOYER_TESTNET: ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX
+          VITE_VAULT_CONTRACT_NAME: vault-v7
+          VITE_ENABLE_TESTNET_DEPOSITS: 'true'
+  integrations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        package: [stacks, bitcoin, pox5]
+    defaults:
+      run:
+        working-directory: integrations/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: integrations/${{ matrix.package }}/package-lock.json
+      - run: npm ci --ignore-scripts
+      - if: matrix.package == 'stacks'
+        run: cp guard-unit/settings/Devnet.toml.example guard-unit/settings/Devnet.toml
+      - if: matrix.package == 'bitcoin'
+        run: npm run build
+      - run: npm test
+      - run: npm audit --audit-level=moderate

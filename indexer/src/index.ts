@@ -12,7 +12,7 @@ import { galxeRouter } from "./routes/galxe.js";
  * oracle keys, and hard-fail a mainnet boot that is missing required config.
  */
 function validateConfig(): void {
-  const network = process.env["STACKS_NETWORK"] ?? "testnet";
+  const network = process.env["STACKS_NETWORK"];
   if (network !== "mainnet" && network !== "testnet") {
     throw new Error(
       `Invalid STACKS_NETWORK "${network}" — must be "mainnet" or "testnet".`
@@ -41,7 +41,7 @@ function validateConfig(): void {
     if (missing.length > 0) {
       throw new Error(`[indexer] mainnet requires env vars: ${missing.join(", ")}`);
     }
-    if (!oracleKey || !oracleKey2) {
+    if (process.env["ORACLE_WRITES_ENABLED"] === "true" && (!oracleKey || !oracleKey2)) {
       throw new Error(
         "[indexer] mainnet requires ORACLE_PRIVATE_KEY and ORACLE_PRIVATE_KEY_2 for 2-of-3 oracle consensus."
       );
@@ -157,10 +157,8 @@ process.on("unhandledRejection", (reason) => {
   );
 });
 
-// Oracle scheduler: fetches live APY and pushes to chain every 30 min — well
-// inside the adapters' ~5.5h (2160-block) staleness window, so on-chain APY
-// never goes stale (and deposits never block) while the indexer is running.
-// No-ops silently if ORACLE_PRIVATE_KEY is not set.
+// Writes require explicit opt-in. Missing fresh observations stop publication
+// so the contract can age out stale APY instead of silently renewing it.
 startOracleScheduler(30 * 60 * 1000);
 
 export default app;

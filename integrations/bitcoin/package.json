@@ -1,0 +1,38 @@
+{
+  "name": "@satoshiyield/bitcoin-integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "check:live": "node scripts/check-live.mjs"
+  },
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "dependencies": {
+    "@babylonlabs-io/babylon-proto-ts": "1.22.1",
+    "@babylonlabs-io/btc-staking-ts": "2.8.6",
+    "@bitcoinerlab/secp256k1": "1.2.0",
+    "@layerzerolabs/lz-v2-utilities": "3.0.168",
+    "@lombard.finance/sdk": "5.9.0",
+    "axios": "1.20.0",
+    "bignumber.js": "9.3.1",
+    "bitcoinjs-lib": "6.1.7",
+    "buffer": "6.0.3",
+    "viem": "2.57.2"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "fast-check": "4.10.2",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

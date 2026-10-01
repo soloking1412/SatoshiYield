@@ -1,0 +1,193 @@
+{
+  "functions": [
+    {
+      "name": "burn-for-protocol",
+      "access": "public",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "mint-for-protocol",
+      "access": "public",
+      "args": [
+        {
+          "name": "recipient",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-token-uri",
+      "access": "public",
+      "args": [
+        {
+          "name": "value",
+          "type": {
+            "string-ascii": {
+              "length": 256
+            }
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "transfer",
+      "access": "public",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "uint128"
+        },
+        {
+          "name": "sender",
+          "type": "principal"
+        },
+        {
+          "name": "recipient",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-last-token-id",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "none"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-owner",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "optional": "principal"
+            },
+            "error": "none"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-token-uri",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "optional": {
+                "string-ascii": {
+                  "length": 256
+                }
+              }
+            },
+            "error": "none"
+          }
+        }
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "ERR_GET_OWNER",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_NOT_AUTHORIZED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "last-id",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "token-uri",
+      "type": {
+        "optional": {
+          "string-ascii": {
+            "length": 256
+          }
+        }
+      },
+      "access": "variable"
+    }
+  ],
+  "maps": [],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [
+    {
+      "name": "withdraw-nft",
+      "type": "uint128"
+    }
+  ],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

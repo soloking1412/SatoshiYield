@@ -1,0 +1,12 @@
+[project]
+name = "satoshi-hermetica-v7-fork"
+description = "Hermetica real-state integration proof; mutations local only"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+[repl.remote_data]
+enabled = true
+api_url = "https://api.hiro.so"
+initial_height = 9101467
+[repl.settings]
+initial_epoch = "4.0"

@@ -1,0 +1,109 @@
+{
+  "checkedAt": "2026-10-01T08:14:48.278Z",
+  "tool": "npm audit --json (all installed dependencies, including development dependencies)",
+  "packages": [
+    {
+      "folder": "contracts",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    },
+    {
+      "folder": "frontend",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    },
+    {
+      "folder": "indexer",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    },
+    {
+      "folder": "integrations/stacks",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    },
+    {
+      "folder": "integrations/hermetica",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    },
+    {
+      "folder": "integrations/bitcoin",
+      "exitCode": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 9,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 9
+      },
+      "advisories": [
+        {
+          "name": "elliptic",
+          "title": "Elliptic Uses a Cryptographic Primitive with a Risky Implementation",
+          "severity": "low",
+          "url": "https://github.com/advisories/GHSA-848j-6mx2-7j84",
+          "range": "<=6.6.1"
+        }
+      ]
+    },
+    {
+      "folder": "integrations/pox5",
+      "exitCode": 0,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "advisories": []
+    }
+  ],
+  "limitations": [
+    "Bitcoin/Lombard package retains 9 low findings on one upstream elliptic advisory in the required LayerZero/ethers5 dependency chain; no compatible published remediation was identified. No mainnet private-key or BTC broadcast flow is enabled.",
+    "A registry scan is point-in-time metadata, not an independent audit or proof of absent defects."
+  ]
+}

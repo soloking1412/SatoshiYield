@@ -1,8 +1,8 @@
 /**
  * Adapter Registry — the ONE file to update when adding a new yield adapter.
  *
- * Add one entry to ADAPTER_REGISTRY and everything else derives automatically:
- * ProtocolId type, aggregator fetches, oracle push targets, TVL, route validation.
+ * A data registry is not authorization to accept deposits. Integrations stay
+ * review-required until separate contract, custody and deployment gates pass.
  *
  * See docs/ADDING-AN-ADAPTER.md for the full checklist (contracts + frontend too).
  */
@@ -19,9 +19,11 @@ export interface AdapterEntry {
   /** Env-var name for contract name override (e.g. "ZEST_ADAPTER_NAME"). */
   envKey: string;
   risk: RiskLevel;
-  /** Bootstrap APY in bps — used until a live on-chain value is established. */
-  referenceBps: number;
-  /** True when a reliable live APY feed exists (drives is_live_integration). */
+  integrationStatus: "review-required" | "enabled";
+  marketType: "sbtc-lending";
+  withdrawalType: "liquidity-dependent";
+  riskFactors: string[];
+  /** Describes feed capability, never integration approval. */
   hasLiveApy: boolean;
   /** DefiLlama protocol slug for TVL lookups. */
   defillamaSlug: string;
@@ -37,8 +39,11 @@ export const ADAPTER_REGISTRY = defineRegistry({
   zest: {
     defaultName: "zest-earn-adapter",
     envKey: "ZEST_ADAPTER_NAME",
-    risk: "low" as RiskLevel,
-    referenceBps: 350,
+    risk: "medium" as RiskLevel,
+    integrationStatus: "review-required",
+    marketType: "sbtc-lending",
+    withdrawalType: "liquidity-dependent",
+    riskFactors: ["smart-contract", "sbtc-peg", "lending-liquidity", "governance", "rpc-and-oracle"],
     hasLiveApy: true,
     defillamaSlug: "zest-v2",
     fetchNativeApy: fetchZestNativeApy,
@@ -49,7 +54,6 @@ export const ADAPTER_REGISTRY = defineRegistry({
   //   defaultName: "hermetica-hbtc-adapter",
   //   envKey: "HBTC_ADAPTER_NAME",
   //   risk: "medium" as RiskLevel,
-  //   referenceBps: 800,
   //   hasLiveApy: false,
   //   defillamaSlug: "hermetica",
   //   fetchNativeApy: fetchHbtcNativeApy,
@@ -60,7 +64,6 @@ export const ADAPTER_REGISTRY = defineRegistry({
   //   defaultName: "<contract-name>",
   //   envKey: "<PROTOCOL>_ADAPTER_NAME",
   //   risk: "low" | "medium" | "high",
-  //   referenceBps: <bootstrap APY × 100>,
   //   hasLiveApy: <true if a live feed is wired below>,
   //   defillamaSlug: "<defillama-slug>",
   //   fetchNativeApy: fetch<Protocol>NativeApy,

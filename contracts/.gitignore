@@ -18,3 +18,9 @@ node_modules
 # Clarinet auto-generated deployment plans (regenerated; embed a default sender)
 deployments/default.simnet-plan.yaml
 deployments/default.testnet-plan.yaml
+
+# Isolated unit-test generated requirement caches
+.cache-v7/**
+.cache-legacy-simnet/**
+
+.cache-hermetica-v7/**

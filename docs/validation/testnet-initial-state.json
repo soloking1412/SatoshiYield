@@ -1,0 +1,32 @@
+{
+  "network": "testnet",
+  "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+  "checkedAt": "2026-09-30T20:05:38.075Z",
+  "checks": {
+    "paused": true,
+    "totalDeposited": "0",
+    "feeBalance": "0",
+    "syncConfig": null,
+    "syncPending": {
+      "type": "(tuple (at uint) (cap uint) (is-async bool))",
+      "value": {
+        "at": {
+          "type": "uint",
+          "value": "22557"
+        },
+        "cap": {
+          "type": "uint",
+          "value": "50000000"
+        },
+        "is-async": {
+          "type": "bool",
+          "value": false
+        }
+      }
+    },
+    "tokenBalance": {
+      "type": "uint",
+      "value": "10000000"
+    }
+  }
+}

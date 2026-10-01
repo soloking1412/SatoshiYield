@@ -1,0 +1,38 @@
+{
+  "reviewedAt": "2026-10-01T08:02:04.793766+00:00",
+  "sourceSha256": "3750a9d460ea16f2bc38bdb9c89ec9bf2c446e73ac5be97b8ef849d7fcc86506",
+  "command": "node --test --experimental-test-coverage tests/*.test.mjs",
+  "tests": 26,
+  "passed": 26,
+  "failed": 0,
+  "sdk": "@stacks/bitcoin-staking 7.6.0",
+  "networkFixture": "testnet with Bitcoin regtest",
+  "rpc": "Deterministic injected RPC, no public mutations, real SDK and SHA-256 source checks",
+  "sourceFixtureSha256": "44a424364cb3c115ec92d0a72ebd228645e65d8f92792d66695898904e14c734",
+  "coverageNote": "Node V8 execution coverage of the preparation module, not exhaustive security proof; percentages recorded from final console output.",
+  "coverageConsole": [
+    "\u2139  index.mjs | 100.00 |    97.22 |  100.00 | "
+  ],
+  "dependencyVulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "rootChangesVerified": [
+    "Canonical pinned strict transport reused for final script checks",
+    "Canonical bond unlock-height read separately compared using bigint",
+    "Fresh bond/signer/schedule comparisons",
+    "Final asynchronous expiry check",
+    "Saved plan reconstruction and exact raw transaction binding",
+    "Malformed ok-false signer grant rejected"
+  ],
+  "limitations": [
+    "No real allowance or eligible wallet established by fixtures.",
+    "No signing, broadcast, funded registration, signer-manager acceptance or inclusion proof validated.",
+    "Recovery builds an unsigned PSBT; caller must independently verify real Bitcoin height, unspent output, confirmations, wallet key ownership and destination before any future signing.",
+    "Preparation remains fundingAllowed=false and broadcastAllowed=false."
+  ]
+}

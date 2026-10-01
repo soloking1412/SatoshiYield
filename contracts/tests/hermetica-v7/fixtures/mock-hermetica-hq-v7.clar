@@ -1,0 +1,11 @@
+;; Local semantic model ONLY: configurable governance graph, no live protocol claim.
+(define-constant OWNER tx-sender)
+(define-data-var governor principal 'SMJSVT0J9K2DKM8QWXSHXPVTYPJBV4CC5P1ZXAW0)
+(define-data-var protocol bool true)
+(define-data-var enabled bool true)
+(define-public (configure (g principal) (p bool) (e bool))
+  (begin (asserts! (is-eq contract-caller OWNER) (err u100))
+    (var-set governor g) (var-set protocol p) (var-set enabled e) (ok true)))
+(define-read-only (get-owner) (var-get governor))
+(define-read-only (get-protocol (who principal)) (var-get protocol))
+(define-read-only (get-protocol-enabled) (var-get enabled))

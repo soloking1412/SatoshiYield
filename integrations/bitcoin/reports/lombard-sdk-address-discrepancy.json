@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-10-01T07:53:38.664Z",
+  "sdk": "@lombard.finance/sdk@5.9.0",
+  "environment": "testnet",
+  "chainId": 11155111,
+  "catalogAddress": "0xc47e4b3124597fdf8dd07843d4a7052f2ee80c30",
+  "transactionResolverAddress": "0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+  "observation": "First live dry-sign guard rejected the mismatch before any private-key signature. A direct SDK diagnostic request (signing disabled) confirmed feeApproval uses the transaction resolver address.",
+  "sourcePaths": ["dist/chunks/statusConstants-DiQt0EQu.js:618", "dist/chunks/token-addresses-DlPm2dgf.js:357", "dist/chunks/withdrawEarn-BQfeDnnw.js:3292"],
+  "mitigation": "Pin both observed SDK addresses, require the exact supported pair, quote and validate the executing transaction resolver token, and independently match the generated deposit API token record.",
+  "arbitraryAddressOverrideAllowed": false,
+  "firstAttemptSignatures": 0,
+  "transactionsBroadcast": 0
+}

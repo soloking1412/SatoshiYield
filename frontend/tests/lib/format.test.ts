@@ -14,11 +14,11 @@ describe("formatApy — honest low-rate display", () => {
     expect(formatApy(0.0001)).toBe("<0.01");
   });
 
-  it("renders exact/invalid zero as 0", () => {
+  it("renders zero, losses and unavailable values distinctly", () => {
     expect(formatApy(0)).toBe("0");
-    expect(formatApy(-1)).toBe("0");
-    expect(formatApy(NaN)).toBe("0");
-    expect(formatApy(Infinity)).toBe("0");
+    expect(formatApy(-1)).toBe("−1.0");
+    expect(formatApy(NaN)).toBe("—");
+    expect(formatApy(Infinity)).toBe("—");
   });
 
   it("uses 2 decimals across the whole sub-1% range so nothing rounds away", () => {

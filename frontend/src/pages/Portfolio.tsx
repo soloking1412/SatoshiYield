@@ -1,254 +1,35 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useWallet } from "../context/WalletContext.js";
 import { usePositions } from "../hooks/usePositions.js";
 import { useConnectModal } from "../context/ConnectModalContext.js";
 import { PositionCard } from "../components/portfolio/PositionCard.js";
 import { EmptyPortfolio } from "../components/portfolio/EmptyPortfolio.js";
-import { MarkSC } from "../components/shared/MarkSC.js";
-import { useCountUp } from "../hooks/useCountUp.js";
-import { PROTOCOLS } from "../constants/protocols.js";
+import { Icon } from "../components/shared/Icon.js";
+import { formatSbtcAmount } from "../lib/amount.js";
+import { CONTRACTS, VAULT_VERSION } from "../constants/contracts.js";
+import { networkName } from "../lib/stacksClient.js";
+import { GetSbtcButton } from "../components/wallet/GetSbtcButton.js";
+import { FaucetButton } from "../components/wallet/FaucetButton.js";
+import { TransactionActivity } from "../components/portfolio/TransactionActivity.js";
+import { ProtocolHoldings } from "../components/portfolio/ProtocolHoldings.js";
 
 export function Portfolio() {
-  const navigate = useNavigate();
-  const { isConnected } = useWallet();
-  const { data: position, isLoading } = usePositions();
+  const { isConnected, address } = useWallet();
+  const { positions, isLoading, isError, refetch } = usePositions();
   const { openConnectModal } = useConnectModal();
-
-  // Animate the balance display
-  const balanceSats = position ? Number(position.principalSats) / 1e8 : 0;
-  const balVal = useCountUp(balanceSats, 1000, 200);
-
-  if (!isConnected) {
-    return (
-      <main
-        className="pb-20 sm:pb-10"
-        style={{
-          maxWidth: 560,
-          margin: "0 auto",
-          padding: "80px 24px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-          <MarkSC size={52} pulse />
-        </div>
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 700,
-            letterSpacing: "-0.03em",
-            marginBottom: 12,
-          }}
-        >
-          Your portfolio
-        </h1>
-        <p
-          style={{
-            color: "var(--muted)",
-            fontSize: 15,
-            lineHeight: 1.6,
-            maxWidth: 380,
-            margin: "0 auto 30px",
-          }}
-        >
-          Connect your wallet to see your deposits, earnings, and APY — all in one place.
-        </p>
-        <button
-          onClick={openConnectModal}
-          style={{
-            background: "var(--accent)",
-            color: "var(--onAccent)",
-            border: "none",
-            borderRadius: "var(--r)",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 15,
-            fontWeight: 700,
-            padding: "14px 30px",
-            cursor: "pointer",
-            transition: "transform .12s",
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
-          onMouseOut={(e) => (e.currentTarget.style.transform = "none")}
-        >
-          Connect wallet
-        </button>
-      </main>
-    );
-  }
-
-  return (
-    <main
-      className="pb-20 sm:pb-10"
-      style={{ maxWidth: 760, margin: "0 auto", padding: "44px 24px" }}
-    >
-      <div style={{ marginBottom: 24 }}>
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 700,
-            letterSpacing: "-0.03em",
-            marginBottom: 6,
-            margin: 0,
-          }}
-        >
-          Your portfolio
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 4 }}>
-          Everything you're earning, in one view.
-        </p>
-      </div>
-
-      {isLoading ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 20,
-            padding: "70px 0",
-            animation: "fadeIn .3s ease",
-          }}
-        >
-          <MarkSC size={48} pulse />
-          <div
-            style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 12,
-              color: "var(--muted)",
-              letterSpacing: ".1em",
-            }}
-          >
-            LOADING POSITION…
-          </div>
-        </div>
-      ) : position ? (
-        <>
-          {/* ── Balance hero ────────────── */}
-          <div
-            style={{
-              background: "var(--bg2)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--r-lg)",
-              padding: "30px 28px",
-              marginBottom: 16,
-              boxShadow: "0 0 50px -18px var(--glow)",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: 10,
-                color: "var(--lo)",
-                letterSpacing: ".12em",
-                marginBottom: 10,
-              }}
-            >
-              TOTAL BALANCE
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: 8,
-                marginBottom: 14,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "clamp(36px,6vw,46px)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {balVal.toFixed(4)}
-              </div>
-              <span style={{ fontSize: 20, color: "var(--accent)", fontWeight: 600 }}>sBTC</span>
-            </div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  background: "var(--accent2D)",
-                  border:
-                    "1px solid color-mix(in oklch, var(--accent2) 30%, transparent)",
-                  borderRadius: "var(--r-pill)",
-                  padding: "5px 13px",
-                }}
-              >
-                <span style={{ color: "var(--pos)", fontSize: 13 }}>●</span>
-                <span
-                  style={{ fontSize: 12.5, color: "var(--pos)", fontWeight: 600 }}
-                >
-                  {PROTOCOLS[position.protocol].name}
-                </span>
-              </div>
-              <div
-                style={{
-                  background: "var(--bg3)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--r-pill)",
-                  padding: "5px 13px",
-                  fontSize: 12.5,
-                  color: "var(--muted)",
-                }}
-              >
-                principal-protected beta
-              </div>
-            </div>
-          </div>
-
-          {/* ── Active position card ─────── */}
-          <div
-            style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 10,
-              color: "var(--lo)",
-              letterSpacing: ".12em",
-              margin: "4px 2px 12px",
-            }}
-          >
-            ACTIVE POSITION
-          </div>
-
-          <PositionCard position={position} />
-
-          <div
-            style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}
-          >
-            <button
-              onClick={() => navigate("/yields")}
-              style={{
-                flex: 1,
-                minWidth: 140,
-                background: "transparent",
-                color: "var(--accent)",
-                border: "1.5px solid var(--accent)",
-                borderRadius: "var(--r)",
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: 14,
-                fontWeight: 700,
-                padding: "13px 20px",
-                cursor: "pointer",
-                transition: "background .15s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "var(--accentD)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.background = "transparent")
-              }
-            >
-              + New deposit
-            </button>
-          </div>
-        </>
-      ) : (
-        <EmptyPortfolio />
-      )}
-    </main>
-  );
+  const total = positions.reduce((sum, position) => sum + position.principalSats, 0n);
+  return <main id="main-content" className="page-shell narrow" tabIndex={-1}>
+    <div className="page-intro"><div><p className="eyebrow">Your capital, accounted for</p><h1>Your portfolio.</h1><p>Review recorded principal and withdrawal status for the configured vault. Transaction submission and on-chain confirmation are separate steps.</p></div>{isConnected && <button className="btn ghost" disabled={isLoading} onClick={() => void refetch()}><Icon name="refresh" size={14} />Refresh</button>}</div>
+    {!isConnected ? <div className="state-panel"><div className="state-symbol"><Icon name="wallet" size={25} /></div><h2>A wallet brings your positions into view.</h2><p>Connect a Stacks wallet to read your positions on {networkName}. Connecting does not authorize any transaction.</p><button className="btn primary" onClick={openConnectModal}>Connect wallet <Icon name="arrow" size={15} /></button><Link className="text-link" to="/yields">Explore strategies first</Link></div> : <>
+      <div className="portfolio-header"><span className="contract-address">{address}</span><div style={{ display: "flex", gap: 9 }}><GetSbtcButton /><FaucetButton /></div></div>
+      {isLoading ? <div className="state-panel" role="status"><span className="spinner" /><h2>Reading your positions</h2><p>Checking the configured contracts on Stacks {networkName}.</p></div> : isError ? <div className="state-panel" role="alert"><div className="state-symbol"><Icon name="info" size={25} /></div><h2>Positions could not be verified.</h2><p>A failed contract read does not mean your balance is zero. Retry or inspect the vault directly.</p><button className="btn primary" onClick={() => void refetch()}>Retry contract read</button><a className="text-link" href={`https://explorer.hiro.so/address/${CONTRACTS.VAULT}?chain=${networkName}`} target="_blank" rel="noopener noreferrer">Inspect the vault <Icon name="external" size={13} /></a></div> : positions.length ? <>
+        <dl className="metrics"><div className="metric"><dt>Total recorded principal</dt><dd>{formatSbtcAmount(total)}<small>sBTC</small></dd><p>Not a current redemption estimate</p></div><div className="metric"><dt>Positions in this vault</dt><dd>{positions.length}</dd><p>{VAULT_VERSION} · {networkName}</p></div><div className="metric"><dt>Pending redemptions</dt><dd>{positions.filter((position) => position.status === "pending").length}</dd><p>Funding required before a claim</p></div></dl>
+        <div className="position-list">{positions.map((position) => <PositionCard key={position.adapter} position={position} />)}</div>
+      </> : <EmptyPortfolio />}
+      <p className="directory-footnote">This view reads {VAULT_VERSION} positions for the configured adapters. It does not aggregate balances across other vault versions or unrelated protocols. <Link className="text-link" to="/tvl">Verify configured contracts</Link></p>
+      <div className="notice"><Icon name="wallet" /><div>Direct Zest and StackingDAO receipts stay in your wallet. <Link to="/integrations">Check protocol balances and withdrawal routes</Link>.</div></div>
+      <ProtocolHoldings />
+      <TransactionActivity />
+    </>}
+  </main>;
 }

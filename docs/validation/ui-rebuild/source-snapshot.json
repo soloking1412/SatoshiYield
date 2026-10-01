@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-01T08:23:19.710757+00:00",
+  "verdict": "PASS for the reviewed release-candidate UI",
+  "review": "docs/validation/ui-rebuild-review.md",
+  "sources": {
+    "frontend/src/components/shared/Modal.tsx": "7d2e487399c7f3b93d7b5ab57e401547faf710a5839e31ab89afcfc035616c35",
+    "frontend/src/components/StacksRoutes.tsx": "340bdae47a35bb33a321c38a9f4d23c5b773f3cbeb4cbb7ad370c455bb10b681",
+    "frontend/src/components/NativeBitcoinBond.tsx": "823c3fda275e329c7c20de57640a65585d31b4dc286e857cbfb222b301926e03",
+    "frontend/src/components/portfolio/ProtocolHoldings.tsx": "0dc511dfc9e6da49578e836d1e58224443136b92022a02cbf88ad1f5306dc4bc",
+    "frontend/src/components/portfolio/TransactionActivity.tsx": "d35655365a272e11788dde5e62f963e5989276e235a4b2150e1a2805c27137d7",
+    "frontend/src/components/portfolio/WithdrawalReview.tsx": "5a8f91932ebe801bdcfa1829fc616fb9aa8096695618f5b61e635f5f3ce9a29b",
+    "frontend/src/components/bitcoin/BitcoinRoutes.tsx": "f4b79de1a13c65e4d5727a89fda523a325c226ea7675341fd601511125b13092",
+    "frontend/src/pages/Home.tsx": "59d208c38748384ccf6a801b6cef2a6d71752269309dbe7be49f4667ddca0645",
+    "frontend/src/pages/Integrations.tsx": "aef34bd9b7009df34f9557d46e3227dcc05b70c9ca1ffb503dc7248b9ab94562",
+    "frontend/src/pages/Portfolio.tsx": "4cd745c4105b5ea8023e145ffbaac24a0488498d698cd2ce19a94470071ad4d4",
+    "frontend/src/pages/Security.tsx": "75af15cffe0280a34ba245dd1ea6d5695f887bfd4e461a5ebc4df85065717cb5",
+    "frontend/src/index.css": "b60dc3a6018af61e7140f8496dac57b389fa720c64f927fe2c3d86b4488cf7f7",
+    "frontend/vite.config.ts": "57dc1a064de28f0b1e81b8914d8d5323332e8b76d1a54ef75ab549b33d79bf6d"
+  },
+  "browser": "Chromium via Playwright",
+  "widths": [
+    1440,
+    768,
+    375
+  ],
+  "signatures": 0,
+  "broadcasts": 0
+}

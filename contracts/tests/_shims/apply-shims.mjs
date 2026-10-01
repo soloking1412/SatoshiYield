@@ -1,4 +1,5 @@
-// Applies tracked simnet shims into Clarinet's requirement cache before tests.
+// Applies tracked accounting shims ONLY to the isolated legacy simnet cache.
+// Does not modify production/fork dependency caches or fetch mainnet contracts.
 //
 // The hermetica-hbtc-adapter calls the real mainnet hBTC vault by hardcoded
 // principal. The real contract's multi-contract state cannot be initialised in
@@ -13,10 +14,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const cacheDir = join(here, "..", "..", ".cache", "requirements");
+const cacheDir = join(here, "..", "..", ".cache-legacy-simnet", "requirements");
 
 // contract-id -> tracked shim file
 const SHIMS = {
+  "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc": "v0-vault-sbtc.clar",
   "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2": "vault-hbtc-v1-2.clar",
 };
 

@@ -3,25 +3,26 @@
  *
  * The Zest vault (v0-vault-sbtc) is an ERC-4626-style lending vault: one zsBTC
  * share is worth `convert-to-assets(SHARE_UNIT) / SHARE_UNIT` sBTC, and that
- * price only rises as supply interest accrues. The annualized growth of that
- * price IS the realized supply APY — exact, trustless, and tied to the exact
- * vault we deposit into (no DefiLlama v0/v2 ambiguity).
+ * price reflects the vault accounting. Annualized sampled growth estimates
+ * realized supply APY for that exact vault. It is subject to RPC correctness,
+ * sampling and underlying strategy losses; it is not guaranteed future yield.
  *
  * We keep a small rolling history of (timestamp, price) snapshots and annualize
  * the growth from the oldest snapshot at least MIN_WINDOW old. Until that much
- * history exists, we return null and the caller holds the on-chain last-known
- * value / reference rate (honest: we never fabricate a realized number).
+ * history exists, we return null and the caller does not publish an oracle
+ * update. Old on-chain values must be allowed to expire.
  *
  * History is in-memory (survives across cycles on the always-on instance) with
  * optional file persistence via ZEST_SHARE_PRICE_FILE so it can survive a
  * restart when a persistent disk is mounted. On a cold start with no history,
- * the on-chain oracle simply holds its last pushed value.
+ * the publisher waits for enough fresh history; no reference rate is published.
  */
 
 import { uintCV, cvToHex } from "@stacks/transactions";
 import { promises as fs } from "node:fs";
 import { dirname } from "node:path";
 import { readUintFromContract } from "./fetchers/chain.js";
+import { chainNetwork } from "./network.js";
 
 const ZEST_VAULT_ADDRESS = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
 const ZEST_VAULT_NAME = "v0-vault-sbtc";
@@ -49,6 +50,9 @@ export function __setHistory(snaps: Snap[]): void {
 
 /** Current share price (assets per share) from the live vault. */
 export async function readZestSharePrice(): Promise<number> {
+  if (chainNetwork.name !== "mainnet") {
+    throw new Error("No verified Zest testnet deployment is configured");
+  }
   const assets = await readUintFromContract(
     ZEST_VAULT_ADDRESS,
     ZEST_VAULT_NAME,
@@ -60,17 +64,19 @@ export async function readZestSharePrice(): Promise<number> {
 
 /**
  * PURE: realized APY (percent) from snapshots + the current price, or null when
- * there isn't yet a snapshot at least MIN_WINDOW old. The price only rises, so a
- * non-positive growth is treated as noise/reset (null), never a negative APY.
+ * there isn't yet an eligible historical snapshot. Negative performance is
+ * unsupported by the unsigned oracle: return null and stop publication rather
+ * than replacing a loss with zero or a positive reference rate.
  */
 export function computeRealizedApy(
   snaps: Snap[],
   nowPrice: number,
   now: number
 ): number | null {
-  if (!Number.isFinite(nowPrice) || nowPrice <= 0) return null;
+  if (!Number.isFinite(nowPrice) || nowPrice <= 0 || !Number.isFinite(now)) return null;
   const anchor = snaps
-    .filter((s) => Number.isFinite(s.p) && s.p > 0 && now - s.t >= MIN_WINDOW_MS)
+    .filter((s) => Number.isFinite(s.p) && s.p > 0 && Number.isFinite(s.t) &&
+      now - s.t >= MIN_WINDOW_MS && now - s.t <= MAX_WINDOW_MS)
     .sort((a, b) => a.t - b.t)[0]; // oldest snapshot >= MIN_WINDOW old -> longest, smoothest window
   if (!anchor) return null;
 
@@ -95,7 +101,9 @@ async function ensureLoaded(): Promise<void> {
       history = arr.filter(
         (s): s is Snap =>
           typeof s === "object" && s !== null &&
-          typeof (s as Snap).t === "number" && typeof (s as Snap).p === "number"
+          Number.isFinite((s as Snap).t) && Number.isFinite((s as Snap).p) &&
+          (s as Snap).p > 0 && (s as Snap).t <= Date.now() &&
+          Date.now() - (s as Snap).t <= MAX_WINDOW_MS
       );
     }
   } catch {
@@ -124,14 +132,15 @@ export async function fetchZestRealizedApy(): Promise<number | null> {
   try {
     price = await readZestSharePrice();
   } catch {
-    return null; // read failed -> caller holds last-known-good / reference
+    return null; // read failed -> oracle publication stops
   }
   if (!Number.isFinite(price) || price <= 0) return null;
 
   const now = Date.now();
   const apy = computeRealizedApy(history, price, now);
 
-  history = [...history.filter((s) => now - s.t <= MAX_WINDOW_MS), { t: now, p: price }];
+  history = [...history.filter((s) => Number.isFinite(s.t) && Number.isFinite(s.p) &&
+    s.p > 0 && s.t <= now && now - s.t <= MAX_WINDOW_MS), { t: now, p: price }];
   await persist();
 
   return apy;

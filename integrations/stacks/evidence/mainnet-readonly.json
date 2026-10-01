@@ -1,0 +1,261 @@
+{
+  "checkedAt": "2026-10-01T08:07:16.873Z",
+  "scope": "Read-only mainnet state, source pin, registry and quote verification; no transactions signed or broadcast",
+  "owner": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+  "observations": [
+    {
+      "protocol": "zest-sbtc",
+      "state": {
+        "protocol": "zest-sbtc",
+        "owner": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+        "network": "mainnet",
+        "chainId": 1,
+        "observedAt": 1790842036874,
+        "tip": "0xd773d501fc66307e99aa80b681378dcb25811036efdba9dcf6d8aa1b72a19543",
+        "stacksHeight": 9101598,
+        "burnHeight": 969419,
+        "sources": [
+          {
+            "contract": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+            "sha256": "2ce21e1ae5bf0d1a8f6dbc09e8c61186770086db0332aad5526e9c5252f9c30a"
+          },
+          {
+            "contract": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-assets",
+            "sha256": "171dbfd8eae2846ccf46d782394d540fbfc74dc4d95a0d2720b946ef69051dda"
+          },
+          {
+            "contract": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+            "sha256": "8f0a0edd55fa25613aac50769cf18a671227333850950d4f7f1f913ea0a9c8d1"
+          },
+          {
+            "contract": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-registry",
+            "sha256": "6769b24ae384bf5c3a15922a8ed42298b6bb7723ae30cf59c8619c172f500887"
+          }
+        ],
+        "queueGuard": null,
+        "claimOnly": false,
+        "assetBalance": "4085359507",
+        "paused": {
+          "accrue": false,
+          "borrow": false,
+          "deposit": false,
+          "flashloan": false,
+          "redeem": false,
+          "repay": false
+        },
+        "cap": "500000000000",
+        "receiptBalance": "0",
+        "registry": {
+          "addr": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+          "collateral": true,
+          "debt": false,
+          "decimals": "8",
+          "id": "3",
+          "oracle": {
+            "callcode": "02",
+            "ident": "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+            "max-staleness": "120",
+            "type": "00"
+          }
+        },
+        "underlying": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+        "assets": "66088904831",
+        "liquidity": "58745048711",
+        "allowance": {
+          "required": false,
+          "type": "none",
+          "reason": "SIP-010 direct calls use caller authority; there is no ERC-20 approval transaction."
+        }
+      },
+      "quote": {
+        "amount": "100000",
+        "expectedOut": "99940",
+        "minimumOut": "99440",
+        "fee": "0",
+        "expiresAt": 1790842096874
+      },
+      "route": {
+        "contract": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+        "function": "deposit",
+        "postConditionMode": 2,
+        "rules": [
+          {
+            "asset": "STX",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "0"
+          },
+          {
+            "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "100000"
+          },
+          {
+            "asset": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "0"
+          }
+        ]
+      }
+    },
+    {
+      "protocol": "stackingdao-stbtc",
+      "state": {
+        "protocol": "stackingdao-stbtc",
+        "owner": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+        "network": "mainnet",
+        "chainId": 1,
+        "observedAt": 1790842042078,
+        "tip": "0xd773d501fc66307e99aa80b681378dcb25811036efdba9dcf6d8aa1b72a19543",
+        "stacksHeight": 9101598,
+        "burnHeight": 969419,
+        "sources": [
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-stbtc-v1",
+            "sha256": "f221645b88f16f4866db1d8d8af14669639f9018cea9b33b517c5ae74384957b"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token",
+            "sha256": "1b72c6ca641dbf251f307b8892c04408161fa1fd4957ee82fe9263a3454b214c"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+            "sha256": "77a38db774ffd43e2e3a33c27b4b96f9fddaa0cfd8b8f5f94ea1c46ebdf59a24"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.data-stbtc-v1",
+            "sha256": "5ffeb5b54235139975461cfa5145d7d1c4d972a55a7e10422e59d81b3009ad88"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.dao",
+            "sha256": "a40f53e543a810456891f9e3d5d2f09ec8f91690ff4fb1554d8384f899ac1e0d"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.withdraw-data-stbtc",
+            "sha256": "df2748f3efc119453bc9a5eb07be302fcdaec04157f4ece672b1add43fe1a7ec"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-withdraw-nft",
+            "sha256": "2fbc5dea54161c673d3252cba857a29a9e359435f738479c09b3a1418aae6240"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+            "sha256": "cceed94aad6afa318d7e3d74d7a1f78bf4aae12c6cfb677b7556714a9419a338"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-tracking",
+            "sha256": "64ad8ff559c05ef678664993305ba8317c65d2b3c9e4ee0321bb138cc29f447b"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-tracking-v2",
+            "sha256": "1bf9401110f1a5b057c64d5ce354a16cd6250a7777bfa48af3e641c27c2c86c0"
+          },
+          {
+            "contract": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+            "sha256": "8f0a0edd55fa25613aac50769cf18a671227333850950d4f7f1f913ea0a9c8d1"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-token",
+            "sha256": "2d1f8118653c14be791eb5ff6786d41eff0454386414f43df4fc15089ccc0f85"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-token-v2",
+            "sha256": "9766e73be4bf0a0b8ff7bdf51ad2798cbafbd6c9edd885f29e320c66c3959004"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-tracking-data",
+            "sha256": "71df11d15fc249d2e776ec7c5eefbbd71affd09cd9dcf2cbc6002d17010eee9e"
+          },
+          {
+            "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-tracking-data-v2",
+            "sha256": "13817ee6acaa31682a357fda39ee58db540e1bf1e75135fd729a9d978fe59cb1"
+          },
+          {
+            "contract": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-registry",
+            "sha256": "6769b24ae384bf5c3a15922a8ed42298b6bb7723ae30cf59c8619c172f500887"
+          }
+        ],
+        "queueGuard": null,
+        "claimOnly": false,
+        "assetBalance": "4085359507",
+        "coreActive": true,
+        "enabled": true,
+        "receiptBalance": "0",
+        "depositPaused": false,
+        "idlePaused": false,
+        "claimPaused": false,
+        "requestPaused": false,
+        "feeExempt": false,
+        "withdrawFee": "0",
+        "idleFee": "100",
+        "supply": "16068617738",
+        "reserved": "509",
+        "liquidBalance": "1102428828",
+        "pendingShares": "500",
+        "totalBacking": "16102428828",
+        "rewardBalance": "44868015",
+        "ratioDown": "100210416",
+        "readyRewards": "149432",
+        "ratioUp": "100210417",
+        "ststxbtcBps": "3276",
+        "keeper": "SP2D2R1KXCP2RRRNZQWKK2EJXPJBBKHD0K3JJVAB5",
+        "ststxBps": "4801",
+        "stxRecipient": "SP19E4PBQXGKY8C3977BA828HVGW2C8YH9KK9Y8AJ",
+        "legacySupply": "0",
+        "cooldown": "4200",
+        "newSupply": "26711244199488",
+        "rates": {
+          "pendingReserveRewards": "28737",
+          "down": "100210595",
+          "up": "100210596"
+        },
+        "allowance": {
+          "required": false,
+          "type": "none",
+          "reason": "SIP-010 direct calls use caller authority; there is no ERC-20 approval transaction."
+        }
+      },
+      "quote": {
+        "amount": "100000",
+        "expectedOut": "99789",
+        "minimumOut": "99290",
+        "fee": "0",
+        "expiresAt": 1790842102078
+      },
+      "route": {
+        "contract": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-stbtc-v1",
+        "function": "deposit",
+        "postConditionMode": 2,
+        "rules": [
+          {
+            "asset": "STX",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "0"
+          },
+          {
+            "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "100000"
+          },
+          {
+            "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "condition": "eq",
+            "amount": "0"
+          },
+          {
+            "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+            "condition": "lte",
+            "amount": "44868015"
+          }
+        ]
+      }
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,63 @@
+{
+  "capturedAt": "2026-10-01T08:16:17.871Z",
+  "evidence": [
+    {
+      "check": "fixed modal restores keyboard focus",
+      "value": {
+        "tag": "BUTTON",
+        "text": "Connect wallet"
+      }
+    },
+    {
+      "check": "light primary contrast colors",
+      "value": {
+        "background": "rgb(153, 80, 26)",
+        "text": "rgb(255, 249, 240)"
+      }
+    },
+    {
+      "check": "listed strategy copy",
+      "value": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements \u2197\n\nTHE STRATEGY DIRECTORY\n\nExplore your next move.\n\nCompare the mechanics before the rate. Each route shows its asset, withdrawal model, and current availability in SatoshiYield.\n\nUnderstand the risks\nDeposit access: New deposits are disabled in this rebuild pending independent review and verified integrations. Existing positions retain withdrawal access.\nAll strategies\nLending\nManaged\nSearch strategies\n2 listed sBTC strategies\n0 fresh rate feeds\nZE\nZest\nLending market\nASSET\nsBTC\nREPORTED APY\n\u2014\nStale \u00b7 unavailable\nWITHDRAWAL\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nASSET\nsBTC\nREPORTED APY\n\u2014\nNo verified feed\nWITHDRAWAL\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nOTHER PROTOCOL CONNECTIONS\nBB\nBabylon BTC staking\n\nSignet wallet and parameter checks can prepare an unsigned staking plan. Signing and broadcast are unavailable. Finality-provider, slashing and unbonding risks apply.\n\nBTC\nUnbonding period; slashing conditions apply\nRead protocol docs\nTest preparation\nReview connection\nLB\nLombard LBTC\n\nSignet-to-Sepolia quotes and reviewed deposit-address authorization are available. No Bitcoin payment is submitted here. Custody, strategy, bridge and redemption risks apply.\n\nBTC / LBTC\nCustodian redemption and destination-chain rules\nRead protocol docs\nTest preparation\nReview connection\nSV\nSolvBTC\n\nBitcoin custody and mapped tokens across other chains. Different products carry different yield and redemption risks. Wallet, bridge and custody integrations are not implemented here.\n\nBTC / SolvBTC\nCustody and product-specific redemption\nRead protocol docs\nResearch only\nstB\nStacking DAO stBTC\n\nDirect-wallet deposits, liquid withdrawals and existing NFT claims use live source and permission checks. New queued exits await guard deployment. Governance can modify existing claim records.\n\nsBTC\nsBTC redemption subject to reserves and bonds\nRead protocol docs\nDirect route\nReview connection\nzv\nZest zvstBTC\n\nA distinct stBTC strategy with operator-managed leverage. Not the legacy Zest Earn adapter. No deposit integration is enabled here.\n\nsBTC\nVault liquidity and leverage constraints\nRead protocol docs\nResearch only\nSTX\nSTX stacking\n\nstSTX and stSTXbtc accept STX. They require a separate STX asset flow and cannot be substituted for an sBTC deposit.\n\nSTX\nProduct-specific cycle and redemption rules\nRead protocol docs\nResearch only\nBTC\nNative BTC staking\n\nRead next-bond eligibility, wallet allowance and the paired STX commitment using the current PoX-5 API. Funding and registration signing are disabled. Testnet uses Bitcoin regtest, not Signet.\n\nBTC + STX\nBitcoin timelock; bond-specific eligibility\nRead protocol docs\nEligibility only\nReview connection\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code \u2197\nStacks docs \u2197\n\u00a9 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release"
+    },
+    {
+      "check": "native mainnet public-address eligibility",
+      "value": "NATIVE BITCOIN \u00b7 STACKS POX-5\n\nCheck bond eligibility.\nRead-only\n\nCheck the next bond\u2019s registration window, your allowance, and the paired STX commitment before considering a Bitcoin lock. This check does not fund or register a stake.\n\nThis route checks native Bitcoin on mainnet. The Babylon and Lombard panels above are separate test-network preparations.\nBitcoin amount to evaluate\nBTC\nCheck eligibility\nFailed to fetch dynamically imported module: http://localhost:5173/@fs/Users/soloking/SatoshiYields/integrations/pox5/src/index.mjs"
+    },
+    {
+      "check": "direct Zest live quote",
+      "value": "STACKS MAINNET \u00b7 SBTC\n\nZest\nVerify before use\n\nSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.\n\nDeposit\nWithdraw\nAvailable 40.85359507 sBTC \u00b7 0 zsBTC\nRefresh balances\nAmount to deposit\nsBTC\nReview quote\nReview this action\n0.5% output tolerance\nExpected output\n0.0009994 zsBTC\nMinimum output\n0.0009944 zsBTC\nEstimated protocol fee\n0 sBTC\nNetwork fee shown by your wallet\nRecipient\nSP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2\nApproval transaction\nNone required\n\nThe minimum output limits the final payout. For an idle exit, protocol fees can change before confirmation within that payout limit.\n\n4 contract source hashes checked at Stacks block 9101628. All amounts use exact token units. Unexpected outgoing assets are rejected.\n\nI reviewed the minimum output and fees. Protocol losses are possible, and wallet submission still needs on-chain confirmation.\nContinue in wallet"
+    },
+    {
+      "check": "direct quote consent starts blocked",
+      "value": true
+    },
+    {
+      "check": "direct quote explicit consent enables review handoff",
+      "value": true
+    },
+    {
+      "check": "v7 withdrawal review on real mock position",
+      "value": "Withdraw position\n\nReview the action for Zest on Stacks testnet.\n\nWallet\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX\nRecorded principal\n0.001 sBTC\nAdapter\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7\nContract version\nv7\nReading the current redemption quote\u2026\nBack\nReview in wallet",
+      "buttons": [
+        {
+          "text": "",
+          "disabled": false
+        },
+        {
+          "text": "Back",
+          "disabled": false
+        },
+        {
+          "text": "Review in wallet",
+          "disabled": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "transactionSigningPerformed": false,
+  "followUp": {
+    "nativeDynamicImport": "Resolved after preview dependency optimizer restart; successful fresh eligibility evidence is native-browser-evidence.json. Per-network optimizer cache directories now prevent cross-preview invalidation.",
+    "withdrawalLoadingCapture": "Completed ready and unavailable quote checks recorded separately in withdrawal-browser-evidence.json."
+  }
+}

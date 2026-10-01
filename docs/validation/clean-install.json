@@ -1,0 +1,171 @@
+{
+  "startedAt": "2026-10-01T08:20:22.941Z",
+  "node": "24.7.0",
+  "scope": "Fresh copy of tracked and unignored candidate files, installed from lockfiles with no reused package directories or Clarinet caches. Tests and builds only; no network transaction submission.",
+  "bootstrapPassed": true,
+  "results": [
+    {
+      "label": "stacks-tests",
+      "folder": "integrations/stacks",
+      "args": [
+        "test"
+      ],
+      "exitCode": 0,
+      "durationMs": 767,
+      "passedTests": 27,
+      "failedTests": 0,
+      "outputSha256": "07f09c1a945ca38e9f2214d42211352e30a1bf6983e476b2eee3484c91b8819a"
+    },
+    {
+      "label": "pox5-tests",
+      "folder": "integrations/pox5",
+      "args": [
+        "test"
+      ],
+      "exitCode": 0,
+      "durationMs": 399,
+      "passedTests": 26,
+      "failedTests": 0,
+      "outputSha256": "4093b0c6b150d5a395a73ecb52117c138fc07673bad3f213548f891b49124f36"
+    },
+    {
+      "label": "indexer-tests",
+      "folder": "indexer",
+      "args": [
+        "test"
+      ],
+      "exitCode": 0,
+      "durationMs": 2952,
+      "passedTests": 88,
+      "outputSha256": "fae8dd42221a279457a516e1f644d33e1954dff7ce4a931f69ea2c56174c8a61"
+    },
+    {
+      "label": "indexer-build",
+      "folder": "indexer",
+      "args": [
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "durationMs": 2605,
+      "outputSha256": "fe2a3aa0e933465ebdcc5d1bc275a255f38433e0a5dce2f03bedae0e9c571c83"
+    },
+    {
+      "label": "contracts-legacy",
+      "folder": "contracts",
+      "args": [
+        "test"
+      ],
+      "exitCode": 0,
+      "durationMs": 7545,
+      "passedTests": 29,
+      "outputSha256": "32399b4891af9d5509dfec40acbbd2babcf3a8e2c3554b63763480fb23830f24"
+    },
+    {
+      "label": "bitcoin-tests",
+      "folder": "integrations/bitcoin",
+      "args": [
+        "test"
+      ],
+      "exitCode": 0,
+      "durationMs": 6998,
+      "passedTests": 52,
+      "outputSha256": "23cf9c822b7a9781f6ccde6e1b2515ba4e82d70a54ad10c8fc7253933d3be6f1"
+    },
+    {
+      "label": "frontend-tests",
+      "folder": "frontend",
+      "args": [
+        "test",
+        "--",
+        "--reporter=json",
+        "--outputFile=/tmp/satoshi-clean-validation-logs/frontend-tests.json"
+      ],
+      "exitCode": 0,
+      "durationMs": 8385,
+      "passedTests": 151,
+      "failedTests": 0,
+      "outputSha256": "ecdf1a740c2e798003d9323679f46fad496192d9c156191f64ab3a801d87a15f"
+    },
+    {
+      "label": "bitcoin-build",
+      "folder": "integrations/bitcoin",
+      "args": [
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "durationMs": 1979,
+      "outputSha256": "c40cb110bb71d4715aa045a8081a109615b1fa91ef2f1511d5859232246f6187"
+    },
+    {
+      "label": "frontend-mainnet-build",
+      "folder": "frontend",
+      "args": [
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "durationMs": 4870,
+      "outputSha256": "7fe07b1ca1f0226ca64d27b94fe0db124f8a432f7f728d7a78896f8dee15606a"
+    },
+    {
+      "label": "frontend-testnet-build",
+      "folder": "frontend",
+      "args": [
+        "run",
+        "build:testnet"
+      ],
+      "exitCode": 0,
+      "durationMs": 3342,
+      "outputSha256": "6365b600196ce5f34c95eb7cef7866194de79fa53235e3e9f67f19630c5b6d1c"
+    },
+    {
+      "label": "contracts-v7",
+      "folder": "contracts",
+      "args": [
+        "run",
+        "test:v7:report"
+      ],
+      "exitCode": 0,
+      "durationMs": 20548,
+      "passedTests": 31,
+      "outputSha256": "b3f61ccaac930e18293872139aa11000fd911a5ee0bfaf62eb5cf4ba79e22950"
+    },
+    {
+      "label": "contracts-zest",
+      "folder": "contracts",
+      "args": [
+        "run",
+        "test:v7:adapters"
+      ],
+      "exitCode": 0,
+      "durationMs": 996,
+      "passedTests": 5,
+      "outputSha256": "b0467955c33782d32ba18ffce316b3b46943ccb36823c1036b59b2e222de257d"
+    },
+    {
+      "label": "contracts-hermetica",
+      "folder": "contracts",
+      "args": [
+        "run",
+        "test:hermetica:v7:report"
+      ],
+      "exitCode": 0,
+      "durationMs": 13151,
+      "passedTests": 19,
+      "outputSha256": "c359b808dc72ff3ce7691a5bcac70ad928a6ebf76591fb711ed151cf48ddc729"
+    }
+  ],
+  "finishedAt": "2026-10-01T08:21:05.183Z",
+  "passed": true,
+  "totalPassingTests": 428,
+  "workingTreeCodeAndConfigurationMatchTestedCopy": true,
+  "sourceManifest": "tested-source-manifest.json",
+  "documentationOnlyDifferences": [
+    {
+      "path": "frontend/rebuild.env.example",
+      "change": "Comments only; environment values unchanged"
+    }
+  ]
+}

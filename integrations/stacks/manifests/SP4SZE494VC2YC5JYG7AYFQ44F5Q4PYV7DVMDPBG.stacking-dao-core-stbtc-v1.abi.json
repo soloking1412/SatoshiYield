@@ -1,0 +1,421 @@
+{
+  "functions": [
+    {
+      "name": "deposit",
+      "access": "public",
+      "args": [
+        {
+          "name": "sbtc-amount",
+          "type": "uint128"
+        },
+        {
+          "name": "min-shares-out",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "init-withdraw",
+      "access": "public",
+      "args": [
+        {
+          "name": "stbtc-amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-fee-exempt",
+      "access": "public",
+      "args": [
+        {
+          "name": "who",
+          "type": "principal"
+        },
+        {
+          "name": "exempt",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-shutdown-deposits",
+      "access": "public",
+      "args": [
+        {
+          "name": "shutdown",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-shutdown-init-withdraw",
+      "access": "public",
+      "args": [
+        {
+          "name": "shutdown",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-shutdown-withdraw",
+      "access": "public",
+      "args": [
+        {
+          "name": "shutdown",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-shutdown-withdraw-idle",
+      "access": "public",
+      "args": [
+        {
+          "name": "shutdown",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-withdraw-fee",
+      "access": "public",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-withdraw-idle-fee",
+      "access": "public",
+      "args": [
+        {
+          "name": "fee",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "withdraw",
+      "access": "public",
+      "args": [
+        {
+          "name": "nft-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "sbtc-fee",
+                  "type": "uint128"
+                },
+                {
+                  "name": "sbtc-user",
+                  "type": "uint128"
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "withdraw-idle",
+      "access": "public",
+      "args": [
+        {
+          "name": "stbtc-amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "sbtc-fee",
+                  "type": "uint128"
+                },
+                {
+                  "name": "sbtc-user",
+                  "type": "uint128"
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-shutdown-deposits",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "get-shutdown-init-withdraw",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "get-shutdown-withdraw",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "get-shutdown-withdraw-idle",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "get-withdraw-fee",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-withdraw-idle-fee",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "is-fee-exempt",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "who",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": "bool"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "DEAD_SHARES",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "DENOMINATOR_8",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "DENOMINATOR_BPS",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "ERR_GET_OWNER",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_INSUFFICIENT_IDLE",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_INVALID_FEE",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_MIN_SHARES",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_SHUTDOWN",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_WITHDRAW_LOCKED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_WITHDRAW_NOT_NFT_OWNER",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "shutdown-deposits",
+      "type": "bool",
+      "access": "variable"
+    },
+    {
+      "name": "shutdown-init-withdraw",
+      "type": "bool",
+      "access": "variable"
+    },
+    {
+      "name": "shutdown-withdraw",
+      "type": "bool",
+      "access": "variable"
+    },
+    {
+      "name": "shutdown-withdraw-idle",
+      "type": "bool",
+      "access": "variable"
+    },
+    {
+      "name": "withdraw-fee",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "withdraw-idle-fee",
+      "type": "uint128",
+      "access": "variable"
+    }
+  ],
+  "maps": [
+    {
+      "name": "fee-exempt",
+      "key": "principal",
+      "value": "bool"
+    }
+  ],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

@@ -1,0 +1,48 @@
+{
+  "verifiedAt": "2026-09-30T20:04:13.454Z",
+  "network": "testnet",
+  "contracts": [
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.sip-010-trait",
+      "sourceSha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589193
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.yield-source-v2",
+      "sourceSha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589193
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.yield-source-async-v1",
+      "sourceSha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589193
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7",
+      "sourceSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589194
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sbtc",
+      "sourceSha256": "d5cf951130adfbb9d38a3f04028c009e19b7272345b79dfcd603ae129a427f90",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589195
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7",
+      "sourceSha256": "3f69ae17c9fe781a32233a770fc0c2bf29bb83b3fe8ab333dac63f3875952fed",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589195
+    },
+    {
+      "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-async-v7",
+      "sourceSha256": "ab87ffd0c275aac16d9d94afcd40bd177502170b26748437cc805bd819550e70",
+      "matchesSubmittedSource": true,
+      "publishHeight": 589195
+    }
+  ]
+}

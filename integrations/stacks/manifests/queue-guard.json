@@ -1,0 +1,8 @@
+{
+  "contract": null,
+  "sha256": "6fad1c8b024cba4d0f7b304de3071ced87bb1493deccecc088ed9fed7557b598",
+  "sourceFile": "contracts/stackingdao-request-guard-v1.clar",
+  "status": "candidate-not-deployed",
+  "network": "mainnet",
+  "chainId": 1
+}

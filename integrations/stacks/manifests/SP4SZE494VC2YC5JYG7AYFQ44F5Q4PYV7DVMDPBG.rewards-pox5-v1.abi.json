@@ -1,0 +1,279 @@
+{
+  "functions": [
+    {
+      "name": "route-sbtc-share",
+      "access": "private",
+      "args": [
+        {
+          "name": "share",
+          "type": "uint128"
+        },
+        {
+          "name": "dest",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "initialize",
+      "access": "public",
+      "args": [
+        {
+          "name": "the-keeper",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "process-rewards",
+      "access": "public",
+      "args": [],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-keeper",
+      "access": "public",
+      "args": [
+        {
+          "name": "new-keeper",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-split-bps",
+      "access": "public",
+      "args": [
+        {
+          "name": "new-ststxbtc-bps",
+          "type": "uint128"
+        },
+        {
+          "name": "new-ststx-bps",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-stx-reward-recipient",
+      "access": "public",
+      "args": [
+        {
+          "name": "recipient",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-keeper",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": {
+          "optional": "principal"
+        }
+      }
+    },
+    {
+      "name": "get-ready-to-release",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-release-end-block",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-balance",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-streaming-remaining",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-ststx-bps",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-ststxbtc-bps",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-stx-reward-recipient",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": {
+          "optional": "principal"
+        }
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "DENOMINATOR_BPS",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "ERR_ALREADY_INITIALIZED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_BPS_TOO_HIGH",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_NOT_KEEPER",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_RECIPIENT_NOT_SET",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "RELEASE_WINDOW_BLOCKS",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "keeper",
+      "type": {
+        "optional": "principal"
+      },
+      "access": "variable"
+    },
+    {
+      "name": "last-release-block",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "release-end-block",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "release-per-block",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "ststx-bps",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "ststxbtc-bps",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "stx-reward-recipient",
+      "type": {
+        "optional": "principal"
+      },
+      "access": "variable"
+    }
+  ],
+  "maps": [],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

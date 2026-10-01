@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Cl, cvToValue } from "@stacks/transactions";
-import { initSimnet } from "@hirosystems/clarinet-sdk";
 
 /**
  * vault-v6 core mechanics (using zest-earn-adapter as the SYNC adapter):
@@ -8,7 +7,6 @@ import { initSimnet } from "@hirosystems/clarinet-sdk";
  * sBTC, and the timelocked fee change.
  */
 
-const simnet = await initSimnet();
 const accounts = simnet.getAccounts();
 const deployer = accounts.get("deployer")!;
 const wallet1 = accounts.get("wallet_1")!;

@@ -55,7 +55,7 @@ export function FaucetButton() {
   const labels: Record<typeof status, string> = {
     idle: "Get Test sBTC",
     pending: "Requesting...",
-    done: "0.1 sBTC sent!",
+    done: "Request submitted",
     error: "Failed — retry",
     cooldown: `Try again in ${mins}m`,
   };

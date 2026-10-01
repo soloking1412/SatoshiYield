@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Cl, cvToValue } from "@stacks/transactions";
-import { initSimnet } from "@hirosystems/clarinet-sdk";
 
 /**
  * Full-stack ASYNC test: vault-v6 -> hermetica-hbtc-adapter -> shim (vault-hbtc-v1-2).
@@ -14,7 +13,6 @@ import { initSimnet } from "@hirosystems/clarinet-sdk";
  * a mainnet fork before approval.
  */
 
-const simnet = await initSimnet();
 const accounts = simnet.getAccounts();
 const deployer = accounts.get("deployer")!;
 const wallet1 = accounts.get("wallet_1")!;

@@ -41,4 +41,12 @@ describe("computeRealizedApy (on-chain share-price growth)", () => {
   it("returns null for a non-positive current price", () => {
     expect(computeRealizedApy([{ t: now - DAY, p: 1.0 }], 0, now)).toBeNull();
   });
+  it("rejects old, future and corrupt persisted timestamps", () => {
+    for (const t of [now - 31 * DAY, now + DAY, NaN, Infinity, -Infinity]) {
+      expect(computeRealizedApy([{ t, p: 1 }], 1.04, now)).toBeNull();
+    }
+  });
+  it("returns a measured zero rather than a fabricated reference rate on no growth", () => {
+    expect(computeRealizedApy([{ t: now - DAY, p: 1 }], 1, now)).toBe(0);
+  });
 });

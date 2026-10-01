@@ -1,0 +1,66 @@
+{
+  "network": "mainnet",
+  "provider": "https://api.hiro.so",
+  "deployer": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D",
+  "upstream": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+  "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+  "expectedGovernor": "SMJSVT0J9K2DKM8QWXSHXPVTYPJBV4CC5P1ZXAW0",
+  "sources": {
+    "blacklist-v1": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/blacklist-v1?proof=0",
+      "sha256": "5545f42338a7c2e6bb14b145b65ff0e5997b3239422ed035ad5a305b96461d94",
+      "publishHeight": 6376541,
+      "fetchedAt": "2026-10-01T07:24:37.668Z"
+    },
+    "vault-hbtc-v1-2": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/vault-hbtc-v1-2?proof=0",
+      "sha256": "bb2576db30a8e45d5bb3322614606151c74bd351c6dcbf65ec65ed6ac60194dd",
+      "publishHeight": 7437511,
+      "fetchedAt": "2026-10-01T07:24:34.907Z"
+    },
+    "reserve-hbtc-v1": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/reserve-hbtc-v1?proof=0",
+      "sha256": "de1154b4fdb804e6b71606179975f0fb8824411fb7b55208df6be11693397d15",
+      "publishHeight": 6376604,
+      "fetchedAt": "2026-10-01T07:24:38.169Z"
+    },
+    "token-hbtc": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/token-hbtc?proof=0",
+      "sha256": "ba751ca615c2cd4b0d3bcbd14150e543c4ef5b6239b776b7b69cc4576a05ef00",
+      "publishHeight": 6376582,
+      "fetchedAt": "2026-10-01T07:24:38.475Z"
+    },
+    "hq-v1": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/hq-v1?proof=0",
+      "sha256": "4544940a3d3330ecd835765cc837c7e5b2fec8d72734788b54042110a19287d2",
+      "publishHeight": 6376535,
+      "fetchedAt": "2026-10-01T07:24:37.062Z"
+    },
+    "fee-collector-hbtc-v1": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/fee-collector-hbtc-v1?proof=0",
+      "sha256": "0dd674f6186a5f1bc72c7efdfccc819ae92ac38ba153901a432c4feeffed3e47",
+      "publishHeight": 6376623,
+      "fetchedAt": "2026-10-01T07:24:39.027Z"
+    },
+    "state-hbtc-v1": {
+      "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/state-hbtc-v1?proof=0",
+      "sha256": "118364278ca354cd13c76148de9c72396296a146e716a7cdef2025b6e6b2e43f",
+      "publishHeight": 6376596,
+      "fetchedAt": "2026-10-01T07:24:35.521Z"
+    }
+  },
+  "claimDeletionPaths": [
+    {
+      "function": "redeem-internal",
+      "line": 163,
+      "conditions": "Funded, cooled-down, non-blacklisted recipient; exact claim assets-fee transferred to recorded claim.user before deletion. Caller unrestricted."
+    },
+    {
+      "function": "cancel-redeem",
+      "line": 227,
+      "conditions": "contract-caller equals claim.user; unfunded, non-express, non-blacklisted; escrow shares returned before deletion."
+    }
+  ],
+  "docs": "https://docs.hermetica.fi/hbtc/how-it-works/smart-contracts",
+  "docsVersionMismatch": "Docs list vault-hbtc-v1; actual current HQ role reads enable only v1-2 among checked versions. Adapter binds v1-2 immutably."
+}

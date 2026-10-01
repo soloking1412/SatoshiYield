@@ -1,0 +1,191 @@
+{
+  "checkedAt": "2026-10-01T07:51:41.839Z",
+  "scope": "Read-only public PoX-5 eligibility; no BTC/STX funding or registration broadcast",
+  "network": "testnet",
+  "observations": [
+    {
+      "network": "testnet",
+      "bitcoinNetwork": "regtest",
+      "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+      "bondIndex": 10,
+      "amountSats": "100000",
+      "signerManager": null,
+      "signerGrantActive": false,
+      "pox": {
+        "contractId": "ST000000000000000000002AMW42H.pox-5",
+        "currentBurnchainBlockHeight": 22591,
+        "firstBurnchainBlockHeight": 0,
+        "rewardCycleId": 25,
+        "rewardCycleLength": 900,
+        "prepareCycleLength": 100,
+        "rewardSlots": 1600,
+        "currentCycle": {
+          "id": 25,
+          "stakedUstx": "6105900000000",
+          "isPoxActive": true
+        },
+        "nextCycle": {
+          "id": 26,
+          "stakedUstx": "6105900000000"
+        },
+        "contractVersions": [
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox",
+            "activationBurnchainBlockHeight": 0,
+            "firstRewardCycleId": 0
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-2",
+            "activationBurnchainBlockHeight": 3,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-3",
+            "activationBurnchainBlockHeight": 5,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-4",
+            "activationBurnchainBlockHeight": 6,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-5",
+            "activationBurnchainBlockHeight": 2702,
+            "firstRewardCycleId": 4
+          }
+        ],
+        "sbtcContract": "SN3VMHXEN64ZZF71JQ5VESXDWTR301XTTXGF4J8F1.sbtc-token",
+        "sbtcRegistryContract": "SN3VMHXEN64ZZF71JQ5VESXDWTR301XTTXGF4J8F1.sbtc-registry"
+      },
+      "bond": {
+        "bondIndex": 10,
+        "targetRateBps": 1000,
+        "stxValueRatio": "1000",
+        "minUstxRatioBps": 500,
+        "earlyUnlockBytes": "21032853a683729ff79dc33bce675d83892cf0bad4fc15462225de42d7b88ed89292ac"
+      },
+      "allowance": "0",
+      "requiredUstx": "50000",
+      "account": {
+        "balance": "470000000",
+        "locked": "0",
+        "nonce": "30",
+        "unlockHeight": 0
+      },
+      "staker": {
+        "staked": false
+      },
+      "membership": null,
+      "status": "locked",
+      "reasons": [
+        "This wallet has no sufficient bond allowance. The bond administrator must approve it before any BTC is locked.",
+        "Registration is locked. Do not fund a lock address outside an open registration window.",
+        "Select a registered signer manager before preparing a commitment."
+      ],
+      "preflightPassed": false,
+      "fundingAllowed": false,
+      "tip": "0x49c5a51a9cc5bef84a6cf22409be766e7d6d4b3288625255f75b1566ae092ed5",
+      "sourceHash": "44a424364cb3c115ec92d0a72ebd228645e65d8f92792d66695898904e14c734",
+      "observedAt": 1790841101841,
+      "expiresAt": 1790841161841,
+      "limitations": [
+        "Signer-manager public validation and Bitcoin inclusion proofs must still pass at registration.",
+        "Bitcoin remains timelocked even if Stacks registration fails or misses its deadline.",
+        "Funding and registration signing are not enabled by this observation."
+      ]
+    },
+    {
+      "network": "testnet",
+      "bitcoinNetwork": "regtest",
+      "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+      "bondIndex": 11,
+      "amountSats": "100000",
+      "signerManager": null,
+      "signerGrantActive": false,
+      "pox": {
+        "contractId": "ST000000000000000000002AMW42H.pox-5",
+        "currentBurnchainBlockHeight": 22591,
+        "firstBurnchainBlockHeight": 0,
+        "rewardCycleId": 25,
+        "rewardCycleLength": 900,
+        "prepareCycleLength": 100,
+        "rewardSlots": 1600,
+        "currentCycle": {
+          "id": 25,
+          "stakedUstx": "6105900000000",
+          "isPoxActive": true
+        },
+        "nextCycle": {
+          "id": 26,
+          "stakedUstx": "6105900000000"
+        },
+        "contractVersions": [
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox",
+            "activationBurnchainBlockHeight": 0,
+            "firstRewardCycleId": 0
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-2",
+            "activationBurnchainBlockHeight": 3,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-3",
+            "activationBurnchainBlockHeight": 5,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-4",
+            "activationBurnchainBlockHeight": 6,
+            "firstRewardCycleId": 1
+          },
+          {
+            "contractId": "ST000000000000000000002AMW42H.pox-5",
+            "activationBurnchainBlockHeight": 2702,
+            "firstRewardCycleId": 4
+          }
+        ],
+        "sbtcContract": "SN3VMHXEN64ZZF71JQ5VESXDWTR301XTTXGF4J8F1.sbtc-token",
+        "sbtcRegistryContract": "SN3VMHXEN64ZZF71JQ5VESXDWTR301XTTXGF4J8F1.sbtc-registry"
+      },
+      "bond": {
+        "bondIndex": 11,
+        "targetRateBps": 1000,
+        "stxValueRatio": "1000",
+        "minUstxRatioBps": 500,
+        "earlyUnlockBytes": "21032853a683729ff79dc33bce675d83892cf0bad4fc15462225de42d7b88ed89292ac"
+      },
+      "allowance": "0",
+      "requiredUstx": "50000",
+      "account": {
+        "balance": "470000000",
+        "locked": "0",
+        "nonce": "30",
+        "unlockHeight": 0
+      },
+      "staker": {
+        "staked": false
+      },
+      "membership": null,
+      "status": "open",
+      "reasons": [
+        "This wallet has no sufficient bond allowance. The bond administrator must approve it before any BTC is locked.",
+        "Select a registered signer manager before preparing a commitment."
+      ],
+      "preflightPassed": false,
+      "fundingAllowed": false,
+      "tip": "0x275178fbd62449c55a488fa59ec937c51c034d54fa3e0b908dfad44dc59e944d",
+      "sourceHash": "44a424364cb3c115ec92d0a72ebd228645e65d8f92792d66695898904e14c734",
+      "observedAt": 1790841107135,
+      "expiresAt": 1790841167135,
+      "limitations": [
+        "Signer-manager public validation and Bitcoin inclusion proofs must still pass at registration.",
+        "Bitcoin remains timelocked even if Stacks registration fails or misses its deadline.",
+        "Funding and registration signing are not enabled by this observation."
+      ]
+    }
+  ],
+  "passed": true
+}

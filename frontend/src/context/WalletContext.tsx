@@ -7,30 +7,23 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import Wallet, {
-  AddressPurpose,
-  BitcoinNetworkType,
-  RpcErrorCode,
-  getSupportedWallets,
-  setDefaultProvider,
-  removeDefaultProvider,
-} from "sats-connect";
-import {
-  request as stacksRequest,
-  disconnect as stacksDisconnect,
-} from "@stacks/connect";
 import type { ClarityValue } from "@stacks/transactions";
-import { cvToHex, postConditionToHex } from "@stacks/transactions";
+import { cvToHex, postConditionToHex, validateStacksAddress } from "@stacks/transactions";
+import { CONTRACTS, VAULT_VERSION } from "../constants/contracts.js";
 import { networkName } from "../lib/stacksClient.js";
 import { useToast } from "./ToastContext.js";
+import { normalizeTxid, recordSubmittedCall } from "../lib/transactionJournal.js";
 
 export type WalletId = "xverse" | "leather";
 
 interface ContractCallOptions {
+  /** Sender whose position, amount and protections were used to prepare this call. */
+  expectedSender: string;
   contractAddress: string;
   contractName: string;
   functionName: string;
   functionArgs: ClarityValue[];
+  postConditionMode?: "deny" | "allow";
   postConditions?: Parameters<typeof postConditionToHex>[0][];
 }
 
@@ -49,8 +42,6 @@ const WalletContext = createContext<WalletState | null>(null);
 const ADDRESS_KEY = "satoshi.stx-address";
 const CONNECTOR_KEY = "satoshi.stx-connector";
 const STX_PREFIX = networkName === "mainnet" ? "SP" : "ST";
-const BITCOIN_NETWORK =
-  networkName === "mainnet" ? BitcoinNetworkType.Mainnet : BitcoinNetworkType.Testnet;
 
 // --- Wallet-extension detection (browser-injected globals) ------------------
 
@@ -58,10 +49,18 @@ const BITCOIN_NETWORK =
 export function isXverseInstalled(): boolean {
   return typeof window !== "undefined" && !!window.XverseProviders;
 }
-function leatherProvider(): unknown {
-  return typeof window !== "undefined"
-    ? (window as { LeatherProvider?: unknown }).LeatherProvider
-    : undefined;
+interface LeatherProvider {
+  request(method: string, params?: Record<string, unknown>): Promise<{ result?: unknown; error?: {message?: string} }>;
+}
+function leatherProvider(): LeatherProvider | undefined {
+  return typeof window !== "undefined" ? (window as unknown as { LeatherProvider?: LeatherProvider }).LeatherProvider : undefined;
+}
+async function leatherRequest(method: string, params?: Record<string, unknown>): Promise<unknown> {
+  const provider = leatherProvider();
+  if (!provider) throw new Error("Leather is unavailable. Reconnect your wallet.");
+  const response = await provider.request(method, params);
+  if (response.error || !response.result) throw new Error(response.error?.message ?? "Invalid Leather response");
+  return response.result;
 }
 /** Leather injects `window.LeatherProvider`. */
 export function isLeatherInstalled(): boolean {
@@ -70,7 +69,7 @@ export function isLeatherInstalled(): boolean {
 
 /** True when an error is just the user dismissing the wallet prompt. */
 function isBenign(message: string, code?: number): boolean {
-  if (code === RpcErrorCode.USER_REJECTION) return true;
+  if (code === -32000 || code === 4001) return true;
   const m = message.toLowerCase();
   return (
     m.includes("cancel") ||
@@ -80,14 +79,11 @@ function isBenign(message: string, code?: number): boolean {
   );
 }
 
-/** Pick the address matching the active network, else any Stacks address. */
+/** Select only an address for the configured network. */
 function pickStxAddress(addresses: { address?: string }[]): string | null {
   const exact = addresses.find((a) => a.address?.startsWith(STX_PREFIX));
   if (exact?.address) return exact.address;
-  const any = addresses.find(
-    (a) => a.address?.startsWith("ST") || a.address?.startsWith("SP")
-  );
-  return any?.address ?? null;
+  return null;
 }
 
 /**
@@ -96,6 +92,8 @@ function pickStxAddress(addresses: { address?: string }[]): string | null {
  * skipped — this app shows its own wallet modal.
  */
 async function connectXverse(): Promise<string | null> {
+  const {default: Wallet, getSupportedWallets, setDefaultProvider, AddressPurpose, BitcoinNetworkType} = await import("sats-connect");
+  const BITCOIN_NETWORK = networkName === "mainnet" ? BitcoinNetworkType.Mainnet : BitcoinNetworkType.Testnet;
   const xverse = getSupportedWallets().find((w) => /xverse/i.test(w.name));
   if (xverse) setDefaultProvider(xverse.id);
 
@@ -113,17 +111,13 @@ async function connectXverse(): Promise<string | null> {
 }
 
 /**
- * Leather — via @stacks/connect targeted directly at the Leather provider
+ * Leather — use its documented native provider RPC
  * (sats-connect cannot see Leather; it only reads the Bitcoin WBIP registry).
  */
 async function connectLeather(): Promise<string | null> {
   const provider = leatherProvider();
   if (!provider) throw new Error("Leather is not installed");
-  const res = await stacksRequest(
-    { provider: provider as never, forceWalletSelect: false },
-    "getAddresses",
-    { network: networkName }
-  );
+  const res = await leatherRequest("getAddresses");
   const list = (res as { addresses?: { address?: string }[] }).addresses ?? [];
   return pickStxAddress(list);
 }
@@ -134,8 +128,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [connector, setConnector] = useState<WalletId | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const connectingRef = useRef(false);
+  const addressRef = useRef<string | null>(null);
   // Mirror of `connector` so callContract/disconnect read it without re-binding.
   const connectorRef = useRef<WalletId | null>(null);
+  const sessionVersionRef = useRef(0);
 
   // Restore a previous session (survives a page refresh).
   useEffect(() => {
@@ -144,9 +140,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const savedConn = localStorage.getItem(CONNECTOR_KEY);
       if (
         savedAddr &&
-        savedAddr.startsWith(STX_PREFIX) &&
+        savedAddr.startsWith(STX_PREFIX) && validateStacksAddress(savedAddr) &&
         (savedConn === "xverse" || savedConn === "leather")
       ) {
+        sessionVersionRef.current += 1;
+        addressRef.current = savedAddr;
         setAddress(savedAddr);
         setConnector(savedConn);
         connectorRef.current = savedConn;
@@ -166,7 +164,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           walletId === "xverse" ? await connectXverse() : await connectLeather();
         if (!addr) return; // user dismissed the prompt
 
-        if (!addr.startsWith(STX_PREFIX)) {
+        if (!addr.startsWith(STX_PREFIX) || !validateStacksAddress(addr)) {
           const want = networkName === "mainnet" ? "Mainnet" : "Testnet";
           show({
             variant: "error",
@@ -175,6 +173,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           return;
         }
 
+        sessionVersionRef.current += 1;
+        addressRef.current = addr;
         setAddress(addr);
         setConnector(walletId);
         connectorRef.current = walletId;
@@ -205,21 +205,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   );
 
   const handleDisconnect = useCallback(() => {
+    sessionVersionRef.current += 1;
     const c = connectorRef.current;
     if (c === "xverse") {
-      void Wallet.disconnect().catch(() => {});
-      try {
-        removeDefaultProvider();
-      } catch {
-        /* ignore */
-      }
-    } else if (c === "leather") {
-      try {
-        stacksDisconnect();
-      } catch {
-        /* ignore */
-      }
+      void import("sats-connect").then(async ({default: Wallet, removeDefaultProvider}) => {
+        try { await Wallet.disconnect(); } finally { removeDefaultProvider(); }
+      }).catch(() => {});
     }
+    // Leather permissions are controlled in the wallet; clear this app's session.
+
+    addressRef.current = null;
     setAddress(null);
     setConnector(null);
     connectorRef.current = null;
@@ -233,6 +228,33 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const callContract = useCallback(
     async (options: ContractCallOptions): Promise<string> => {
+      if (!connectorRef.current || !addressRef.current) throw new Error("Reconnect your wallet before signing");
+      const expectedAddress = options.expectedSender;
+      const selectedConnector = connectorRef.current;
+      const sessionVersion = sessionVersionRef.current;
+      const assertSessionUnchanged = () => {
+        if (!expectedAddress || addressRef.current !== expectedAddress ||
+            connectorRef.current !== selectedConnector || sessionVersionRef.current !== sessionVersion) {
+          throw new Error("Wallet session changed. Review the transaction again before signing.");
+        }
+      };
+      assertSessionUnchanged();
+      let xverseWallet: (typeof import("sats-connect"))["default"] | undefined;
+      if (selectedConnector === "leather") {
+        const current = await connectLeather();
+        if (current !== expectedAddress) throw new Error("Wallet account or network changed. Reconnect before signing.");
+      } else {
+        const {default: Wallet} = await import("sats-connect");
+        assertSessionUnchanged();
+        xverseWallet = Wallet;
+        const current = await Wallet.request("stx_getAddresses", {});
+        if (current.status !== "success" ||
+            current.result.network.stacks.name.toLowerCase() !== networkName ||
+            !current.result.addresses.some(a => a.address === expectedAddress)) {
+          throw new Error("Wallet account or network changed. Reconnect before signing.");
+        }
+      }
+      assertSessionUnchanged();
       const contract = options.contractAddress.includes(".")
         ? options.contractAddress
         : `${options.contractAddress}.${options.contractName}`;
@@ -245,16 +267,29 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const postConditions = (options.postConditions ?? []).map((pc) =>
         postConditionToHex(pc)
       );
-      const postConditionMode = options.postConditions?.length ? "deny" : "allow";
+      const postConditionMode = options.postConditionMode ?? "deny";
+      if (postConditionMode === "allow" && (VAULT_VERSION !== "v6" || contract !== CONTRACTS.VAULT || !["withdraw", "request-withdraw", "claim-withdraw", "cancel-withdraw"].includes(options.functionName))) throw new Error("Allow mode is restricted to legacy exits");
+      const recordSubmission = (value: unknown): string => {
+        let txid: string;
+        try { txid = normalizeTxid(value); }
+        catch { throw new Error("The wallet did not return a valid transaction ID. Check wallet activity before retrying; submission status is unknown."); }
+        try {
+          recordSubmittedCall({txid,network:networkName,sender:expectedAddress,contract,functionName:options.functionName,functionArgs,postConditionMode,submittedAt:Date.now()});
+        } catch {
+          // A journal failure after a wallet broadcast must never be reported as a failed transaction.
+          show({variant:"pending",message:"Transaction submitted, but local history could not be saved. Inspect the transaction before repeating it.",txid});
+        }
+        return txid;
+      };
 
-      // Leather — route through @stacks/connect, the provider it connected with.
-      if (connectorRef.current === "leather") {
+      // Leather — call the native provider selected during connection.
+      if (selectedConnector === "leather") {
         const provider = leatherProvider();
         if (!provider) {
           throw new Error("Leather wallet unavailable — reconnect your wallet.");
         }
-        const res = await stacksRequest(
-          { provider: provider as never },
+        assertSessionUnchanged();
+        const res = await leatherRequest(
           "stx_callContract",
           {
             contract: contract as `${string}.${string}`,
@@ -265,15 +300,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             postConditionMode,
           }
         );
-        const txid = (res as { txid?: unknown }).txid;
-        if (typeof txid !== "string" || txid.length === 0) {
-          throw new Error("Wallet returned no transaction id");
-        }
-        return txid;
+        return recordSubmission((res as { txid?: unknown }).txid);
       }
 
       // Xverse — route through sats-connect.
-      const res = await Wallet.request("stx_callContract", {
+      if (!xverseWallet) throw new Error("Xverse is unavailable. Reconnect your wallet.");
+      assertSessionUnchanged();
+      const res = await xverseWallet.request("stx_callContract", {
         contract,
         functionName: options.functionName,
         functionArgs,
@@ -283,12 +316,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (res.status === "error") {
         throw new Error(res.error?.message ?? "Wallet rejected the transaction");
       }
-      if (!res.result?.txid) {
-        throw new Error("Wallet returned no transaction id");
-      }
-      return res.result.txid;
+      return recordSubmission(res.result?.txid);
     },
-    []
+    [show]
   );
 
   return (

@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-10-01T07:57:20.170Z",
+  "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "chainId": 11155111,
+  "blockNumber": "11820471",
+  "transactionsBroadcast": 0,
+  "contracts": [
+    {
+      "address": "0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+      "codeBytes": 1159,
+      "codeHash": "0x7cdc1f603539882680c35ce7f0b44e9a26c2a44a0b688d4350ce2039d81ece09",
+      "name": "Lombard Staked Bitcoin",
+      "symbol": "LBTC",
+      "decimals": 8,
+      "domainSeparator": "0xd75584e0cce9ddb45534bba1cb195eb9353ab42085dc8b10704d740bf159c980",
+      "eip712Domain": {
+        "fields": "0x0f",
+        "name": "Lombard Staked Bitcoin",
+        "version": "1",
+        "chainId": "11155111",
+        "verifyingContract": "0x107Fc7d90484534704dD2A9e24c7BD45DB4dD1B5",
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "extensions": []
+      },
+      "implementationSlot": "0x0000000000000000000000007fdc265a16adf07f5f8c17e169378a95da1fdb5e",
+      "implementation": "0x7fDC265A16adF07F5F8c17E169378a95Da1fdB5e",
+      "implementationCodeHash": "0x355c327d4fd62d70e83d3e916589a5386b64b6bacf8ff6b8385592c177eb710d",
+      "domainMatchesFeeAuthorization": true
+    },
+    {
+      "address": "0xc47e4b3124597fdf8dd07843d4a7052f2ee80c30",
+      "codeBytes": 1159,
+      "codeHash": "0x65f51436d15bb4c5dc849eacca381353017e038e9a10f06cbe39d3d66863c5a2",
+      "name": "Lombard Staked Bitcoin",
+      "symbol": "stLBTC",
+      "decimals": 8,
+      "domainSeparator": "0x601e015f52dd84ed1ed84168c88c3ae1cc62347b18e2888274d10d7309c390c7",
+      "eip712Domain": {
+        "fields": "0x0f",
+        "name": "Lombard Staked Bitcoin",
+        "version": "1",
+        "chainId": "11155111",
+        "verifyingContract": "0xc47e4b3124597FDF8DD07843D4a7052F2eE80C30",
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "extensions": []
+      },
+      "implementationSlot": "0x00000000000000000000000005345f7644720a2f033e80e8676b69f518ec0cef",
+      "implementation": "0x05345f7644720a2F033E80e8676b69F518Ec0cEF",
+      "implementationCodeHash": "0x17e42b842bb979cdc6ccfbc194c509b0217d69000ed2296565eada5a0a71649b",
+      "domainMatchesFeeAuthorization": true
+    }
+  ],
+  "officialRegistryCheck": {
+    "url": "https://docs.lombard.finance/learn/transparency/smart-contracts",
+    "accessDate": "2026-10-01",
+    "result": "Official transparency registry lists supported production chain deployments; no Sepolia entry was found. Testnet identity comes from pinned official SDK5.9.0 transaction resolver plus independent public Sepolia RPC code/domain observations, not claimed registry approval."
+  }
+}

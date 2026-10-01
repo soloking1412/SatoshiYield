@@ -1,0 +1,12 @@
+;; Local semantic model ONLY. Current live deployment has deposits disabled.
+(define-constant OWNER tx-sender)
+(define-data-var deposits bool true)
+(define-data-var vault bool true)
+(define-data-var exit-fee uint u0)
+(define-public (configure (d bool) (v bool) (f uint))
+  (begin (asserts! (is-eq contract-caller OWNER) (err u100))
+    (asserts! (<= f u100) (err u101))
+    (var-set deposits d) (var-set vault v) (var-set exit-fee f) (ok true)))
+(define-read-only (get-deposit-enabled) (var-get deposits))
+(define-read-only (get-vault-enabled) (var-get vault))
+(define-read-only (get-custom-exit-fee (user principal) (express bool)) (var-get exit-fee))

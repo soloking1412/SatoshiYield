@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-10-01T08:05:47.549Z",
+  "purpose": "Read-only public testnet SDK and endpoint validation",
+  "transactionsBroadcast": 0,
+  "signaturesRequested": 0,
+  "privateKeysUsed": false,
+  "protocols": {
+    "babylon": {
+      "status": "live-read-success",
+      "network": "signet",
+      "babylonChainId": "bbn-test-6",
+      "genesisHash": "00000008819873e925422c1ff0f99f7cc9bbb232af63a077a480a3633bee1ef6",
+      "bitcoinTipHeight": 324469,
+      "babylonBitcoinTipHeight": 324469,
+      "parameterSource": "https://staking-api.testnet.babylonlabs.io/v2/network-info",
+      "parameters": {
+        "version": 6,
+        "btcActivationHeight": 273725,
+        "covenantNoCoordPks": [
+          "fa9d882d45f4060bdb8042183828cd87544f1ea997380e586cab77d5fd698737",
+          "0aee0509b16db71c999238a4827db945526859b13c95487ab46725357c9a9f25",
+          "17921cf156ccb4e73d428f996ed11b245313e37e27c978ac4d2cc21eca4672e4",
+          "113c3a32a9d320b72190a04a020a0db3976ef36972673258e9a38a364f3dc3b0",
+          "79a71ffd71c503ef2e2f91bccfc8fcda7946f4653cef0d9f3dde20795ef3b9f0",
+          "3bb93dfc8b61887d771f3630e9a63e97cbafcfcc78556a474df83a31a0ef899c",
+          "d21faf78c6751a0d38e6bd8028b907ff07e9a869a43fc837d6b3f8dff6119a36",
+          "40afaf47c4ffa56de86410d8e47baa2bb6f04b604f4ea24323737ddc3fe092df",
+          "f5199efae3f28bb82476163a7e458c7ad445d9bffb0682d10d3bdb2cb41f8e8e"
+        ],
+        "covenantQuorum": 6,
+        "minStakingAmountSat": 50000,
+        "maxStakingAmountSat": 35000000000,
+        "minStakingTimeBlocks": 10000,
+        "maxStakingTimeBlocks": 64000,
+        "unbondingTime": 301,
+        "unbondingFeeSat": 2000,
+        "slashing": {
+          "slashingPkScriptHex": "00145be12624d08a2b424095d7c07221c33450d14bf1",
+          "slashingRate": 0.05,
+          "minSlashingTxFeeSat": 9000
+        }
+      },
+      "versionsObserved": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "minimumStakingConfirmations": 30,
+      "providersObserved": 43,
+      "activeProvidersObserved": 16,
+      "sdk": "@babylonlabs-io/btc-staking-ts@2.8.6",
+      "fundingAndDelegationTested": false
+    },
+    "lombard": {
+      "status": "live-quote-success",
+      "sdk": "@lombard.finance/sdk@5.9.0",
+      "publicRpcAndApi": true,
+      "walletProvider": "mocked eth_accounts/eth_chainId only; authorization forbidden",
+      "quote": {
+        "protocol": "lombard",
+        "environment": "testnet",
+        "partnerId": "test",
+        "sourceNetwork": "signet",
+        "destinationChainId": 11155111,
+        "amountBtc": "0.00100000",
+        "amountSats": 100000,
+        "token": "LBTC",
+        "tokenAddress": "0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+        "catalogTokenAddress": "0xc47e4b3124597fdf8dd07843d4a7052f2ee80c30",
+        "deploymentSource": "sdk-transaction-resolver",
+        "tokenDecimals": 8,
+        "mintingFeeBtc": "0.00001342",
+        "estimatedLbtc": "0.00098632",
+        "expiresAtMs": 1790842076471,
+        "custody": "lombard-consortium",
+        "minimumOutputEnforced": false,
+        "authorizationReady": false,
+        "authorizationBlockReason": "Lombard testnet authorization service returned incomplete status. Address registration is unavailable."
+      },
+      "addressRegistrationTested": false,
+      "btcFundingOrRedemptionTested": false
+    }
+  }
+}

@@ -3,17 +3,11 @@
  * Config is fully driven by environment variables. There are no fallbacks
  * to testnet — running this without explicit env vars is always a misconfig.
  */
-import { serializeCV, deserializeCV, uintCV } from "@stacks/transactions";
+import { validateStacksAddress } from "@stacks/transactions";
+import { chainNetwork } from "../network.js";
 
-const STACKS_API = process.env["STACKS_API_URL"];
-const DEPLOYER = process.env["DEPLOYER_ADDRESS"];
-
-if (!STACKS_API || !DEPLOYER) {
-  throw new Error(
-    "[chain] STACKS_API_URL and DEPLOYER_ADDRESS env vars are required " +
-      "(no testnet fallback)."
-  );
-}
+const STACKS_API = chainNetwork.api;
+const DEPLOYER = chainNetwork.deployer;
 
 const TIMEOUT_MS = 8_000;
 
@@ -29,11 +23,11 @@ function assertSafeName(name: string, label: string): void {
 /** Decode the uint result returned by a Clarity (ok uint) read-only call. */
 function decodeUint(hex: string): number {
   const raw = hex.startsWith("0x") ? hex.slice(2) : hex;
-  if (raw.length < 6) throw new Error("Clarity response too short");
-  // First byte: 07 = (ok ...), 08 = (err ...). Throw on err so callers
-  // treat a stale/failed read-only as "no data" rather than misreading the
-  // error code (e.g. u107 for err-stale-apy) as an APY value.
-  if (raw.startsWith("08")) throw new Error("Clarity call returned err response");
+  // A uint is exactly 16 bytes. Accept only (ok uint), rejecting signed ints,
+  // truncated payloads, non-hex values and trailing serialized values.
+  if (!/^0701[0-9a-f]{32}$/i.test(raw)) {
+    throw new Error("Expected an exact Clarity (ok uint) response");
+  }
   const valueHex = raw.slice(4); // skip "0701" (ok-response + uint type prefix)
   let value: bigint;
   try {
@@ -78,7 +72,7 @@ export async function readUint(
   }
 
   const { okay, result } = json as { okay: boolean; result: string };
-  if (!okay) throw new Error(`Contract error for ${contractName}.${functionName}`);
+  if (okay !== true) throw new Error(`Contract error for ${contractName}.${functionName}`);
 
   return decodeUint(result);
 }
@@ -89,19 +83,9 @@ export async function readUint(
  */
 function decodeUintFlexible(hex: string): number {
   const raw = (hex.startsWith("0x") ? hex.slice(2) : hex).toLowerCase();
-  let valueHex: string;
-  if (raw.startsWith("07")) {
-    const inner = raw.slice(2);
-    if (!inner.startsWith("01")) throw new Error("ok-response inner is not a uint");
-    valueHex = inner.slice(2);
-  } else if (raw.startsWith("08")) {
-    throw new Error("Clarity call returned err response");
-  } else if (raw.startsWith("01")) {
-    valueHex = raw.slice(2);
-  } else {
-    throw new Error("Unexpected Clarity type prefix");
-  }
-  if (valueHex.length === 0) throw new Error("empty uint payload");
+  if (/^0701[0-9a-f]{32}$/.test(raw)) return decodeUint(raw);
+  if (!/^01[0-9a-f]{32}$/.test(raw)) throw new Error("Expected an exact Clarity uint");
+  const valueHex = raw.slice(2);
   const value = BigInt(`0x${valueHex}`);
   if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
     throw new Error("Chain uint exceeds JS safe-integer range");
@@ -122,7 +106,7 @@ export async function readUintFromContract(
 ): Promise<number> {
   assertSafeName(contractName, "contractName");
   assertSafeName(functionName, "functionName");
-  if (!/^[A-Z0-9]+$/.test(address)) throw new Error(`Invalid address: ${address}`);
+  if (!validateStacksAddress(address)) throw new Error(`Invalid address: ${address}`);
 
   const url = `${STACKS_API}/v2/contracts/call-read/${address}/${contractName}/${functionName}`;
   const res = await fetch(url, {
@@ -145,7 +129,7 @@ export async function readUintFromContract(
     throw new Error(`Unexpected chain response shape for ${contractName}.${functionName}`);
   }
   const { okay, result } = json as { okay: boolean; result: string };
-  if (!okay) throw new Error(`Contract error for ${contractName}.${functionName}`);
+  if (okay !== true) throw new Error(`Contract error for ${contractName}.${functionName}`);
 
   return decodeUintFlexible(result);
 }
@@ -173,7 +157,8 @@ export async function readAdapterOracleState(
   const lastUpdatedBlock =
     lastBlockResult.status === "fulfilled" ? lastBlockResult.value : 0;
 
-  if (apyResult.status === "rejected") {
+  if (apyResult.status === "rejected" || lastBlockResult.status === "rejected" ||
+      lastUpdatedBlock === 0 || apyResult.value > 6000) {
     return { apyBps: 0, lastUpdatedBlock, isStale: true };
   }
 
@@ -193,89 +178,31 @@ export function exceedsDeviation(
   return (Math.abs(newBps - currentBps) / currentBps) * 100 > maxPct;
 }
 
-// Consensus tolerance the adapter uses to agree two oracle reports (CONSENSUS-TOL-PCT).
-const CONSENSUS_TOL_PCT = 10;
-
-interface OracleReport {
-  idx: number;
-  bps: number;
-  block: number;
-}
-
-/** Read one oracle slot's last report: (ok { bps, block }). Null on any error. */
-async function readOracleReport(
-  contractName: string,
-  idx: number
-): Promise<OracleReport | null> {
+/**
+ * Read the actual committed APY. Oracle reports are proposals, not committed
+ * state: averaging them can invent an anchor that never existed on-chain.
+ * The exact data variable is readable even after get-apy expires.
+ */
+export async function readAnchorApyBps(contractName: string): Promise<number | null> {
   assertSafeName(contractName, "contractName");
-  const arg = "0x" + serializeCV(uintCV(idx));
-  const url = `${STACKS_API}/v2/contracts/call-read/${DEPLOYER}/${contractName}/get-oracle-report`;
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender: DEPLOYER, arguments: [arg] }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
+    const value = await readUint(contractName, "get-apy");
+    return value <= 6000 ? value : null;
+  } catch {
+    // A stale response is expected; inspect committed state below.
+  }
+  try {
+    const res = await fetch(
+      `${STACKS_API}/v2/data_var/${DEPLOYER}/${contractName}/current-apy-bps?proof=0`,
+      { signal: AbortSignal.timeout(TIMEOUT_MS) }
+    );
     if (!res.ok) return null;
-    const json = (await res.json()) as { okay: boolean; result: string };
-    if (!json.okay) return null;
-    const cv = deserializeCV(json.result);
-    // (ok { bps, block }) -> unwrap response, then tuple
-    if (cv.type !== "ok") return null;
-    const tuple = cv.value;
-    if (tuple.type !== "tuple") return null;
-    const fields = tuple.value as Record<string, { value: bigint } | undefined>;
-    const bps = Number(fields["bps"]?.value ?? 0n);
-    const block = Number(fields["block"]?.value ?? 0n);
-    return { idx, bps, block };
+    const data: unknown = await res.json();
+    if (typeof data !== "object" || data === null || !("data" in data) ||
+        typeof data.data !== "string") return null;
+    const value = decodeUintFlexible(data.data);
+    return value <= 6000 ? value : null;
   } catch {
     return null;
   }
-}
-
-/**
- * Returns the adapter's real committed APY anchor in bps — even when the oracle
- * is STALE (get-apy returns err). The on-chain deviation guard compares any new
- * report against the live `current-apy-bps` var (not get-apy), so the pusher
- * MUST know that real value to stay inside the guard; otherwise a stale read
- * (current=0) makes it jump to the bootstrap reference and the contract aborts
- * every push (err u109), trapping the APY stale forever.
- *
- * Fresh path: get-apy succeeds -> that's the anchor.
- * Stale path: reconstruct from the oracle reports the same way the contract
- * commits — the average of a consensus pair (within CONSENSUS-TOL-PCT), else
- * the most recently reported value. Returns null when nothing is on-chain yet.
- */
-export async function readAnchorApyBps(
-  contractName: string
-): Promise<number | null> {
-  try {
-    return await readUint(contractName, "get-apy");
-  } catch {
-    // stale — fall through and reconstruct from reports
-  }
-
-  const raw = await Promise.all(
-    [0, 1, 2].map((i) => readOracleReport(contractName, i))
-  );
-  const reports = raw.filter(
-    (r): r is OracleReport => r !== null && r.block > 0 && r.bps > 0
-  );
-  if (reports.length === 0) return null;
-
-  // Mirror try-commit-consensus: average of the first pair within tolerance.
-  for (let i = 0; i < reports.length; i++) {
-    for (let j = i + 1; j < reports.length; j++) {
-      const a = reports[i]!.bps;
-      const b = reports[j]!.bps;
-      if (b > 0 && Math.abs(a - b) * 100 <= CONSENSUS_TOL_PCT * b) {
-        return Math.floor((a + b) / 2);
-      }
-    }
-  }
-
-  // No consensus pair — anchor to the most recent report.
-  reports.sort((x, y) => y.block - x.block);
-  return reports[0]!.bps;
 }

@@ -1,0 +1,320 @@
+{
+  "network": "mainnet-fork-only",
+  "mainnetWrites": false,
+  "pinnedHeight": 9101467,
+  "initialEpoch": "4.0",
+  "sdk": "@stacks/clarinet-sdk 3.24.1",
+  "startedAt": "2026-10-01T07:43:53.148Z",
+  "holder": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+  "scope": "Exact candidate v7/adaptor sources with remote canonical sBTC and real immutable Hermetica contracts. Governance modifications and elapsed time are local fork only.",
+  "steps": [
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "set-sbtc-token",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "schedule-adapter",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u969559)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "apply-adapter",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok true)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "set-global-paused",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok false)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "set-paused",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok false)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "set-oracle-at",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "set-oracle-at",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok SP000000000000000000002Q6VF78)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "set-apy",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u0)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "set-apy",
+      "sender": "SP000000000000000000002Q6VF78",
+      "result": "(ok u100)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "label": "canonical-upstream-paused-deposit-rejected",
+      "result": "(err u101)",
+      "rollbackVerified": true
+    },
+    {
+      "contract": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.state-hbtc-v1",
+      "function": "set-deposit-enabled",
+      "sender": "SMJSVT0J9K2DKM8QWXSHXPVTYPJBV4CC5P1ZXAW0",
+      "result": "(ok true)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "deposit-async",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u98041)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "100000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "100000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.reserve-hbtc-v1",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7"
+          }
+        },
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "98041",
+            "asset_identifier": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.token-hbtc::hBTC",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7"
+          }
+        }
+      ]
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "request-withdraw",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u126)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "98041",
+            "asset_identifier": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.token-hbtc::hBTC",
+            "recipient": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7"
+          }
+        }
+      ]
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "cancel-withdraw",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok true)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "98041",
+            "asset_identifier": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.token-hbtc::hBTC",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+            "sender": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+          }
+        }
+      ]
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "request-withdraw",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u127)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "98041",
+            "asset_identifier": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.token-hbtc::hBTC",
+            "recipient": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7"
+          }
+        }
+      ]
+    },
+    {
+      "label": "premature-settlement-rejected",
+      "result": "(err u103004)",
+      "rollbackVerified": true
+    },
+    {
+      "contract": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+      "function": "fund-claim",
+      "sender": "SP000000000000000000002Q6VF78",
+      "result": "(ok u99999)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+            "sender": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.reserve-hbtc-v1"
+          }
+        },
+        {
+          "event": "ft_burn_event",
+          "data": {
+            "amount": "98041",
+            "asset_identifier": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.token-hbtc::hBTC",
+            "sender": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+          }
+        }
+      ]
+    },
+    {
+      "contract": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2",
+      "function": "redeem",
+      "sender": "SP000000000000000000002Q6VF78",
+      "result": "(ok u99999)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+            "sender": "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+          }
+        }
+      ]
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7",
+      "function": "settle-pending",
+      "sender": "SP000000000000000000002Q6VF78",
+      "result": "(ok u99999)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": []
+    },
+    {
+      "label": "minimum-payout-rejected-after-stranger-redeem",
+      "result": "(err u123)",
+      "rollbackVerified": true
+    },
+    {
+      "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+      "function": "claim-withdraw",
+      "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+      "result": "(ok u99999)",
+      "nativeDenyPostconditionsPassed": true,
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.hermetica-hbtc-adapter-v7"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.vault-v7"
+          }
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "file": "contracts/contracts/traits/sip-010-trait.clar",
+      "sha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3"
+    },
+    {
+      "file": "contracts/contracts/traits/yield-source-v2.clar",
+      "sha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94"
+    },
+    {
+      "file": "contracts/contracts/traits/yield-source-async-v1.clar",
+      "sha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6"
+    },
+    {
+      "file": "contracts/contracts/vault-v7.clar",
+      "sha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3"
+    },
+    {
+      "file": "contracts/contracts/adapters/hermetica-hbtc-adapter-v7.clar",
+      "sha256": "c6c03c59a012f8e686c577da446f3536321595a6faefda47291eb7fcc2884e08"
+    }
+  ],
+  "localGovernanceChanges": [
+    "Real owner impersonated locally to enable deposits for lifecycle verification; public network remains disabled."
+  ],
+  "initialSbtc": "4085359507",
+  "canonicalDepositEnabled": false,
+  "cooldown": {
+    "realContractSeconds": "259200",
+    "claimTimestamp": "1791185156",
+    "localBurnBlocksMined": 435,
+    "timeBefore": "0x010000000000000000000000006abf5c8e",
+    "timeAfter": "0x010000000000000000000000006ac3578a"
+  },
+  "roundTrip": {
+    "amount": "100000",
+    "shares": "98041",
+    "upstreamPaid": "99999",
+    "vaultFee": "0",
+    "net": "99999",
+    "finalSbtc": "4085359506",
+    "thirdPartyDeletionRecovered": true
+  },
+  "passed": true,
+  "finishedAt": "2026-10-01T07:45:31.396Z"
+}

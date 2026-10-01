@@ -1,0 +1,9 @@
+{
+  "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6?proof=0",
+  "fetchedAt": "2026-09-30T20:04:22.661Z",
+  "publishedSha256": "6183af69fbc902711548f6de0f397451b293eb2f1f7a48a02f324e587babca49",
+  "localSha256": "6183af69fbc902711548f6de0f397451b293eb2f1f7a48a02f324e587babca49",
+  "exactMatch": true,
+  "matchIgnoringCommentsAndWhitespace": true,
+  "publishHeight": 8300186
+}

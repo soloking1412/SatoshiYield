@@ -1,0 +1,508 @@
+{
+  "schema_version": 1,
+  "network": "mainnet",
+  "api_base": "https://api.hiro.so",
+  "started_at": "2026-09-30T20:11:51.405Z",
+  "completed_at": "2026-09-30T20:12:07.730Z",
+  "mode": "READ ONLY: source fetches, read-only calls, and data-variable reads; no signed transactions or mainnet writes",
+  "privacy_scope": "Public configuration and aggregate vault accounting only; no user position maps or user address lists fetched",
+  "node_info": {
+    "url": "https://api.hiro.so/v2/info",
+    "network_id": 1,
+    "is_fully_synced": true,
+    "stacks_tip_height": 9098802,
+    "stacks_tip": "fc94ae0fed599213f376ecc7874e46a5e9f8e2f5f641413b04200656f51a8d87",
+    "burn_block_height": 969345
+  },
+  "canonical_block": {
+    "url": "https://api.hiro.so/extended/v2/blocks/9098802",
+    "canonical": true,
+    "height": 9098802,
+    "hash": "0xfc94ae0fed599213f376ecc7874e46a5e9f8e2f5f641413b04200656f51a8d87",
+    "block_time": 1790799099,
+    "block_time_iso": "2026-09-30T20:11:39.000Z",
+    "tenure_height": 257581,
+    "index_block_hash": "0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+    "parent_block_hash": "0x3af9b98f21a97a11bee4e111152519bede2e85e13f9334da027fa55e0734555a",
+    "parent_index_block_hash": "0x6b1bb6cab148802822cb046026f0ced52f65e8d64f1f7bdf87b29ab07d6b361a",
+    "burn_block_time": 1790798937,
+    "burn_block_time_iso": "2026-09-30T20:08:57.000Z",
+    "burn_block_hash": "0x0000000000000000000163a70086dffb2db4218f98c3cbdd756f6e7129784256",
+    "burn_block_height": 969344,
+    "miner_txid": "0x96e60dac586101a2db42cf042451e796fb4c58169e3d7dee565035a79b49573e",
+    "tx_count": 2,
+    "execution_cost_read_count": 0,
+    "execution_cost_read_length": 0,
+    "execution_cost_runtime": 0,
+    "execution_cost_write_count": 0,
+    "execution_cost_write_length": 0
+  },
+  "snapshot_consistency": "Core contract source, read-only function and data-variable calls include tip=index_block_hash. Extended contract absence lookup is unpinned corroborating evidence. Values are an observation, not a claim that state cannot change.",
+  "vault": {
+    "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6",
+    "source": {
+      "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6",
+      "url": "https://api.hiro.so/v2/contracts/source/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6?proof=0&tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+      "http_status": 200,
+      "deployed": true,
+      "publish_height": 8300186,
+      "source_sha256": "6183af69fbc902711548f6de0f397451b293eb2f1f7a48a02f324e587babca49",
+      "source_hash_definition": "SHA-256 of the exact UTF-8 source string returned by Hiro, without whitespace normalization",
+      "repository_path": "contracts/contracts/vault-v6.clar",
+      "repository_source_sha256": "6183af69fbc902711548f6de0f397451b293eb2f1f7a48a02f324e587babca49",
+      "repository_source_exact_match": true,
+      "external_contract_literals": []
+    },
+    "readings": {
+      "get-owner": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-owner?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x0516c3b8ff8d1de908b9df1821599eab4d9e17a5f976",
+        "clarity": {
+          "type": "principal",
+          "value": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-sbtc-token": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-sbtc-token?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x0a0614f6decc7cfff2a413bd7cd4f53c25ad7fd1899acc0a736274632d746f6b656e",
+        "clarity": {
+          "type": "(optional principal)",
+          "value": {
+            "type": "principal",
+            "value": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"
+          }
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-total-deposited": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-total-deposited?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x0100000000000000000000000000003811",
+        "clarity": {
+          "type": "uint",
+          "value": "14353"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-fee-balance": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-balance?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x0100000000000000000000000000000000",
+        "clarity": {
+          "type": "uint",
+          "value": "0"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-fee-basis-points": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-basis-points?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x01000000000000000000000000000001f4",
+        "clarity": {
+          "type": "uint",
+          "value": "500"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-tvl-cap": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-tvl-cap?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x01000000000000000000000000004c4b40",
+        "clarity": {
+          "type": "uint",
+          "value": "5000000"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-min-deposit": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-min-deposit?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x01000000000000000000000000000003e8",
+        "clarity": {
+          "type": "uint",
+          "value": "1000"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      },
+      "get-timelock-blocks": {
+        "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-timelock-blocks?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "hex": "0x0100000000000000000000000000000090",
+        "clarity": {
+          "type": "uint",
+          "value": "144"
+        },
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        }
+      }
+    },
+    "variables": {
+      "global-paused": {
+        "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/global-paused?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+        "http_status": 200,
+        "hex": "0x04",
+        "clarity": {
+          "type": "bool",
+          "value": false
+        }
+      },
+      "fee-collector": {
+        "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/fee-collector?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+        "http_status": 200,
+        "hex": "0x0516c3b8ff8d1de908b9df1821599eab4d9e17a5f976",
+        "clarity": {
+          "type": "principal",
+          "value": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V"
+        }
+      },
+      "reentrancy-lock": {
+        "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/reentrancy-lock?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+        "http_status": 200,
+        "hex": "0x04",
+        "clarity": {
+          "type": "bool",
+          "value": false
+        }
+      }
+    }
+  },
+  "adapters": [
+    {
+      "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.zest-earn-adapter",
+      "source": {
+        "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.zest-earn-adapter",
+        "url": "https://api.hiro.so/v2/contracts/source/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter?proof=0&tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 200,
+        "deployed": true,
+        "publish_height": 8300197,
+        "source_sha256": "0d8d78111c6f2a1c0fe1f9b9d7454fe5dc4d62c1966813e001180e596c6799b2",
+        "source_hash_definition": "SHA-256 of the exact UTF-8 source string returned by Hiro, without whitespace normalization",
+        "repository_path": "contracts/contracts/adapters/zest-earn-adapter.clar",
+        "repository_source_sha256": "0d8d78111c6f2a1c0fe1f9b9d7454fe5dc4d62c1966813e001180e596c6799b2",
+        "repository_source_exact_match": true,
+        "external_contract_literals": [
+          "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc"
+        ]
+      },
+      "vault_status": {
+        "is-adapter-approved": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-approved?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x03",
+          "clarity": {
+            "type": "bool",
+            "value": true
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976117a6573742d6561726e2d61646170746572"
+            ]
+          }
+        },
+        "is-adapter-async": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-async?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x04",
+          "clarity": {
+            "type": "bool",
+            "value": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976117a6573742d6561726e2d61646170746572"
+            ]
+          }
+        },
+        "is-adapter-paused": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-paused?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x04",
+          "clarity": {
+            "type": "bool",
+            "value": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976117a6573742d6561726e2d61646170746572"
+            ]
+          }
+        }
+      },
+      "adapter_readings": {
+        "is-paused": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/is-paused?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x0704",
+          "clarity": {
+            "type": "(response bool UnknownType)",
+            "value": {
+              "type": "bool",
+              "value": false
+            },
+            "success": true
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": []
+          }
+        },
+        "get-apy": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/get-apy?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x08010000000000000000000000000000006b",
+          "clarity": {
+            "type": "(response UnknownType uint)",
+            "value": {
+              "type": "uint",
+              "value": "107"
+            },
+            "success": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": []
+          }
+        },
+        "get-total-deposited": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/get-total-deposited?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x070100000000000000000000000000003810",
+          "clarity": {
+            "type": "(response uint UnknownType)",
+            "value": {
+              "type": "uint",
+              "value": "14352"
+            },
+            "success": true
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": []
+          }
+        },
+        "get-last-updated-block": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/get-last-updated-block?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x07010000000000000000000000000085bdb7",
+          "clarity": {
+            "type": "(response uint UnknownType)",
+            "value": {
+              "type": "uint",
+              "value": "8764855"
+            },
+            "success": true
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": []
+          }
+        }
+      },
+      "adapter_variables": {
+        "authorized-vault": {
+          "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/authorized-vault?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+          "http_status": 200,
+          "hex": "0x0a0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976087661756c742d7636",
+          "clarity": {
+            "type": "(optional principal)",
+            "value": {
+              "type": "principal",
+              "value": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6"
+            }
+          }
+        },
+        "total-shares": {
+          "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/total-shares?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+          "http_status": 200,
+          "hex": "0x0100000000000000000000000000003808",
+          "clarity": {
+            "type": "uint",
+            "value": "14344"
+          }
+        },
+        "current-apy-bps": {
+          "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/current-apy-bps?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+          "http_status": 200,
+          "hex": "0x0100000000000000000000000000000003",
+          "clarity": {
+            "type": "uint",
+            "value": "3"
+          }
+        },
+        "last-updated-block": {
+          "url": "https://api.hiro.so/v2/data_var/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/zest-earn-adapter/last-updated-block?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75&proof=0",
+          "http_status": 200,
+          "hex": "0x010000000000000000000000000085bdb7",
+          "clarity": {
+            "type": "uint",
+            "value": "8764855"
+          }
+        }
+      }
+    },
+    {
+      "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter",
+      "source": {
+        "principal": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter",
+        "url": "https://api.hiro.so/v2/contracts/source/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/hermetica-hbtc-adapter?proof=0&tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+        "http_status": 404,
+        "deployed": false,
+        "error": "No contract source data found",
+        "source_sha256": null
+      },
+      "vault_status": {
+        "is-adapter-approved": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-approved?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x04",
+          "clarity": {
+            "type": "bool",
+            "value": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976166865726d65746963612d686274632d61646170746572"
+            ]
+          }
+        },
+        "is-adapter-async": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-async?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x04",
+          "clarity": {
+            "type": "bool",
+            "value": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976166865726d65746963612d686274632d61646170746572"
+            ]
+          }
+        },
+        "is-adapter-paused": {
+          "url": "https://api.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/is-adapter-paused?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 200,
+          "hex": "0x04",
+          "clarity": {
+            "type": "bool",
+            "value": false
+          },
+          "request": {
+            "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+            "arguments": [
+              "0x0616c3b8ff8d1de908b9df1821599eab4d9e17a5f976166865726d65746963612d686274632d61646170746572"
+            ]
+          }
+        }
+      },
+      "adapter_readings": {},
+      "adapter_variables": {},
+      "absence_checks": [
+        {
+          "url": "https://api.hiro.so/v2/contracts/interface/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/hermetica-hbtc-adapter?tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+          "http_status": 404,
+          "data": "No contract interface data found"
+        },
+        {
+          "url": "https://api.hiro.so/extended/v1/contract/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter",
+          "http_status": 404,
+          "data": {
+            "statusCode": 404,
+            "error": "Not Found",
+            "message": "cannot find contract by ID"
+          }
+        }
+      ],
+      "adapter_state": "unavailable: configured contract source and interface not deployed at inspected address",
+      "repository_only_reference": {
+        "repository_path": "contracts/contracts/adapters/hermetica-hbtc-adapter.clar",
+        "repository_source_sha256": "80f79e397c7fb08f71a30c910dec71237ce1d40ad57918542ed8bc55fe561421",
+        "not_a_live_deployment": true,
+        "external_contract_literals": [
+          "SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.vault-hbtc-v1-2"
+        ]
+      }
+    }
+  ],
+  "external_sources": [
+    {
+      "principal": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+      "url": "https://api.hiro.so/v2/contracts/source/SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7/v0-vault-sbtc?proof=0&tip=0xb84a8d0c125095f6265f9ee08febf85f11de8b66eea66b61ec6eaa806923aa75",
+      "http_status": 200,
+      "deployed": true,
+      "publish_height": 6162063,
+      "source_sha256": "2ce21e1ae5bf0d1a8f6dbc09e8c61186770086db0332aad5526e9c5252f9c30a",
+      "source_hash_definition": "SHA-256 of the exact UTF-8 source string returned by Hiro, without whitespace normalization",
+      "external_contract_literals": [
+        "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"
+      ]
+    }
+  ],
+  "limitations": [
+    "Principal accounting does not establish liquidation value, exit liquidity, safety, or complete solvency.",
+    "Approval and pause controls can change after this block.",
+    "Source hash comparison is exact bytes; a mismatch can be documentation-only or material and requires separate review.",
+    "A missing configured Hermetica adapter does not prove absence of any other separately named or separately owned integration."
+  ],
+  "interpretation": {
+    "vault_owner": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+    "sbtc_token": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+    "recorded_principal_sats": "14353",
+    "deposit_cap_sats": "5000000",
+    "accrued_fee_sats": "0",
+    "performance_fee_bps": "500",
+    "global_paused": false,
+    "zest": {
+      "deployed": true,
+      "approved": true,
+      "async": false,
+      "vault_adapter_paused": false,
+      "adapter_paused": false,
+      "authorized_vault": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6",
+      "external_vault": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+      "current_deposit_apy_gate": "get-apy returns err u107 (stale); vault deposit uses try! on this result and fails at this gate under the sampled state",
+      "adapter_share_valuation_sats": "14352",
+      "recorded_principal_minus_share_valuation_sats": "1",
+      "valuation_note": "The one-satoshi difference is compatible with share conversion rounding; these aggregate observations alone do not establish its cause, redeemability or complete solvency."
+    },
+    "hermetica": {
+      "deployed_at_configured_principal": false,
+      "approved": false,
+      "async_map_value": false,
+      "vault_adapter_paused_map_value": false,
+      "pause_note": "False is the vault map default and does not establish a functioning or unpaused Hermetica deployment.",
+      "exposure_conclusion": "The repository Hermetica adapter is not a deployed and approved route at the inspected principal and block. Its code defect must not be represented as demonstrated live v6 Hermetica exposure."
+    }
+  }
+}
