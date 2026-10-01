@@ -149,3 +149,7 @@ A canonical transaction with an unexpected result is not retried as though it ne
 Only report the lifecycle phase as complete when `evidence.exercise.passed` is true, every lifecycle transaction is canonical with its exact expected result, and its recorded final state proves principal restoration and zero residual positions/counters. The extended economics campaign additionally requires `evidence.economics.status` to be `passed`, the fee-change snapshot proof, explicit minimum rejection/accepted loss, and the precisely reconciled residual described above. Until then, report the exact completed steps and the remaining blocker.
 
 Even a complete campaign establishes only these mock flows on Stacks testnet. Independent review, production adapter verification, adversarial tests, operational controls, and real integration evidence remain separate release requirements.
+
+## Committed release-source attestation
+
+After the deployed source files are committed, run `node scripts/attest-testnet-sources.mjs`. This separate read-only command validates the exact seven deployment records, canonical testnet context and each source against its submitted hash, deployment transaction, current working tree and one stable Git commit. It writes `testnet-release-source-attestation.json` and reads no credential. It works after activation without reasserting the old empty/paused baseline. The first committed attestation passed at `4ec2e0a`; historical initial-state/preflight records remain unchanged.

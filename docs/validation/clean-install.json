@@ -167,5 +167,7 @@
       "path": "frontend/rebuild.env.example",
       "change": "Comments only; environment values unchanged"
     }
-  ]
+  ],
+  "coreSourceCommit": "4ec2e0a4a7e7dbff2cfd803d39e97fa7f6babdd4",
+  "laterChanges": "Hosting bootstrap/CSP/Node metadata and a separate read-only source attester are validated separately; this record describes the core candidate test run."
 }

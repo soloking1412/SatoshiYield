@@ -12,7 +12,7 @@ Date: 1 October 2026. Branch: `codex/secure-yield-rebuild`.
 - Wallet calls bind to the reviewed sender and network. Session changes block dispatch. V7 testnet calls use Deny postconditions, exact asset identity, fresh admission checks and frozen reviewed fees/minimum payouts. Partial/total loss requires explicit consent. Legacy v6 exits disclose their weaker bounds.
 - Transaction history separates pending, canonical success, confirmed failure and unavailable/mismatched observations. It validates the actual sender, contract, function, serialized arguments and result, and responds to later receipt changes. This is local-browser history, not a complete wallet index or a promise of Bitcoin finality.
 - Read-only-by-default indexer with validated chain/network schemas, honest rate freshness, oracle writes disabled unless explicitly configured, bounded serialized test faucets and exact large-integer credential API responses.
-- Locked dependency bootstrap and CI for contracts, application, indexer and integration clients. Hosted GitHub Actions has not been run in this task.
+- Locked dependency bootstrap and CI for contracts, application, indexer and integration clients. All six hosted GitHub Actions jobs passed for the core candidate at `4ec2e0a`; see [the hosted run](https://github.com/soloking1412/SatoshiYield/actions/runs/36836578717). Later build and validation tooling changes receive their own PR checks.
 
 ## Protocol capabilities and limits
 
@@ -69,7 +69,7 @@ After the genuine first governance delay, both adapters were activated and the p
 
 **The separate economics campaign is waiting for Bitcoin burn block 22731.** It has configured a 110% mock payout, seeded exactly 10,000 mock units, entered a 100,000-unit position with a 500-bps fee snapshot, and scheduled a lower 300-bps fee. Application of that fee, proof that the existing position still pays the old fee, fee collection and explicit partial-loss checks remain pending. The runner does not shorten the delay or fast-forward the public chain.
 
-Use [the restartable runbook](testnet-runbook.md) and [canonical journal](testnet-v7.json). Every mutation is bounded to one new transaction per invocation, rechecks network/source/state, and persists exact signed bytes privately before submission. Uncertain submissions retry only the same bytes. Source attestation against a Git commit is reported separately from working-tree matches; see the journal's current `sourceAttestation` value.
+Use [the restartable runbook](testnet-runbook.md) and [canonical journal](testnet-v7.json). Every mutation is bounded to one new transaction per invocation, rechecks network/source/state, and persists exact signed bytes privately before submission. Uncertain submissions retry only the same bytes. [Committed source attestation](testnet-release-source-attestation.json) subsequently passed for all seven contracts at `4ec2e0a`: submitted, deployment-transaction, published, working-tree and committed source hashes all match. The older preflight remains a historical partial result; it is not silently rewritten. Reproduce this read-only check with `node scripts/attest-testnet-sources.mjs`.
 
 [Inspect the public testnet vault](https://explorer.hiro.so/address/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7?chain=testnet). Mock units have no monetary value and do not demonstrate real yield.
 
@@ -86,5 +86,7 @@ Required before a full production release: finish the real public delay/campaign
 ## Reproduction
 
 Use Node 24 and `node scripts/bootstrap-rebuild.mjs`. The bootstrap installs all seven lockfiles, builds the Bitcoin client, and copies documented **public** local-fork wallet fixtures only when absent. Follow the per-package scripts and integration guides for unit suites, source verification and remote forks. Do not put signing credentials in `VITE_*` variables.
+
+The hosting installer also has [separate clean production-mode validation](vercel-workspace-build.json): it installs the frontend and its three sibling clients from their lockfiles, rebuilds Bitcoin output, and fails before installation if the monorepo checkout is incomplete. The original automatic Vercel preview failed on missing sibling dependencies; this fix addresses the confirmed build log. Font policy now permits only the Google stylesheet/font origins already used by the interface.
 
 Development previews: `http://127.0.0.1:5173` for mainnet reads/direct routes and `http://127.0.0.1:5174` for mock testnet. These are local services, not a published release.

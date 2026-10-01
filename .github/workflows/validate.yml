@@ -27,6 +27,7 @@ jobs:
       - run: npm run test:v7:report
       - run: npm run test:v7:adapters
       - run: npm run test:hermetica:v7:report
+      - run: npm audit --audit-level=moderate
   app:
     runs-on: ubuntu-latest
     timeout-minutes: 15
