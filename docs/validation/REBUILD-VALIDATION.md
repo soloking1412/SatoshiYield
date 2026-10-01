@@ -12,7 +12,7 @@ Date: 1 October 2026. Branch: `codex/secure-yield-rebuild`.
 - Wallet calls bind to the reviewed sender and network. Session changes block dispatch. V7 testnet calls use Deny postconditions, exact asset identity, fresh admission checks and frozen reviewed fees/minimum payouts. Partial/total loss requires explicit consent. Legacy v6 exits disclose their weaker bounds.
 - Transaction history separates pending, canonical success, confirmed failure and unavailable/mismatched observations. It validates the actual sender, contract, function, serialized arguments and result, and responds to later receipt changes. This is local-browser history, not a complete wallet index or a promise of Bitcoin finality.
 - Read-only-by-default indexer with validated chain/network schemas, honest rate freshness, oracle writes disabled unless explicitly configured, bounded serialized test faucets and exact large-integer credential API responses.
-- Locked dependency bootstrap and CI for contracts, application, indexer and integration clients. All six hosted GitHub Actions jobs passed for the core candidate at `4ec2e0a`; see [the hosted run](https://github.com/soloking1412/SatoshiYield/actions/runs/36836578717). Later build and validation tooling changes receive their own PR checks.
+- Locked dependency bootstrap and CI for contracts, application, indexer and integration clients. All six hosted GitHub Actions jobs passed for the core candidate at `4ec2e0a`; see [the hosted run](https://github.com/soloking1412/SatoshiYield/actions/runs/36836578717). The follow-up build/validation revision `cd42a61` also passed all six jobs and its automatic Vercel preview build; see [the latest verified hosted run](https://github.com/soloking1412/SatoshiYield/actions/runs/36837412764).
 
 ## Protocol capabilities and limits
 
@@ -88,5 +88,7 @@ Required before a full production release: finish the real public delay/campaign
 Use Node 24 and `node scripts/bootstrap-rebuild.mjs`. The bootstrap installs all seven lockfiles, builds the Bitcoin client, and copies documented **public** local-fork wallet fixtures only when absent. Follow the per-package scripts and integration guides for unit suites, source verification and remote forks. Do not put signing credentials in `VITE_*` variables.
 
 The hosting installer also has [separate clean production-mode validation](vercel-workspace-build.json): it installs the frontend and its three sibling clients from their lockfiles, rebuilds Bitcoin output, and fails before installation if the monorepo checkout is incomplete. The original automatic Vercel preview failed on missing sibling dependencies; this fix addresses the confirmed build log. Font policy now permits only the Google stylesheet/font origins already used by the interface.
+
+[Hosted preview](https://satoshi-yield-8v29-git-codex-secu-0ea039-soloking1412s-projects.vercel.app) is protected by Vercel login. Its authenticated smoke review and limits are recorded in [hosted-preview.json](hosted-preview.json). The production domain is unchanged.
 
 Development previews: `http://127.0.0.1:5173` for mainnet reads/direct routes and `http://127.0.0.1:5174` for mock testnet. These are local services, not a published release.
