@@ -1,0 +1,267 @@
+{
+  "generatedAt": "2026-09-30T20:35:01.226782+00:00",
+  "sourceSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+  "command": "npm run test:v7:report",
+  "result": "31 tests passed",
+  "fuzz": {
+    "seeds": [
+      20903,
+      48869,
+      12648430,
+      3735928559
+    ],
+    "operationsPerSeed": 200,
+    "totalOperations": 800,
+    "model": "3 users x 2 token-moving mock strategies; balance conservation, exact counters, position states and fee inventory checked after every transition"
+  },
+  "coverage": {
+    "vault-v7": {
+      "lines": {
+        "covered": 190,
+        "total": 199,
+        "percent": 95.48
+      },
+      "functions": {
+        "covered": 33,
+        "total": 42,
+        "percent": 78.57
+      },
+      "branches": {
+        "covered": 37,
+        "total": 57,
+        "percent": 64.91
+      },
+      "uncoveredFunctions": [
+        "get-pending-adapter",
+        "get-tvl-cap",
+        "get-fee-basis-points",
+        "get-fee-collector",
+        "get-pending-fee",
+        "get-pending-collector",
+        "get-owner",
+        "get-min-deposit",
+        "get-timelock-blocks"
+      ],
+      "uncoveredLines": [
+        249,
+        251,
+        254,
+        255,
+        256,
+        257,
+        259,
+        260,
+        261
+      ]
+    }
+  },
+  "maxSimnetCostByMethod": {
+    "set-sbtc-token": {
+      "write_length": 39,
+      "write_count": 1,
+      "read_length": 16916,
+      "read_count": 8,
+      "runtime": 50089
+    },
+    "schedule-adapter": {
+      "write_length": 97,
+      "write_count": 1,
+      "read_length": 15036,
+      "read_count": 5,
+      "runtime": 31510
+    },
+    "apply-adapter": {
+      "write_length": 127,
+      "write_count": 2,
+      "read_length": 15265,
+      "read_count": 9,
+      "runtime": 49164
+    },
+    "set-global-paused": {
+      "write_length": 2,
+      "write_count": 1,
+      "read_length": 15034,
+      "read_count": 4,
+      "runtime": 21918
+    },
+    "set-tvl-cap": {
+      "write_length": 18,
+      "write_count": 1,
+      "read_length": 15052,
+      "read_count": 5,
+      "runtime": 23652
+    },
+    "revoke-adapter": {
+      "write_length": 120,
+      "write_count": 2,
+      "read_length": 15117,
+      "read_count": 6,
+      "runtime": 33500
+    },
+    "deposit": {
+      "write_length": 400,
+      "write_count": 9,
+      "read_length": 23390,
+      "read_count": 45,
+      "runtime": 128707
+    },
+    "get-total-deposited": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15052,
+      "read_count": 4,
+      "runtime": 15619
+    },
+    "deposit-async": {
+      "write_length": 402,
+      "write_count": 9,
+      "read_length": 26436,
+      "read_count": 44,
+      "runtime": 130310
+    },
+    "withdraw": {
+      "write_length": 215,
+      "write_count": 12,
+      "read_length": 25291,
+      "read_count": 45,
+      "runtime": 159229
+    },
+    "get-position": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15299,
+      "read_count": 4,
+      "runtime": 19585
+    },
+    "get-adapter-deposited": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15089,
+      "read_count": 4,
+      "runtime": 17122
+    },
+    "schedule-fee-basis-points": {
+      "write_length": 48,
+      "write_count": 1,
+      "read_length": 15036,
+      "read_count": 5,
+      "runtime": 26389
+    },
+    "apply-fee-basis-points": {
+      "write_length": 20,
+      "write_count": 2,
+      "read_length": 15084,
+      "read_count": 7,
+      "runtime": 30617
+    },
+    "get-fee-balance": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15052,
+      "read_count": 4,
+      "runtime": 15619
+    },
+    "schedule-fee-collector": {
+      "write_length": 59,
+      "write_count": 1,
+      "read_length": 15036,
+      "read_count": 5,
+      "runtime": 29016
+    },
+    "apply-fee-collector": {
+      "write_length": 25,
+      "write_count": 2,
+      "read_length": 15095,
+      "read_count": 7,
+      "runtime": 34055
+    },
+    "collect-fee": {
+      "write_length": 23,
+      "write_count": 5,
+      "read_length": 16992,
+      "read_count": 15,
+      "runtime": 55019
+    },
+    "claim-withdraw": {
+      "write_length": 241,
+      "write_count": 13,
+      "read_length": 26351,
+      "read_count": 46,
+      "runtime": 167413
+    },
+    "request-withdraw": {
+      "write_length": 328,
+      "write_count": 5,
+      "read_length": 18398,
+      "read_count": 16,
+      "runtime": 91010
+    },
+    "cancel-withdraw": {
+      "write_length": 293,
+      "write_count": 4,
+      "read_length": 18358,
+      "read_count": 14,
+      "runtime": 87432
+    },
+    "is-global-paused": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15036,
+      "read_count": 4,
+      "runtime": 15603
+    },
+    "get-sbtc-token": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15036,
+      "read_count": 4,
+      "runtime": 15603
+    },
+    "get-adapter-config": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15070,
+      "read_count": 4,
+      "runtime": 16819
+    },
+    "fee": {
+      "write_length": 0,
+      "write_count": 0,
+      "read_length": 15034,
+      "read_count": 3,
+      "runtime": 16368
+    }
+  },
+  "limitations": [
+    "Coverage indicates executed code, not proof of correctness or exhaustive state exploration.",
+    "Cost results cover local mock integrations, not external production protocol calls.",
+    "No real mainnet fork or completed public-testnet yield protocol lifecycle is established by this report.",
+    "Circular reentrancy is rejected by the Clarity VM before the vault callback executes; the lock is defense in depth."
+  ],
+  "tooling": {
+    "vitest": "4.1.11",
+    "vitestEnvironmentClarinet": "2.6.0",
+    "pool": "forks",
+    "maxWorkers": 1,
+    "isolate": false,
+    "clarinetInitBeforeEach": true
+  },
+  "otherSuites": {
+    "legacy": {
+      "tests": 29,
+      "note": "Includes one passing reproduction of an unresolved Hermetica defect"
+    },
+    "zestCandidateOracle": {
+      "tests": 5,
+      "note": "ABI/oracle only; no protocol fork lifecycle"
+    }
+  },
+  "reportIntegrity": {
+    "namedCoverageRecords": 31,
+    "costTestFiles": [
+      "tests/v7/adversarial.test.ts",
+      "tests/v7/deployment.test.ts",
+      "tests/v7/vault-v7.test.ts"
+    ]
+  }
+}

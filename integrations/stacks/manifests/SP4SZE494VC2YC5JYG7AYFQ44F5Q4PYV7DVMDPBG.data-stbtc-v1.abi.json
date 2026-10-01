@@ -1,0 +1,94 @@
+{
+  "functions": [
+    {
+      "name": "compute-ratio",
+      "access": "private",
+      "args": [
+        {
+          "name": "round-up",
+          "type": "bool"
+        }
+      ],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "add-pending-shares",
+      "access": "public",
+      "args": [
+        {
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "remove-pending-shares",
+      "access": "public",
+      "args": [
+        {
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-pending-shares",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-per-stbtc",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-per-stbtc-up",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "DENOMINATOR_8",
+      "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "pending-shares",
+      "type": "uint128",
+      "access": "variable"
+    }
+  ],
+  "maps": [],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

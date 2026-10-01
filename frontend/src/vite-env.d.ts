@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_DEPLOYER_TESTNET?: string;
   readonly VITE_DEPLOYER_MAINNET?: string;
   readonly VITE_VAULT_CONTRACT_NAME?: string;
+  readonly VITE_ENABLE_TESTNET_DEPOSITS?: string;
   readonly VITE_INDEXER_URL?: string;
   // Per-protocol adapter contract-name overrides. Default to the live adapters
   // (zest-earn-adapter / hermetica-hbtc-adapter). Keep in sync with the indexer.

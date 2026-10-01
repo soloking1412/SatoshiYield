@@ -6,7 +6,7 @@ import { __setHistory } from "../src/share-price.js";
 
 // Test-only fake principal. Must match process.env.DEPLOYER_ADDRESS in
 // vitest.config.ts; chain.ts has no defaults.
-const DEPLOYER = "SP000000000000000000002AMW42H";
+const DEPLOYER = "SP000000000000000000002Q6VF78";
 const API = "https://api.hiro.so";
 const ZEST_ADDR = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7";
 
@@ -57,12 +57,26 @@ describe("fetchZest (sync lending)", () => {
     expect((await fetchZest()).apy_percent).toBe(3.4);
   });
   it("uses live DefiLlama protocol TVL", async () => {
-    expect((await fetchZest()).tvl_usd).toBe(83_000_000);
+    const result = await fetchZest();
+    expect(result.tvl_usd).toBe(83_000_000);
+    expect(result.tvl_scope).toBe("protocol");
+    expect(result.tvl_available).toBe(true);
   });
-  it("is a live integration once on-chain share-price history exists", async () => {
+  it("does not present an old on-chain APY as fresh while the live feed is unavailable", async () => {
+    __setHistory([]);
+    const result = await fetchZest();
+    expect(result.apy_stale).toBe(true);
+    expect(result.data_status).toBe("unavailable");
+    expect(result.native_apy_percent).toBeNull();
+    expect(result.risk_assessment).toBe("unreviewed");
+  });
+  it("keeps integration review independent of share-price feed availability", async () => {
     // a >= 24h-old snapshot below the current price -> realized APY computes
     __setHistory([{ t: Date.now() - 7 * 24 * 60 * 60 * 1000, p: 1.0 }]);
-    expect((await fetchZest()).is_live_integration).toBe(true);
+    const result = await fetchZest();
+    expect(result.is_live_integration).toBe(false);
+    expect(result.integration_status).toBe("review-required");
+    expect(result.native_apy_percent).toBeGreaterThan(0);
   });
   it("marks apy stale (no throw) when the chain returns a non-200", async () => {
     server.use(
@@ -80,11 +94,11 @@ describe("fetchZest (sync lending)", () => {
     // here greys out the whole yields table via YieldTable `allStale`).
     server.use(
       chainHandler("zest-earn-adapter", "get-apy", 17),
-      sharePriceHandler(1.003) // vs a 1.0 anchor ~1yr old -> ~0.3% realized APY (~30 bps)
+      sharePriceHandler(Math.pow(1.003, 7 / 365)) // vs a 1.0 anchor 7 days old -> ~0.3% realized APY (~30 bps)
     );
-    __setHistory([{ t: Date.now() - 365 * 24 * 60 * 60 * 1000, p: 1.0 }]);
+    __setHistory([{ t: Date.now() - 7 * 24 * 60 * 60 * 1000, p: 1.0 }]);
     const y = await fetchZest();
-    expect(y.is_live_integration).toBe(true);
+    expect(y.is_live_integration).toBe(false);
     expect(y.apy_stale).toBe(false);
     expect(y.apy_percent).toBe(0.17);
   });
@@ -94,9 +108,9 @@ describe("fetchZest (sync lending)", () => {
     // divergence (>= 100 bps gap AND > 50%) -> flagged so the UI can warn.
     server.use(
       chainHandler("zest-earn-adapter", "get-apy", 50),
-      sharePriceHandler(1.08) // vs a 1.0 anchor ~1yr old -> ~8% realized APY (~800 bps)
+      sharePriceHandler(Math.pow(1.08, 7 / 365)) // vs a 1.0 anchor 7 days old -> ~8% realized APY (~800 bps)
     );
-    __setHistory([{ t: Date.now() - 365 * 24 * 60 * 60 * 1000, p: 1.0 }]);
+    __setHistory([{ t: Date.now() - 7 * 24 * 60 * 60 * 1000, p: 1.0 }]);
     expect((await fetchZest()).apy_stale).toBe(true);
   });
 });

@@ -1,0 +1,50 @@
+{
+  "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D/vault-hbtc-v1-2?proof=0",
+  "fetchedAt": "2026-09-30T19:54:33.188Z",
+  "sha256": "bb2576db30a8e45d5bb3322614606151c74bd351c6dcbf65ec65ed6ac60194dd",
+  "publishHeight": 7437511,
+  "locations": [
+    {
+      "pattern": "(define-public (redeem (claim-id uint))",
+      "lines": [
+        140
+      ]
+    },
+    {
+      "pattern": "(define-private (redeem-internal (claim-id uint))",
+      "lines": [
+        147
+      ]
+    },
+    {
+      "pattern": "(user (get user claim))",
+      "lines": [
+        152
+      ]
+    },
+    {
+      "pattern": "transfer assets-net current-contract user none",
+      "lines": [
+        157
+      ]
+    },
+    {
+      "pattern": "(map-delete claims { claim-id: claim-id })",
+      "lines": [
+        163,
+        227
+      ]
+    },
+    {
+      "pattern": "(define-public (fund-claim (claim-id uint))",
+      "lines": [
+        237
+      ]
+    },
+    {
+      "pattern": "(assets (unwrap-panic (preview-redeem shares)))",
+      "lines": []
+    }
+  ],
+  "finding": "Permissionless upstream redeem pays the pooled adapter then deletes the claim. The adapter unconditionally calls redeem a second time, which fails. No per-user redeemed amount remains available to distinguish co-mingled claims."
+}

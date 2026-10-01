@@ -1,0 +1,35 @@
+# ABI/oracle analysis only; requirement cache contains tracked accounting shims.
+# Never use this manifest for deployment or production-fork validation.
+[project]
+name = "satoshi-yield-v7-adapter-analysis"
+description = "Zest candidate ABI and oracle unit tests only"
+authors = []
+telemetry = false
+cache_dir = "./.cache-legacy-simnet"
+[[project.requirements]]
+contract_id = "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc"
+
+[contracts.sip-010-trait]
+path = "contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.yield-source-v2]
+path = "contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.yield-source-async-v1]
+path = "contracts/traits/yield-source-async-v1.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.vault-v7]
+path = "contracts/vault-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.zest-earn-adapter-v7]
+path = "contracts/adapters/zest-earn-adapter-v7.clar"
+clarity_version = 3
+epoch = "3.2"

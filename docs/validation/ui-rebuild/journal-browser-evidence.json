@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-10-01T08:12:37.169Z",
+  "method": "Seeded an isolated browser journal from two real testnet transaction call records, then read their live canonical API receipts; no wallet installed or called.",
+  "transactions": [
+    "0x9b696cd8bc8344face181321a65565c08c07502fc50b2143dd26021a2f644ec6",
+    "0xcff4ff116b9b2d045917428036c552f6aa2f1aa6e74decb6c8dd1992ba2dcde3"
+  ],
+  "actual": "Transaction activity\n\nCalls submitted from this browser and connected wallet. Confirmations are checked against the submitted action.\n\nDeposit\n\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7\n\n10/1/2026, 12:57:24 PM · testnet\nConfirmed on-chain\n\nSucceeded on the canonical Stacks chain. Bitcoin confirmations are shown separately.\n\n11 Bitcoin confirmations\nExplorer\nApply Adapter\n\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7\n\n10/1/2026, 1:43:45 AM · testnet\nFailed on-chain\n\nThe contract transaction failed. Check the result before retrying.\n\n180 Bitcoin confirmations\nExplorer",
+  "unavailable": "Transaction activity\n\nCalls submitted from this browser and connected wallet. Confirmations are checked against the submitted action.\n\nDeposit\n\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7\n\n10/1/2026, 12:57:24 PM · testnet\nConfirmation unavailable\n\nFailed to fetch\n\nExplorer\nApply Adapter\n\nST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7\n\n10/1/2026, 1:43:45 AM · testnet\nFailed on-chain\n\nThe contract transaction failed. Check the result before retrying.\n\n180 Bitcoin confirmations\nExplorer",
+  "overflow": false,
+  "errors": [],
+  "transactionSigningPerformed": false
+}

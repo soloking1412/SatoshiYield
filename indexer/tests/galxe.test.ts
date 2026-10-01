@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, afterAll, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@stacks/transactions";
 
 // Must match vitest.config.ts env
-const DEPLOYER = "SP000000000000000000002AMW42H";
+const DEPLOYER = "SP000000000000000000002Q6VF78";
 const API = "https://api.hiro.so";
 
 // Valid mainnet addresses derived from known private keys — guarantees correct
@@ -92,7 +92,7 @@ function get(path: string): Promise<Response> {
 // "bypass" lets the local express server requests pass through MSW un-intercepted
 // while still intercepting Stacks API calls via the handlers above.
 beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => { server.resetHandlers(); vi.unstubAllEnvs(); });
 afterAll(() => server.close());
 
 describe("GET /api/galxe/check", () => {
@@ -127,6 +127,34 @@ describe("GET /api/galxe/check", () => {
     expect(res.status).toBe(400);
   });
 
+  it.each(["0x0a03", "0x09ff", "0x", "0x0a0c00000000"])('returns unavailable for malformed optional position %s', async result => {
+    server.use(http.post(positionUrl(), () => HttpResponse.json({ okay: true, result })));
+    expect((await get(`/api/galxe/check?address=${DEPOSITOR}`)).status).toBe(503);
+  });
+  it('rejects truthy nonboolean RPC success and zero-principal eligibility', async () => {
+    server.use(http.post(positionUrl(), () => HttpResponse.json({ okay: "true", result: somePosition(2500) })));
+    expect((await get(`/api/galxe/check?address=${DEPOSITOR}`)).status).toBe(503);
+    server.use(http.post(positionUrl(), () => HttpResponse.json({ okay: true, result: somePosition(0) })));
+    expect(await (await get(`/api/galxe/check?address=${DEPOSITOR}`)).json()).toMatchObject({is_eligible:false,deposited_sats:0});
+  });
+  it('rejects valid wallets on another network', async () => {
+    expect((await get('/api/galxe/check?address=ST000000000000000000002AMW42H')).status).toBe(400);
+  });
+  it('requires an explicit v7 adapter list and aggregates each adapter exactly once', async () => {
+    vi.stubEnv('VAULT_VERSION','v7'); vi.stubEnv('VAULT_NAME','vault-v7');
+    expect((await get(`/api/galxe/check?address=${DEPOSITOR}`)).status).toBe(503);
+    vi.stubEnv('VAULT_ADAPTERS',`${ADAPTER_OWNER}.a,${ADAPTER_OWNER}.b`);
+    const calls:string[][]=[];
+    server.use(http.post(`${API}/v2/contracts/call-read/${DEPLOYER}/vault-v7/get-position`, async ({request}) => {
+      const body=await request.json() as {arguments:string[]}; calls.push(body.arguments);
+      return HttpResponse.json({okay:true,result:somePosition(2500)});
+    }));
+    expect(await (await get(`/api/galxe/check?address=${DEPOSITOR}`)).json()).toMatchObject({is_eligible:true,deposited_sats:5000});
+    expect(calls).toHaveLength(2); expect(calls.every(args=>args.length===2)).toBe(true);
+    expect(calls[0]![1]).not.toBe(calls[1]![1]);
+    vi.stubEnv('VAULT_ADAPTERS',`${ADAPTER_OWNER}.a,${ADAPTER_OWNER}.a`);
+    expect((await get(`/api/galxe/check?address=${DEPOSITOR}`)).status).toBe(503);
+  });
   it("returns 503 when the chain is unreachable", async () => {
     server.use(
       http.post(positionUrl(), () => HttpResponse.error())

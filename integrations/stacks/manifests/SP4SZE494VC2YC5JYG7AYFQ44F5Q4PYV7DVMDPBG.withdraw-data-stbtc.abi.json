@@ -1,0 +1,169 @@
+{
+  "functions": [
+    {
+      "name": "delete-withdrawals-by-nft",
+      "access": "public",
+      "args": [
+        {
+          "name": "nft-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-withdraw-cooldown-blocks",
+      "access": "public",
+      "args": [
+        {
+          "name": "blocks",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "set-withdrawals-by-nft",
+      "access": "public",
+      "args": [
+        {
+          "name": "nft-id",
+          "type": "uint128"
+        },
+        {
+          "name": "asset-amount",
+          "type": "uint128"
+        },
+        {
+          "name": "token-amount",
+          "type": "uint128"
+        },
+        {
+          "name": "unlock-burn-height",
+          "type": "uint128"
+        },
+        {
+          "name": "withdraw-fee",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-withdraw-cooldown-blocks",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-withdraw-unlock-burn-height",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-withdrawals-by-nft",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "nft-id",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "tuple": [
+            {
+              "name": "asset-amount",
+              "type": "uint128"
+            },
+            {
+              "name": "token-amount",
+              "type": "uint128"
+            },
+            {
+              "name": "unlock-burn-height",
+              "type": "uint128"
+            },
+            {
+              "name": "withdraw-fee",
+              "type": "uint128"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "ERR_COOLDOWN_TOO_SHORT",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "withdraw-cooldown-blocks",
+      "type": "uint128",
+      "access": "variable"
+    }
+  ],
+  "maps": [
+    {
+      "name": "withdrawals-by-nft",
+      "key": "uint128",
+      "value": {
+        "tuple": [
+          {
+            "name": "asset-amount",
+            "type": "uint128"
+          },
+          {
+            "name": "token-amount",
+            "type": "uint128"
+          },
+          {
+            "name": "unlock-burn-height",
+            "type": "uint128"
+          },
+          {
+            "name": "withdraw-fee",
+            "type": "uint128"
+          }
+        ]
+      }
+    }
+  ],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

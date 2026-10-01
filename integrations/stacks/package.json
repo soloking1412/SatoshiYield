@@ -1,0 +1,23 @@
+{
+  "name": "@satoshiyields/stacks-integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Non-signing, source-pinned Stacks sBTC protocol routes",
+  "exports": "./src/index.mjs",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "verify:mainnet": "node scripts/verify-mainnet.mjs",
+    "test:fork": "node scripts/fork-roundtrip.mjs",
+    "test:vault:fork": "node scripts/vault-fork-roundtrip.mjs"
+  },
+  "dependencies": {
+    "@stacks/transactions": "7.4.0"
+  },
+  "devDependencies": {
+    "@stacks/clarinet-sdk": "3.24.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

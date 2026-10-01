@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-10-01T08:19:34.330Z",
+  "url": "http://127.0.0.1:5173/integrations?tab=bitcoin",
+  "walletProvider": "Mock public Sepolia account/network reads only; no private keys or signing",
+  "protocolData": "Live Lombard SDK sandbox HTTPS requests; no API mocks",
+  "authorizeDisabled": true,
+  "review": "02 / EXTERNAL CUSTODY\n\nLombard LBTC\n\nMove Signet test BTC into Lombard custody and receive its test token on Sepolia. LBTC strategy and custody risks differ from a native BTC timelock.\n\nSignet → Sepolia · sandbox\nReview quote\nAuthorize deposit address\nSend test BTC separately\nIssue & redeem LBTC\n\nAddress authorization signs a fee allowance. It does not transfer BTC. Funding, issuance and a complete redemption have not been exercised by this rebuild.\n\nOfficial sandbox guide ↗\nReview a test deposit\n0xF38699B5…16d3D0\nSepolia recipient\nReconnect\nAmount in test BTC\nGet live quote\n\nREVIEW BEFORE AUTHORIZATION\n\nAmount\n0.00100000 test BTC\nMaximum minting fee\n0.00001342 test BTC\nEstimated receipt\n0.00098632 test LBTC\nCustody\nLombard consortium\nDestination\nEthereum Sepolia\nReceipt token\n0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5\n\nReceipt is an estimate; this BTC deposit flow does not enforce a minimum token output. The fee signature can remain valid for up to 24 hours. BTC network fees are additional.\n\nI understand the custody, variable receipt, and fee authorization. I will use Signet test coins only.\n\nLombard testnet authorization service returned incomplete status. Address registration is unavailable.\n\nAuthorize test deposit address",
+  "status": "live-quote-read",
+  "mobile": {
+    "width": 375,
+    "scrollWidth": 375
+  },
+  "walletCalls": [
+    "eth_chainId",
+    "eth_requestAccounts",
+    "eth_chainId",
+    "eth_accounts",
+    "eth_chainId",
+    "eth_accounts"
+  ],
+  "signingCalls": 0,
+  "transactionsBroadcast": 0,
+  "errors": [],
+  "api": [
+    {
+      "url": "https://gastald-testnet.prod.lombard-fi.com/api/v1/address/destination/DESTINATION_BLOCKCHAIN_ETHEREUM/0xF38699B59ACAB779641cD07c56a2e8e10516d3D0?asc=false&referralId=test",
+      "status": 200
+    },
+    {
+      "url": "https://bff.stage.lombard-fi.com/multi-rpc/proxy/eth_sepolia",
+      "status": 201
+    },
+    {
+      "url": "https://bff.stage.lombard-fi.com/multi-rpc/proxy/eth_sepolia",
+      "status": 201
+    },
+    {
+      "url": "https://gastald-testnet.prod.lombard-fi.com/api/v1/claimer/get-user-signature?user_destination_address=0xF38699B59ACAB779641cD07c56a2e8e10516d3D0&chain_id=11155111&token_address=0x107Fc7d90484534704dD2A9e24c7BD45DB4dD1B5",
+      "status": 200
+    },
+    {
+      "url": "https://bff.stage.lombard-fi.com/multi-rpc/proxy/eth_sepolia",
+      "status": 201
+    },
+    {
+      "url": "https://bff.stage.lombard-fi.com/multi-rpc/proxy/eth_sepolia",
+      "status": 201
+    },
+    {
+      "url": "https://bff.stage.lombard-fi.com/multi-rpc/proxy/eth_sepolia",
+      "status": 201
+    },
+    {
+      "url": "https://gastald-testnet.prod.lombard-fi.com/api/v1/ratio",
+      "status": 200
+    },
+    {
+      "url": "https://gastald-testnet.prod.lombard-fi.com/api/v1/claimer/get-user-signature?user_destination_address=0xF38699B59ACAB779641cD07c56a2e8e10516d3D0&chain_id=11155111&token_address=0x107fc7d90484534704dd2a9e24c7bd45db4dd1b5",
+      "status": 200
+    }
+  ]
+}

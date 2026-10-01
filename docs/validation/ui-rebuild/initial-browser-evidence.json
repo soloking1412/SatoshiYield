@@ -1,0 +1,955 @@
+{
+  "capturedAt": "2026-10-01T08:22:55.320Z",
+  "evidence": [
+    {
+      "name": "home",
+      "width": 1440,
+      "title": "Bitcoin capital, in view | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nBITCOIN, WORKING WITH CLARITY\n\nBitcoin capital.\nThe details\nin view.\n\nExplore yield routes on Stacks with the asset, withdrawal terms, and integration status alongside every strategy.\n\nExplore strategies\nInspect the vault\n\nsBTC lending · Managed strategies · Stacking research\nDifferent assets. Different risks. Always visible.\n\nVAULT SNAPSHOT / V6\nMAINNET\n0.00014353 sBTC\n\nRecorded deposited principal\n\nDeposit access\nRelease review required\nListed strategies\n2 sBTC strategies\nFresh rate feeds\n0 reporting\nSource\nStacks contract read\nView contracts & data\nKnow the route your capital takes.\n01 → 03\n01 /\nYour wallet\n\nHold the right asset on the right network. Review every transaction before signing.\n\n02 /\nA defined strategy\n\nWhen enabled, an approved adapter connects the vault to a specific protocol.\n\n03 /\nA clear exit\n\nReview liquidity, cooldowns, and claim requirements before committing capital.\n\nThe integration register\n\nAvailability is separate from a protocol’s market rate.\n\nExplore all\n2 listed sBTC strategies\n0 fresh rate feeds\nStrategy / protocol\nAsset\nReported APY\nWithdrawal\nAvailability\nZE\nZest\nLending market\nsBTC\n—\nStale · unavailable\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nsBTC\n—\nNo verified feed\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "yields",
+      "width": 1440,
+      "title": "Explore strategies | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nTHE STRATEGY DIRECTORY\n\nExplore your next move.\n\nCompare the mechanics before the rate. Each route shows its asset, withdrawal model, and current availability in SatoshiYield.\n\nUnderstand the risks\nDeposit access: New deposits are disabled in this rebuild pending independent review and verified integrations. Existing positions retain withdrawal access.\nAll strategies\nLending\nManaged\nSearch strategies\n2 listed sBTC strategies\n0 fresh rate feeds\nStrategy / protocol\nAsset\nReported APY\nWithdrawal\nAvailability\nZE\nZest\nLending market\nsBTC\n—\nStale · unavailable\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nsBTC\n—\nNo verified feed\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nOTHER PROTOCOL CONNECTIONS\nBB\nBabylon BTC staking\n\nSignet wallet and parameter checks can prepare an unsigned staking plan. Signing and broadcast are unavailable. Finality-provider, slashing and unbonding risks apply.\n\nBTC\nUnbonding period; slashing conditions apply\nRead protocol docs\nTest preparation\nReview connection\nLB\nLombard LBTC\n\nSignet-to-Sepolia quotes and reviewed deposit-address authorization are available. No Bitcoin payment is submitted here. Custody, strategy, bridge and redemption risks apply.\n\nBTC / LBTC\nCustodian redemption and destination-chain rules\nRead protocol docs\nTest preparation\nReview connection\nSV\nSolvBTC\n\nBitcoin custody and mapped tokens across other chains. Different products carry different yield and redemption risks. Wallet, bridge and custody integrations are not implemented here.\n\nBTC / SolvBTC\nCustody and product-specific redemption\nRead protocol docs\nResearch only\nstB\nStacking DAO stBTC\n\nDirect-wallet deposits, liquid withdrawals and existing NFT claims use live source and permission checks. New queued exits await guard deployment. Governance can modify existing claim records.\n\nsBTC\nsBTC redemption subject to reserves and bonds\nRead protocol docs\nDirect route\nReview connection\nzv\nZest zvstBTC\n\nA distinct stBTC strategy with operator-managed leverage. Not the legacy Zest Earn adapter. No deposit integration is enabled here.\n\nsBTC\nVault liquidity and leverage constraints\nRead protocol docs\nResearch only\nSTX\nSTX stacking\n\nstSTX and stSTXbtc accept STX. They require a separate STX asset flow and cannot be substituted for an sBTC deposit.\n\nSTX\nProduct-specific cycle and redemption rules\nRead protocol docs\nResearch only\nBTC\nNative BTC staking\n\nRead next-bond eligibility, wallet allowance and the paired STX commitment using the current PoX-5 API. Funding and registration signing are disabled. Testnet uses Bitcoin regtest, not Signet.\n\nBTC + STX\nBitcoin timelock; bond-specific eligibility\nRead protocol docs\nEligibility only\nReview connection\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "All strategies",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Lending",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Managed",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-stacks",
+      "width": 1440,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nZ\nZest\nsBTC → zsBTC\nS\nStackingDAO\nsBTC → stBTC\nDIRECT PROTOCOL POSITIONS\n\nReceipts belong to your wallet. These routes do not deposit into the SatoshiYield vault.\n\nContract code and current permissions are checked before each review. Protocol governance, liquidity and loss risks still apply.\n\nRead risk & release notes\n\nSTACKS MAINNET · SBTC\n\nZest\nVerify before use\n\nSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.\n\nDeposit\nWithdraw\nConnect to inspect your route.\n\nRead balances and current protocol availability before reviewing an action.\n\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "ZZestsBTC → zsBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "SStackingDAOsBTC → stBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Deposit",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Withdraw",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-bitcoin",
+      "width": 1440,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nLoading Bitcoin connections…\n\nNATIVE BITCOIN · STACKS POX-5\n\nCheck bond eligibility.\nRead-only\n\nCheck the next bond’s registration window, your allowance, and the paired STX commitment before considering a Bitcoin lock. This check does not fund or register a stake.\n\nThis route checks native Bitcoin on mainnet. The Babylon and Lombard panels above are separate test-network preparations.\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "portfolio",
+      "width": 1440,
+      "title": "Your portfolio | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nYOUR CAPITAL, ACCOUNTED FOR\n\nYour portfolio.\n\nReview recorded principal and withdrawal status for the configured vault. Transaction submission and on-chain confirmation are separate steps.\n\nA wallet brings your positions into view.\n\nConnect a Stacks wallet to read your positions on mainnet. Connecting does not authorize any transaction.\n\nConnect wallet\nExplore strategies first\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "transparency",
+      "width": 1440,
+      "title": "Vault transparency | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nCONTRACTS, CAPITAL & CONSTRAINTS\n\nA view into the vault.\n\nDirect contract readings, with their scope clearly labeled. Deposited principal is an accounting value; it is not a mark-to-market valuation or a measure of withdrawal liquidity.\n\nRefresh data\nV6 / MAINNET\nRead at 01:52 PM\nRecorded deposited principal\n0.00014353sBTC\n\nVault accounting · excludes unreported returns\n\nConfigured deposit cap\n0.05000000sBTC\n\nA capacity limit, not a protection guarantee\n\nPerformance fee\n5.00%\n\nVault fee on yield, when realized\n\nHistorical deposits\nNot available\nA time series needs real snapshots.\n\nHistorical vault snapshots are not connected to this view yet. No estimated or simulated performance chart is shown.\n\nVault parameters\nMinimum deposit\n0.00001000 sBTC\nAccrued vault fees\n0.00000000 sBTC\nNew deposits\nDisabled for review\nContract version\nv6\nNetwork\nMainnet\n\nApplication availability and the contract’s on-chain state are separate. A successful read does not establish that a contract is safe.\n\nVerify at the source.\n\nConfigured contracts for this environment. Always check the network and exact address.\n\nRelease status\nVault\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6\nExplorer\nsBTC token\nSM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token\nExplorer\nZest adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.zest-earn-adapter\nExplorer\nHermetica adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter\nExplorer\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Refresh data",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "security",
+      "width": 1440,
+      "title": "Risk & release | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nMainnet\nGet sBTC\nConnect wallet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nRISK & RELEASE\n\nTrust should be inspectable.\n\nThe rebuild is a release candidate. This page explains what remains to verify and what can go wrong, without labeling the system audited or guaranteeing your principal.\n\nInspect contracts\nNew vault deposits are disabled for this deployment. Existing positions can be reviewed and withdrawal transactions requested. The configured legacy vault and the rebuild are separate deployments.\nDirect protocol connections have separate limits. Zest sBTC and StackingDAO stBTC routes verify current contracts before wallet review; funded mainnet fork tests cover deposits and exits. They have not received an independent audit here. New StackingDAO queue requests remain disabled until the bounded guard is deployed. Babylon and Lombard provide test-network preparation; native PoX-5 is an eligibility check. Inspect each connection.\n01\nSmart contracts & administration\n\nA defect, unexpected adapter behavior, or compromised privileged key can put funds at risk. Contract controls and internal tests do not replace an independent review of the deployed code.\n\n02\nThe asset you are holding\n\nBTC, sBTC, STX, and liquid staking receipts are distinct assets. Peg, signer, redemption, and bridge risks vary. A strategy that accepts STX cannot receive an sBTC deposit through the same route.\n\n03\nThe strategy underneath\n\nLending can face liquidity shortfalls or bad debt. Managed strategies may use leverage, off-chain counterparties, or external venues. An advertised rate does not establish safety or future returns.\n\n04\nThe path back to your wallet\n\nAn atomic withdrawal depends on available liquidity. A request-and-claim route depends on funding the redemption. Neither route guarantees that your original principal will be returned in full.\n\n05\nData and execution\n\nRate feeds and contract reads can fail or become stale. This interface hides unverified figures. A wallet returning a transaction ID means submitted; successful chain confirmation must be checked separately.\n\nBefore production vault deposits\n\nV6 configured on mainnet. Enabling a route requires evidence for the exact deployed contracts.\n\nIndependent security review\nReview the vault, each adapter, privileged roles, and the transaction flow; resolve material findings.\nIntegration verification\nPin the actual protocol contracts and asset identifiers. Validate deposits, losses, fees, liquidity, and exits.\nPublic network evidence\nConfirm transactions and state changes on testnet. Mock integration success alone is insufficient.\nOperational readiness\nEstablish administration, monitoring, incident response, and a migration process for existing users.\nReview the source\nThere is no universally safest or highest-yield route. Returns, asset exposure, liquidity, administration, and custody assumptions must be assessed together. Only an explicitly enabled, reviewed integration can accept deposits through this app.\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 1440,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "title": "Bitcoin capital, in view | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nBITCOIN, WORKING WITH CLARITY\n\nBitcoin capital.\nThe details\nin view.\n\nExplore yield routes on Stacks with the asset, withdrawal terms, and integration status alongside every strategy.\n\nExplore strategies\nInspect the vault\n\nsBTC lending · Managed strategies · Stacking research\nDifferent assets. Different risks. Always visible.\n\nVAULT SNAPSHOT / V6\nMAINNET\n0.00014353 sBTC\n\nRecorded deposited principal\n\nDeposit access\nRelease review required\nListed strategies\n2 sBTC strategies\nFresh rate feeds\n0 reporting\nSource\nStacks contract read\nView contracts & data\nKnow the route your capital takes.\n01 → 03\n01 /\nYour wallet\n\nHold the right asset on the right network. Review every transaction before signing.\n\n02 /\nA defined strategy\n\nWhen enabled, an approved adapter connects the vault to a specific protocol.\n\n03 /\nA clear exit\n\nReview liquidity, cooldowns, and claim requirements before committing capital.\n\nThe integration register\n\nAvailability is separate from a protocol’s market rate.\n\nExplore all\n2 listed sBTC strategies\n0 fresh rate feeds\nZE\nZest\nLending market\nASSET\nsBTC\nREPORTED APY\n—\nStale · unavailable\nWITHDRAWAL\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nASSET\nsBTC\nREPORTED APY\n—\nNo verified feed\nWITHDRAWAL\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "yields",
+      "width": 768,
+      "title": "Explore strategies | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nTHE STRATEGY DIRECTORY\n\nExplore your next move.\n\nCompare the mechanics before the rate. Each route shows its asset, withdrawal model, and current availability in SatoshiYield.\n\nUnderstand the risks\nDeposit access: New deposits are disabled in this rebuild pending independent review and verified integrations. Existing positions retain withdrawal access.\nAll strategies\nLending\nManaged\nSearch strategies\n2 listed sBTC strategies\n0 fresh rate feeds\nZE\nZest\nLending market\nASSET\nsBTC\nREPORTED APY\n—\nStale · unavailable\nWITHDRAWAL\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nASSET\nsBTC\nREPORTED APY\n—\nNo verified feed\nWITHDRAWAL\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nOTHER PROTOCOL CONNECTIONS\nBB\nBabylon BTC staking\n\nSignet wallet and parameter checks can prepare an unsigned staking plan. Signing and broadcast are unavailable. Finality-provider, slashing and unbonding risks apply.\n\nBTC\nUnbonding period; slashing conditions apply\nRead protocol docs\nTest preparation\nReview connection\nLB\nLombard LBTC\n\nSignet-to-Sepolia quotes and reviewed deposit-address authorization are available. No Bitcoin payment is submitted here. Custody, strategy, bridge and redemption risks apply.\n\nBTC / LBTC\nCustodian redemption and destination-chain rules\nRead protocol docs\nTest preparation\nReview connection\nSV\nSolvBTC\n\nBitcoin custody and mapped tokens across other chains. Different products carry different yield and redemption risks. Wallet, bridge and custody integrations are not implemented here.\n\nBTC / SolvBTC\nCustody and product-specific redemption\nRead protocol docs\nResearch only\nstB\nStacking DAO stBTC\n\nDirect-wallet deposits, liquid withdrawals and existing NFT claims use live source and permission checks. New queued exits await guard deployment. Governance can modify existing claim records.\n\nsBTC\nsBTC redemption subject to reserves and bonds\nRead protocol docs\nDirect route\nReview connection\nzv\nZest zvstBTC\n\nA distinct stBTC strategy with operator-managed leverage. Not the legacy Zest Earn adapter. No deposit integration is enabled here.\n\nsBTC\nVault liquidity and leverage constraints\nRead protocol docs\nResearch only\nSTX\nSTX stacking\n\nstSTX and stSTXbtc accept STX. They require a separate STX asset flow and cannot be substituted for an sBTC deposit.\n\nSTX\nProduct-specific cycle and redemption rules\nRead protocol docs\nResearch only\nBTC\nNative BTC staking\n\nRead next-bond eligibility, wallet allowance and the paired STX commitment using the current PoX-5 API. Funding and registration signing are disabled. Testnet uses Bitcoin regtest, not Signet.\n\nBTC + STX\nBitcoin timelock; bond-specific eligibility\nRead protocol docs\nEligibility only\nReview connection\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "All strategies",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Lending",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Managed",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-stacks",
+      "width": 768,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nZ\nZest\nsBTC → zsBTC\nS\nStackingDAO\nsBTC → stBTC\nDIRECT PROTOCOL POSITIONS\n\nReceipts belong to your wallet. These routes do not deposit into the SatoshiYield vault.\n\nContract code and current permissions are checked before each review. Protocol governance, liquidity and loss risks still apply.\n\nRead risk & release notes\n\nSTACKS MAINNET · SBTC\n\nZest\nVerify before use\n\nSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.\n\nDeposit\nWithdraw\nConnect to inspect your route.\n\nRead balances and current protocol availability before reviewing an action.\n\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "ZZestsBTC → zsBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "SStackingDAOsBTC → stBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Deposit",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Withdraw",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-bitcoin",
+      "width": 768,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nLoading Bitcoin connections…\n\nNATIVE BITCOIN · STACKS POX-5\n\nCheck bond eligibility.\nRead-only\n\nCheck the next bond’s registration window, your allowance, and the paired STX commitment before considering a Bitcoin lock. This check does not fund or register a stake.\n\nThis route checks native Bitcoin on mainnet. The Babylon and Lombard panels above are separate test-network preparations.\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "portfolio",
+      "width": 768,
+      "title": "Your portfolio | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nYOUR CAPITAL, ACCOUNTED FOR\n\nYour portfolio.\n\nReview recorded principal and withdrawal status for the configured vault. Transaction submission and on-chain confirmation are separate steps.\n\nA wallet brings your positions into view.\n\nConnect a Stacks wallet to read your positions on mainnet. Connecting does not authorize any transaction.\n\nConnect wallet\nExplore strategies first\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "transparency",
+      "width": 768,
+      "title": "Vault transparency | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nCONTRACTS, CAPITAL & CONSTRAINTS\n\nA view into the vault.\n\nDirect contract readings, with their scope clearly labeled. Deposited principal is an accounting value; it is not a mark-to-market valuation or a measure of withdrawal liquidity.\n\nRefresh data\nV6 / MAINNET\nRead at 01:52 PM\nRecorded deposited principal\n0.00014353sBTC\n\nVault accounting · excludes unreported returns\n\nConfigured deposit cap\n0.05000000sBTC\n\nA capacity limit, not a protection guarantee\n\nPerformance fee\n5.00%\n\nVault fee on yield, when realized\n\nHistorical deposits\nNot available\nA time series needs real snapshots.\n\nHistorical vault snapshots are not connected to this view yet. No estimated or simulated performance chart is shown.\n\nVault parameters\nMinimum deposit\n0.00001000 sBTC\nAccrued vault fees\n0.00000000 sBTC\nNew deposits\nDisabled for review\nContract version\nv6\nNetwork\nMainnet\n\nApplication availability and the contract’s on-chain state are separate. A successful read does not establish that a contract is safe.\n\nVerify at the source.\n\nConfigured contracts for this environment. Always check the network and exact address.\n\nRelease status\nVault\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6\nExplorer\nsBTC token\nSM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token\nExplorer\nZest adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.zest-earn-adapter\nExplorer\nHermetica adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter\nExplorer\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Refresh data",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "security",
+      "width": 768,
+      "title": "Risk & release | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nExplore\nConnect protocols\nPortfolio\nTransparency\nRisk & release\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nRISK & RELEASE\n\nTrust should be inspectable.\n\nThe rebuild is a release candidate. This page explains what remains to verify and what can go wrong, without labeling the system audited or guaranteeing your principal.\n\nInspect contracts\nNew vault deposits are disabled for this deployment. Existing positions can be reviewed and withdrawal transactions requested. The configured legacy vault and the rebuild are separate deployments.\nDirect protocol connections have separate limits. Zest sBTC and StackingDAO stBTC routes verify current contracts before wallet review; funded mainnet fork tests cover deposits and exits. They have not received an independent audit here. New StackingDAO queue requests remain disabled until the bounded guard is deployed. Babylon and Lombard provide test-network preparation; native PoX-5 is an eligibility check. Inspect each connection.\n01\nSmart contracts & administration\n\nA defect, unexpected adapter behavior, or compromised privileged key can put funds at risk. Contract controls and internal tests do not replace an independent review of the deployed code.\n\n02\nThe asset you are holding\n\nBTC, sBTC, STX, and liquid staking receipts are distinct assets. Peg, signer, redemption, and bridge risks vary. A strategy that accepts STX cannot receive an sBTC deposit through the same route.\n\n03\nThe strategy underneath\n\nLending can face liquidity shortfalls or bad debt. Managed strategies may use leverage, off-chain counterparties, or external venues. An advertised rate does not establish safety or future returns.\n\n04\nThe path back to your wallet\n\nAn atomic withdrawal depends on available liquidity. A request-and-claim route depends on funding the redemption. Neither route guarantees that your original principal will be returned in full.\n\n05\nData and execution\n\nRate feeds and contract reads can fail or become stale. This interface hides unverified figures. A wallet returning a transaction ID means submitted; successful chain confirmation must be checked separately.\n\nBefore production vault deposits\n\nV6 configured on mainnet. Enabling a route requires evidence for the exact deployed contracts.\n\nIndependent security review\nReview the vault, each adapter, privileged roles, and the transaction flow; resolve material findings.\nIntegration verification\nPin the actual protocol contracts and asset identifiers. Validate deposits, losses, fees, liquidity, and exits.\nPublic network evidence\nConfirm transactions and state changes on testnet. Mock integration success alone is insufficient.\nOperational readiness\nEstablish administration, monitoring, incident response, and a migration process for existing users.\nReview the source\nThere is no universally safest or highest-yield route. Returns, asset exposure, liquidity, administration, and custody assumptions must be assessed together. Only an explicitly enabled, reviewed integration can accept deposits through this app.\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.",
+      "overflow": false,
+      "scrollWidth": 768,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "home",
+      "width": 375,
+      "title": "Bitcoin capital, in view | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nBITCOIN, WORKING WITH CLARITY\n\nBitcoin capital.\nThe details in view.\n\nExplore yield routes on Stacks with the asset, withdrawal terms, and integration status alongside every strategy.\n\nExplore strategies\nInspect the vault\n\nsBTC lending · Managed strategies · Stacking research\nDifferent assets. Different risks. Always visible.\n\nVAULT SNAPSHOT / V6\nMAINNET\n0.00014353 sBTC\n\nRecorded deposited principal\n\nDeposit access\nRelease review required\nListed strategies\n2 sBTC strategies\nFresh rate feeds\n0 reporting\nSource\nStacks contract read\nView contracts & data\nKnow the route your capital takes.\n01 → 03\n01 /\nYour wallet\n\nHold the right asset on the right network. Review every transaction before signing.\n\n02 /\nA defined strategy\n\nWhen enabled, an approved adapter connects the vault to a specific protocol.\n\n03 /\nA clear exit\n\nReview liquidity, cooldowns, and claim requirements before committing capital.\n\nThe integration register\n\nAvailability is separate from a protocol’s market rate.\n\nExplore all\n2 listed sBTC strategies\n0 fresh rate feeds\nZE\nZest\nLending market\nASSET\nsBTC\nREPORTED APY\n—\nStale · unavailable\nWITHDRAWAL\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nASSET\nsBTC\nREPORTED APY\n—\nNo verified feed\nWITHDRAWAL\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "yields",
+      "width": 375,
+      "title": "Explore strategies | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nTHE STRATEGY DIRECTORY\n\nExplore your next move.\n\nCompare the mechanics before the rate. Each route shows its asset, withdrawal model, and current availability in SatoshiYield.\n\nUnderstand the risks\nDeposit access: New deposits are disabled in this rebuild pending independent review and verified integrations. Existing positions retain withdrawal access.\nAll strategies\nLending\nManaged\nSearch strategies\n2 listed sBTC strategies\n0 fresh rate feeds\nZE\nZest\nLending market\nASSET\nsBTC\nREPORTED APY\n—\nStale · unavailable\nWITHDRAWAL\nLiquidity dependent\nNo fixed lock\nReview required\nDetails\nhB\nHermetica hBTC\nManaged strategy\nASSET\nsBTC\nREPORTED APY\n—\nNo verified feed\nWITHDRAWAL\nRequest & claim\nFunding required\nReview required\nDetails\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings.\n\nOTHER PROTOCOL CONNECTIONS\nBB\nBabylon BTC staking\n\nSignet wallet and parameter checks can prepare an unsigned staking plan. Signing and broadcast are unavailable. Finality-provider, slashing and unbonding risks apply.\n\nBTC\nUnbonding period; slashing conditions apply\nRead protocol docs\nTest preparation\nReview connection\nLB\nLombard LBTC\n\nSignet-to-Sepolia quotes and reviewed deposit-address authorization are available. No Bitcoin payment is submitted here. Custody, strategy, bridge and redemption risks apply.\n\nBTC / LBTC\nCustodian redemption and destination-chain rules\nRead protocol docs\nTest preparation\nReview connection\nSV\nSolvBTC\n\nBitcoin custody and mapped tokens across other chains. Different products carry different yield and redemption risks. Wallet, bridge and custody integrations are not implemented here.\n\nBTC / SolvBTC\nCustody and product-specific redemption\nRead protocol docs\nResearch only\nstB\nStacking DAO stBTC\n\nDirect-wallet deposits, liquid withdrawals and existing NFT claims use live source and permission checks. New queued exits await guard deployment. Governance can modify existing claim records.\n\nsBTC\nsBTC redemption subject to reserves and bonds\nRead protocol docs\nDirect route\nReview connection\nzv\nZest zvstBTC\n\nA distinct stBTC strategy with operator-managed leverage. Not the legacy Zest Earn adapter. No deposit integration is enabled here.\n\nsBTC\nVault liquidity and leverage constraints\nRead protocol docs\nResearch only\nSTX\nSTX stacking\n\nstSTX and stSTXbtc accept STX. They require a separate STX asset flow and cannot be substituted for an sBTC deposit.\n\nSTX\nProduct-specific cycle and redemption rules\nRead protocol docs\nResearch only\nBTC\nNative BTC staking\n\nRead next-bond eligibility, wallet allowance and the paired STX commitment using the current PoX-5 API. Funding and registration signing are disabled. Testnet uses Bitcoin regtest, not Signet.\n\nBTC + STX\nBitcoin timelock; bond-specific eligibility\nRead protocol docs\nEligibility only\nReview connection\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "All strategies",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Lending",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Managed",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Zest details",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Details",
+          "label": "View Hermetica hBTC details",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-stacks",
+      "width": 375,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nZ\nZest\nsBTC → zsBTC\nS\nStackingDAO\nsBTC → stBTC\n\nReceipts belong to your wallet. These routes do not deposit into the SatoshiYield vault.\n\nRead risk & release notes\n\nSTACKS MAINNET · SBTC\n\nZest\nVerify before use\n\nSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.\n\nDeposit\nWithdraw\nConnect to inspect your route.\n\nRead balances and current protocol availability before reviewing an action.\n\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "ZZestsBTC → zsBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "SStackingDAOsBTC → stBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Deposit",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Withdraw",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "integrations-bitcoin",
+      "width": 375,
+      "title": "Protocol connections | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nPROTOCOL CONNECTIONS\n\nOne place. Clear routes.\n\nReview the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.\n\nStacks protocols\nLive checks · mainnet\nBitcoin staking\nPreparation & eligibility\nLoading Bitcoin connections…\n\nNATIVE BITCOIN · STACKS POX-5\n\nCheck bond eligibility.\nRead-only\n\nCheck the next bond’s registration window, your allowance, and the paired STX commitment before considering a Bitcoin lock. This check does not fund or register a stake.\n\nThis route checks native Bitcoin on mainnet. The Babylon and Lombard panels above are separate test-network preparations.\nConnect Stacks wallet\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Stacks protocols Live checks · mainnet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bitcoin staking Preparation & eligibility",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect Stacks wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "portfolio",
+      "width": 375,
+      "title": "Your portfolio | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nYOUR CAPITAL, ACCOUNTED FOR\n\nYour portfolio.\n\nReview recorded principal and withdrawal status for the configured vault. Transaction submission and on-chain confirmation are separate steps.\n\nA wallet brings your positions into view.\n\nConnect a Stacks wallet to read your positions on mainnet. Connecting does not authorize any transaction.\n\nConnect wallet\nExplore strategies first\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "transparency",
+      "width": 375,
+      "title": "Vault transparency | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nCONTRACTS, CAPITAL & CONSTRAINTS\n\nA view into the vault.\n\nDirect contract readings, with their scope clearly labeled. Deposited principal is an accounting value; it is not a mark-to-market valuation or a measure of withdrawal liquidity.\n\nRefresh data\nV6 / MAINNET\nRead at 01:52 PM\nRecorded deposited principal\n0.00014353sBTC\n\nVault accounting · excludes unreported returns\n\nConfigured deposit cap\n0.05000000sBTC\n\nA capacity limit, not a protection guarantee\n\nPerformance fee\n5.00%\n\nVault fee on yield, when realized\n\nHistorical deposits\nNot available\nA time series needs real snapshots.\n\nHistorical vault snapshots are not connected to this view yet. No estimated or simulated performance chart is shown.\n\nVault parameters\nMinimum deposit\n0.00001000 sBTC\nAccrued vault fees\n0.00000000 sBTC\nNew deposits\nDisabled for review\nContract version\nv6\nNetwork\nMainnet\n\nApplication availability and the contract’s on-chain state are separate. A successful read does not establish that a contract is safe.\n\nVerify at the source.\n\nConfigured contracts for this environment. Always check the network and exact address.\n\nRelease status\nVault\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6\nExplorer\nsBTC token\nSM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token\nExplorer\nZest adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.zest-earn-adapter\nExplorer\nHermetica adapter\nSP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.hermetica-hbtc-adapter\nExplorer\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Refresh data",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "security",
+      "width": 375,
+      "title": "Risk & release | SatoshiYield",
+      "text": "Skip to content\nSatoshiYield\nConnect wallet\nMainnet\nVault release under review.\nNew vault deposits are disabled.\nView release requirements ↗\n\nRISK & RELEASE\n\nTrust should be inspectable.\n\nThe rebuild is a release candidate. This page explains what remains to verify and what can go wrong, without labeling the system audited or guaranteeing your principal.\n\nInspect contracts\nNew vault deposits are disabled for this deployment. Existing positions can be reviewed and withdrawal transactions requested. The configured legacy vault and the rebuild are separate deployments.\nDirect protocol connections have separate limits. Zest sBTC and StackingDAO stBTC routes verify current contracts before wallet review; funded mainnet fork tests cover deposits and exits. They have not received an independent audit here. New StackingDAO queue requests remain disabled until the bounded guard is deployed. Babylon and Lombard provide test-network preparation; native PoX-5 is an eligibility check. Inspect each connection.\n01\nSmart contracts & administration\n\nA defect, unexpected adapter behavior, or compromised privileged key can put funds at risk. Contract controls and internal tests do not replace an independent review of the deployed code.\n\n02\nThe asset you are holding\n\nBTC, sBTC, STX, and liquid staking receipts are distinct assets. Peg, signer, redemption, and bridge risks vary. A strategy that accepts STX cannot receive an sBTC deposit through the same route.\n\n03\nThe strategy underneath\n\nLending can face liquidity shortfalls or bad debt. Managed strategies may use leverage, off-chain counterparties, or external venues. An advertised rate does not establish safety or future returns.\n\n04\nThe path back to your wallet\n\nAn atomic withdrawal depends on available liquidity. A request-and-claim route depends on funding the redemption. Neither route guarantees that your original principal will be returned in full.\n\n05\nData and execution\n\nRate feeds and contract reads can fail or become stale. This interface hides unverified figures. A wallet returning a transaction ID means submitted; successful chain confirmation must be checked separately.\n\nBefore production vault deposits\n\nV6 configured on mainnet. Enabling a route requires evidence for the exact deployed contracts.\n\nIndependent security review\nReview the vault, each adapter, privileged roles, and the transaction flow; resolve material findings.\nIntegration verification\nPin the actual protocol contracts and asset identifiers. Validate deposits, losses, fees, liquidity, and exits.\nPublic network evidence\nConfirm transactions and state changes on testnet. Mock integration success alone is insufficient.\nOperational readiness\nEstablish administration, monitoring, incident response, and a migration process for existing users.\nReview the source\nThere is no universally safest or highest-yield route. Returns, asset exposure, liquidity, administration, and custody assumptions must be assessed together. Only an explicitly enabled, reviewed integration can accept deposits through this app.\nSatoshiYield\n\nBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.\n\nRisk & release\nContracts & data\nSource code ↗\nStacks docs ↗\n© 2026 SatoshiYield\nVariable returns. Capital at risk. No guarantee of principal or yield.\nExplore\nProtocols\nPortfolio\nTransparency\nRisk & release",
+      "overflow": false,
+      "scrollWidth": 375,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "label": "Use light theme",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Get sBTC",
+          "label": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Connect wallet",
+          "label": null,
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "failed": []
+}

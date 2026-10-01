@@ -1,0 +1,48 @@
+# LOCAL MODEL ONLY: principal-substituted candidate and token-moving semantic models.
+[project]
+name = "hermetica-v7-semantic-tests"
+description = "Testnet-only mock integration; not production strategies"
+authors = []
+telemetry = false
+cache_dir = "./.cache-hermetica-v7/simnet"
+
+[contracts.sip-010-trait]
+path = "contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.yield-source-v2]
+path = "contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.yield-source-async-v1]
+path = "contracts/traits/yield-source-async-v1.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.vault-v7]
+path = "contracts/vault-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.mock-sbtc]
+path = "contracts/token/mock-sbtc.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.mock-hermetica-hq-v7]
+path = "tests/hermetica-v7/fixtures/mock-hermetica-hq-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.mock-hermetica-state-v7]
+path = "tests/hermetica-v7/fixtures/mock-hermetica-state-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.mock-hermetica-upstream-v7]
+path = "tests/hermetica-v7/fixtures/mock-hermetica-upstream-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.hermetica-hbtc-adapter-v7]
+path = ".cache-hermetica-v7/generated/hermetica-hbtc-adapter-v7.clar"
+clarity_version = 3
+epoch = "3.2"

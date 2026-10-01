@@ -1,0 +1,14 @@
+[project]
+name = "satoshi-exact-mainnet-routes"
+description = "Read-only mainnet fork; all writes stay in local simulator"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+[repl.remote_data]
+enabled = true
+api_url = "https://api.hiro.so"
+initial_height = 9101400
+
+[repl.settings]
+initial_epoch = "4.0"

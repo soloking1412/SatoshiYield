@@ -1,0 +1,14 @@
+{
+  "mainnet": {
+    "contract": "SP000000000000000000002Q6VF78.pox-5",
+    "sha256": "ffad35ad181d85832ebd7b998f445204c92d5cd19549166e644fb1f3988fa385",
+    "publishHeight": 8665568,
+    "sourceUrl": "https://api.hiro.so/v2/contracts/source/SP000000000000000000002Q6VF78/pox-5?proof=0"
+  },
+  "testnet": {
+    "contract": "ST000000000000000000002AMW42H.pox-5",
+    "sha256": "44a424364cb3c115ec92d0a72ebd228645e65d8f92792d66695898904e14c734",
+    "publishHeight": 2822,
+    "sourceUrl": "https://api.testnet.hiro.so/v2/contracts/source/ST000000000000000000002AMW42H/pox-5?proof=0"
+  }
+}

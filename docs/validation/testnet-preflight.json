@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "network": "testnet",
+  "chainId": 2147483648,
+  "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+  "endpoint": "https://api.testnet.hiro.so",
+  "checkedAt": "2026-09-30T20:30:08.576Z",
+  "scope": "Mock fixture deployment only; no real protocol integration or yield validation.",
+  "result": "partial",
+  "checks": [
+    {
+      "name": "canonical:deploy:sip-010-trait",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:yield-source-v2",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:yield-source-async-v1",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:vault-v7",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:mock-sbtc",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:mock-sync-v7",
+      "passed": true
+    },
+    {
+      "name": "canonical:deploy:mock-async-v7",
+      "passed": true
+    },
+    {
+      "name": "canonical:init:token",
+      "passed": true
+    },
+    {
+      "name": "canonical:init:sync",
+      "passed": true
+    },
+    {
+      "name": "canonical:init:async",
+      "passed": true
+    },
+    {
+      "name": "canonical:init:mint",
+      "passed": true
+    },
+    {
+      "name": "deployed-source-matches-submission-and-working-tree",
+      "passed": true
+    },
+    {
+      "name": "committed-sources-do-not-conflict",
+      "passed": true
+    },
+    {
+      "name": "initial-paused-unapproved-empty-state",
+      "passed": true
+    }
+  ],
+  "sources": {
+    "repositoryHead": "2103f8fea6e466650ef5611af85ef885a9375479",
+    "contracts": [
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.sip-010-trait",
+        "path": "contracts/contracts/traits/sip-010-trait.clar",
+        "deployedSha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3",
+        "worktreeSha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3",
+        "submittedSha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3",
+        "committedSha256": "d38fdb65a98c3513ad46a72e8d8d933eb4c25055d0359d73e55c914b4adaf4c3",
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": true,
+        "publishHeight": 589193
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.yield-source-v2",
+        "path": "contracts/contracts/traits/yield-source-v2.clar",
+        "deployedSha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94",
+        "worktreeSha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94",
+        "submittedSha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94",
+        "committedSha256": "a899b4927032b66c93ddd75d4767b13984caaead4501c7f7bc5f33c8e74e5b94",
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": true,
+        "publishHeight": 589193
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.yield-source-async-v1",
+        "path": "contracts/contracts/traits/yield-source-async-v1.clar",
+        "deployedSha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6",
+        "worktreeSha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6",
+        "submittedSha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6",
+        "committedSha256": "c8d46370bd2888c63a0efd575763acb7a77533b7bc0b5e56467d47870057aaa6",
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": true,
+        "publishHeight": 589193
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.vault-v7",
+        "path": "contracts/contracts/vault-v7.clar",
+        "deployedSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+        "worktreeSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+        "submittedSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+        "committedSha256": null,
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": null,
+        "publishHeight": 589194
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sbtc",
+        "path": "contracts/contracts/token/mock-sbtc.clar",
+        "deployedSha256": "d5cf951130adfbb9d38a3f04028c009e19b7272345b79dfcd603ae129a427f90",
+        "worktreeSha256": "d5cf951130adfbb9d38a3f04028c009e19b7272345b79dfcd603ae129a427f90",
+        "submittedSha256": "d5cf951130adfbb9d38a3f04028c009e19b7272345b79dfcd603ae129a427f90",
+        "committedSha256": "d5cf951130adfbb9d38a3f04028c009e19b7272345b79dfcd603ae129a427f90",
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": true,
+        "publishHeight": 589195
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7",
+        "path": "contracts/tests/v7/fixtures/mock-sync-v7.clar",
+        "deployedSha256": "3f69ae17c9fe781a32233a770fc0c2bf29bb83b3fe8ab333dac63f3875952fed",
+        "worktreeSha256": "3f69ae17c9fe781a32233a770fc0c2bf29bb83b3fe8ab333dac63f3875952fed",
+        "submittedSha256": "3f69ae17c9fe781a32233a770fc0c2bf29bb83b3fe8ab333dac63f3875952fed",
+        "committedSha256": null,
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": null,
+        "publishHeight": 589195
+      },
+      {
+        "contract": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-async-v7",
+        "path": "contracts/tests/v7/fixtures/mock-async-v7.clar",
+        "deployedSha256": "ab87ffd0c275aac16d9d94afcd40bd177502170b26748437cc805bd819550e70",
+        "worktreeSha256": "ab87ffd0c275aac16d9d94afcd40bd177502170b26748437cc805bd819550e70",
+        "submittedSha256": "ab87ffd0c275aac16d9d94afcd40bd177502170b26748437cc805bd819550e70",
+        "committedSha256": null,
+        "matchesWorkingTree": true,
+        "matchesSubmittedSource": true,
+        "matchesCommittedSource": null,
+        "publishHeight": 589195
+      }
+    ],
+    "workingTreeMatches": true,
+    "committedSourceVerification": "incomplete-uncommitted-sources"
+  },
+  "state": {
+    "checkedAt": "2026-09-30T20:30:08.576Z",
+    "burnBlockHeight": 22421,
+    "stacksTip": "5464752e2a41e5afce7350b16cab3b497504f8dc3e1d0e5e9da6c94e82c1ccb0",
+    "tokenBinding": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sbtc",
+    "paused": true,
+    "totalDeposited": "0",
+    "feeBalance": "0",
+    "feeBps": "500",
+    "owner": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+    "feeCollector": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+    "delay": "144",
+    "pendingFee": null,
+    "pendingCollector": null,
+    "supply": "10000000",
+    "userBalance": "10000000",
+    "vaultBalance": "0",
+    "mock-sync-v7:config": null,
+    "mock-sync-v7:proposal": {
+      "at": "22557",
+      "cap": "50000000",
+      "is-async": false
+    },
+    "mock-sync-v7:exposure": "0",
+    "mock-sync-v7:position": null,
+    "mock-sync-v7:total": "0",
+    "mock-sync-v7:shares": "0",
+    "mock-sync-v7:preview": "0",
+    "mock-sync-v7:tokens": "0",
+    "mock-async-v7:config": null,
+    "mock-async-v7:proposal": {
+      "at": "22557",
+      "cap": "50000000",
+      "is-async": true
+    },
+    "mock-async-v7:exposure": "0",
+    "mock-async-v7:position": null,
+    "mock-async-v7:total": "0",
+    "mock-async-v7:shares": "0",
+    "mock-async-v7:preview": "0",
+    "mock-async-v7:tokens": "0",
+    "claimId": null
+  },
+  "timelocks": [
+    {
+      "adapter": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-sync-v7",
+      "earliestBurnBlock": "22557",
+      "currentBurnBlock": 22421,
+      "remainingBurnBlocks": 136,
+      "ready": false
+    },
+    {
+      "adapter": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX.mock-async-v7",
+      "earliestBurnBlock": "22557",
+      "currentBurnBlock": 22421,
+      "remainingBurnBlocks": 136,
+      "ready": false
+    }
+  ],
+  "committedSourceNote": "A deployed/submitted/working-tree match is not a git-commit attestation. Uncommitted files are reported as incomplete until committed."
+}

@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-10-01T08:03:15.796Z",
+  "url": "http://127.0.0.1:5173/integrations",
+  "babylon": "01 / NATIVE BITCOIN\n\nBabylon staking\n\nYour BTC is held in a Bitcoin script with a timelock. Provider misconduct can slash part of it. Rewards are separate from BTC principal.\n\nSignet · unsigned preparation\nRead network & prepare\nRegister on Babylon\nConfirm BTC stake\nUnbond & recover\n\nThis workspace covers step one. An unsigned plan is not an active stake. Registration, covenant approval and recovery still need end-to-end testnet evidence.\n\nOfficial Babylon test app ↗\nPrepare a test stake\nRefresh network\nBitcoin / Babylon height\n324,469 / 324,469\nMinimum stake\n0.00050000 test BTC\nCommittee\n6 of 9\nConnect a Signet payment account\nPublic key and test inputs come from your wallet.\nConnect Bitcoin\nFinality provider\nChoose an active provider\nZellic · 5.0% commission\nCoinage x DAIC Finality Provider · 10.0% commission\nstakefish-testnet-5 · 10.0% commission\nStakecito · 5.0% commission\nBlockdaemon · 10.0% commission\nXangle · 10.0% commission\nDSRV · 5.0% commission\nHostDeFi · 5.0% commission\nKeplr · 5.0% commission\nRockXFinalityProvider · 5.0% commission\nColossus · 5.0% commission\nBabylon Labs 0 · 12.0% commission\nBabylon Labs 2 · 14.0% commission\nBabylon Labs 1 · 10.0% commission\nContributionDAO · 10.0% commission\nokx-babylon-genesis-fp-testnet-6 · 10.0% commission\nAmount in test BTC\nLock duration in blocks\nNetwork fee limits\nReview unsigned plan",
+  "errors": [],
+  "overflow": {
+    "width": 375,
+    "scrollWidth": 375
+  },
+  "signingCalls": 0,
+  "transactionsBroadcast": 0
+}

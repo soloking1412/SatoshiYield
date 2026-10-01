@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-01T08:21:50.461Z",
+  "evidence": [
+    {
+      "width": 1440,
+      "path": "/yields",
+      "title": "Explore your next move.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 1440,
+      "path": "/integrations",
+      "title": "One place. Clear routes.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 1440,
+      "path": "/portfolio",
+      "title": "Your portfolio.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 1440,
+      "path": "/tvl",
+      "title": "A view into the vault.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 1440,
+      "path": "/security",
+      "title": "Trust should be inspectable.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 375,
+      "path": "/yields",
+      "title": "Explore your next move.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 375,
+      "path": "/integrations",
+      "title": "One place. Clear routes.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 375,
+      "path": "/portfolio",
+      "title": "Your portfolio.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 375,
+      "path": "/tvl",
+      "title": "A view into the vault.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "width": 375,
+      "path": "/security",
+      "title": "Trust should be inspectable.",
+      "current": "page",
+      "outline": "rgb(238, 160, 99) solid 2px"
+    },
+    {
+      "check": "keyboard details expanded and vault gate",
+      "expanded": "true",
+      "depositDisabled": true
+    },
+    {
+      "check": "empty filtered list",
+      "text": "THE STRATEGY DIRECTORY\n\nExplore your next move.\n\nCompare the mechanics before the rate. Each route shows its asset, withdrawal model, and current availability in SatoshiYield.\n\nUnderstand the risks\nDeposit access: New deposits are disabled in this rebuild pending independent review and verified integrations. Existing positions retain withdrawal access.\nAll strategies\nLending\nManaged\nSearch strategies\n0 listed sBTC strategies\n0 fresh rate feeds\nNo matching strategies\n\nTry a different protocol name or choose all strategies.\n\nClear filters\n\nRates are indicative annualized figures reported by the data service, before SatoshiYield fees. They are variable, are not a forecast, and do not establish that a route is available. Protocol risk labels are not independent ratings."
+    }
+  ],
+  "errors": []
+}

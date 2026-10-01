@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-01T08:24:35.743Z",
+  "text": "NATIVE BITCOIN · STACKS POX-5\n\nCheck bond eligibility.\nRead-only\n\nCheck the next bond’s registration window, your allowance, and the paired STX commitment before considering a Bitcoin lock. This check does not fund or register a stake.\n\nThis route checks native Bitcoin on mainnet. The Babylon and Lombard panels above are separate test-network preparations.\nBitcoin amount to evaluate\nBTC\nCheck eligibility\nNext bond\n#2 · open\nYour allowance\n0 BTC\nPaired STX commitment\n13.369200 STX\nBitcoin network\nmainnet\nFunding enabled\nNo · eligibility check only\nThis wallet has no sufficient bond allowance. The bond administrator must approve it before any BTC is locked.\nAvailable STX does not cover the paired commitment.\nSelect a registered signer manager before preparing a commitment.\n\nLast checked 10/1/2026, 1:54:30 PM. Bitcoin remains locked by its timelock even if Stacks registration fails. Do not send funds based on this eligibility result.",
+  "errors": [],
+  "failed": [],
+  "bad": [],
+  "transactionSigningPerformed": false
+}

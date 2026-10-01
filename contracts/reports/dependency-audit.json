@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-09-30T20:35:01.226782+00:00",
+  "before": {
+    "info": 0,
+    "low": 1,
+    "moderate": 2,
+    "high": 3,
+    "critical": 1,
+    "total": 7
+  },
+  "after": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "method": "Compatible patches followed by explicitly authorized controlled Vitest4.1.11 migration; no force or dependency overrides; Clarinet major unchanged",
+  "remaining": {},
+  "scope": "Node tooling/deployment package dependency advisories, separate from Clarity contract findings",
+  "intermediateCompatiblePatchResult": {
+    "info": 0,
+    "low": 0,
+    "moderate": 2,
+    "high": 0,
+    "critical": 0,
+    "total": 2
+  },
+  "compatibilityValidation": {
+    "vitest": "4.1.11",
+    "vitestEnvironmentClarinet": "2.6.0",
+    "legacyTests": 29,
+    "vaultTests": 31,
+    "adapterOracleTests": 5,
+    "config": "Single shared worker environment; Clarinet resets chain state before each test. All31 test records and all3 v7 files verified in generated reports.",
+    "note": "Environment transformMode emits an upstream deprecation warning, remains supported by pinned Vitest4.1.11; no migration to5 attempted."
+  }
+}

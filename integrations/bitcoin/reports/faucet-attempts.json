@@ -1,0 +1,91 @@
+{
+  "verifiedAt": "2026-10-01T08:13:56.532Z",
+  "scope": "Fresh isolated testnet identities only; no production wallets or mainnet transfers",
+  "publicWallets": {
+    "createdAt": "2026-10-01T07:51:31.381Z",
+    "purpose": "New isolated testnet-only identities",
+    "bitcoin": {
+      "network": "signet",
+      "address": "tb1qmsyv7j7lwdnk4my0sge706n52szyew8jxeccmc",
+      "publicKey": "0388716ad8ec3ede6b7856c1ba2dfdab26ba1fa6807b5db399bb1fc271154c9457",
+      "taprootAddress": "tb1p6en2xhazq6l4hmdcjs6pvm8gqcnwjl325fyg8h8defdtgal9wershwrfs7"
+    },
+    "babylon": {
+      "chainId": "bbn-test-6",
+      "address": "bbn18lc48gsl8cdlughwlnhdscs8zendluu3g7guqc"
+    },
+    "ethereum": {
+      "chainId": 11155111,
+      "address": "0x0c0E45ca58bBB200A2Ca4f605615e00b2B06264B",
+      "additionalTestAddress": "0xF38699B59ACAB779641cD07c56a2e8e10516d3D0"
+    }
+  },
+  "sources": [
+    "https://docs.babylonlabs.io/trustless-bitcoin-vault/testnet-info/setup/",
+    "https://docs.babylonlabs.io/developers/babylon_genesis_chain/baby_faucets/"
+  ],
+  "attempts": [
+    {
+      "url": "https://tbv-faucet.testnet.babylonlabs.io/",
+      "address": "tb1p6en2xhazq6l4hmdcjs6pvm8gqcnwjl325fyg8h8defdtgal9wershwrfs7",
+      "requestedBtc": "0.001",
+      "status": "captcha-required",
+      "observed": "Please complete the CAPTCHA verification",
+      "action": "Clicked Drip once; no CAPTCHA bypass, no faucet transfer response or transaction ID received"
+    },
+    {
+      "url": "https://faucet.hoodscan.io/",
+      "status": "http-502",
+      "observed": "Cloudflare bad gateway/host error"
+    },
+    {
+      "url": "https://testnet.itrocket.net/babylon/faucet",
+      "status": "disconnected",
+      "observed": "REST endpoint and faucet account unavailable in public UI"
+    },
+    {
+      "url": "https://babylon-explorer.xangle.io/testnet/faucet",
+      "status": "not-claimed",
+      "observed": "Request stayed disabled in initial form check. Later page produced challenge-platform requests; browser load did not settle within25s. No claim transaction received."
+    },
+    {
+      "url": "https://signetfaucet.com/",
+      "status": "login-required",
+      "action": "No account created"
+    },
+    {
+      "url": "https://alt.signetfaucet.com/",
+      "status": "challenge-page",
+      "action": "No bypass attempted"
+    }
+  ],
+  "balances": [
+    {
+      "kind": "signet-segwit",
+      "url": "https://mempool.space/signet/api/address/tb1qmsyv7j7lwdnk4my0sge706n52szyew8jxeccmc/utxo",
+      "status": 200,
+      "body": []
+    },
+    {
+      "kind": "signet-taproot",
+      "url": "https://mempool.space/signet/api/address/tb1p6en2xhazq6l4hmdcjs6pvm8gqcnwjl325fyg8h8defdtgal9wershwrfs7/utxo",
+      "status": 200,
+      "body": []
+    },
+    {
+      "kind": "babylon-balance",
+      "url": "https://babylon-testnet-api.polkachu.com/cosmos/bank/v1beta1/balances/bbn18lc48gsl8cdlughwlnhdscs8zendluu3g7guqc",
+      "status": 200,
+      "body": {
+        "balances": [],
+        "pagination": {
+          "next_key": null,
+          "total": "0"
+        }
+      }
+    }
+  ],
+  "btcTransactionsBroadcast": 0,
+  "babylonTransactionsBroadcast": 0,
+  "protocolLifecycleCompleted": false
+}

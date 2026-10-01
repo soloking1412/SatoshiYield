@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient.js";
@@ -14,10 +15,16 @@ import { Dashboard } from "./pages/Dashboard.js";
 import { TVL } from "./pages/TVL.js";
 import { Portfolio } from "./pages/Portfolio.js";
 import { NotFound } from "./pages/NotFound.js";
+import { Security } from "./pages/Security.js";
+import { Integrations } from "./pages/Integrations.js";
 
 function AppShell() {
   const { pathname } = useLocation();
-  const hideFooter = pathname === "/portfolio";
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    const titles: Record<string, string> = { "/": "Bitcoin capital, in view", "/yields": "Explore strategies", "/portfolio": "Your portfolio", "/tvl": "Vault transparency", "/security": "Risk & release", "/integrations": "Protocol connections" };
+    document.title = `${titles[pathname] ?? "Page not found"} | SatoshiYield`;
+  }, [pathname]);
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -30,10 +37,12 @@ function AppShell() {
           <Route path="/yields" element={<Dashboard />} />
           <Route path="/tvl" element={<TVL />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/security" element={<Security />} />
+          <Route path="/integrations" element={<Integrations />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      {!hideFooter && <Footer />}
+      <Footer />
       <BottomTabs />
     </div>
   );

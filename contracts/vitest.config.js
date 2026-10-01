@@ -24,12 +24,13 @@ export default defineConfig({
     // Scope to the main suite; fork-test/ is a separate remote-data project
     // (run it with: cd fork-test && npx vitest run).
     include: ["tests/**/*.test.ts"],
+    exclude: ["tests/v7/**", "tests/v7-adapters/**", "tests/hermetica-v7/**"],
     environment: "clarinet", // use vitest-environment-clarinet
     pool: "forks",
-    poolOptions: {
-      threads: { singleThread: true },
-      forks: { singleFork: true },
-    },
+    maxWorkers: 1,
+    // Clarinet resets the chain before each test; share the environment to aggregate reports.
+    isolate: false,
+    fileParallelism: false,
     setupFiles: [
       vitestSetupFilePath,
       // custom setup files can be added here
@@ -37,6 +38,7 @@ export default defineConfig({
     environmentOptions: {
       clarinet: {
         ...getClarinetVitestsArgv(),
+        manifestPath: "./Clarinet.legacy-simnet.toml",
         // add or override options
       },
     },

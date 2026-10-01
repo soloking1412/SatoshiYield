@@ -1,0 +1,1 @@
+{"name":"@satoshiyields/pox5-integrations","version":"0.1.0","private":true,"type":"module","exports":"./src/index.mjs","scripts":{"test":"node --test tests/*.test.mjs","verify:testnet":"node scripts/verify-testnet.mjs"},"dependencies":{"@scure/btc-signer":"2.2.0","@stacks/bitcoin-staking":"7.6.0","@stacks/transactions":"7.6.0"},"engines":{"node":">=22"}}

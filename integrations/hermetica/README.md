@@ -1,0 +1,9 @@
+# Hermetica v7 real-state integration proof
+
+Run `npm ci --ignore-scripts`, copy `fork/settings/Devnet.toml.example` to `fork/settings/Devnet.toml`, then run `npm run test:fork`. Public Hiro reads require network access and may be rate limited. The simulator uses `@stacks/clarinet-sdk` 3.24.1, epoch 4.0, with canonical state pinned at Stacks block 9101467. It imports the real deployed Hermetica dependencies automatically. No transaction is signed or broadcast on mainnet.
+
+The run deploys the exact local v7 vault and Hermetica candidate into the fork. It first proves canonical upstream deposits are disabled and a deposit rolls back. For the subsequent scenario, it impersonates the real protocol owner **only in the local fork** to enable deposits. No other cap, supply, user balance, share price, or protocol source is overridden. A real funded holder deposits 100,000 sBTC base units and receives 98,041 hBTC shares.
+
+The lifecycle covers request, cancellation, repeated request, premature settlement rejection, the real timestamp-based 259,200-second cooldown, permissionless funding and stranger redemption, deleted upstream claim recovery into a durable adapter receipt, minimum-payout rejection with atomic rollback, and final v7 payout of 99,999 base units. Positive asset-moving calls enforce native SDK deny postconditions. Receipt liability and vault exposure end at zero. Time advances only in the local simulator.
+
+See [evidence/mainnet-fork.json](evidence/mainnet-fork.json) for exact source hashes, events, balances and results. A failed rerun writes `passed: false`; it is never converted to a passing test by catching an external error. This proof does not establish current public deposit availability, mainnet deployment, professional audit, real-world strategy returns, or loss-free liquidity.

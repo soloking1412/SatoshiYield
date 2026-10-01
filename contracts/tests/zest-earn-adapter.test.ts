@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Cl, cvToValue } from "@stacks/transactions";
-import { initSimnet } from "@hirosystems/clarinet-sdk";
 
 /**
  * Full-stack REVENUE test: vault-v6 -> zest-earn-adapter (SYNC) -> shim (v0-vault-sbtc).
@@ -12,7 +11,6 @@ import { initSimnet } from "@hirosystems/clarinet-sdk";
  *   - principal is protected when yield is zero
  */
 
-const simnet = await initSimnet();
 const accounts = simnet.getAccounts();
 const deployer = accounts.get("deployer")!;
 const wallet1 = accounts.get("wallet_1")!;

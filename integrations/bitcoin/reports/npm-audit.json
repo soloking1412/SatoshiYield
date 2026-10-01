@@ -1,0 +1,216 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@ethersproject/abi": {
+      "name": "@ethersproject/abi",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ethersproject/hash"
+      ],
+      "effects": [
+        "@layerzerolabs/lz-v2-utilities"
+      ],
+      "range": "5.0.10 - 5.8.0",
+      "nodes": [
+        "node_modules/@ethersproject/abi"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@ethersproject/abstract-provider": {
+      "name": "@ethersproject/abstract-provider",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ethersproject/transactions"
+      ],
+      "effects": [
+        "@ethersproject/abstract-signer"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@ethersproject/abstract-provider"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@ethersproject/abstract-signer": {
+      "name": "@ethersproject/abstract-signer",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ethersproject/abstract-provider"
+      ],
+      "effects": [
+        "@ethersproject/hash"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@ethersproject/abstract-signer"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@ethersproject/hash": {
+      "name": "@ethersproject/hash",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ethersproject/abstract-signer"
+      ],
+      "effects": [
+        "@ethersproject/abi"
+      ],
+      "range": "5.0.6 - 5.8.0",
+      "nodes": [
+        "node_modules/@ethersproject/hash"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@ethersproject/signing-key": {
+      "name": "@ethersproject/signing-key",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "elliptic"
+      ],
+      "effects": [
+        "@ethersproject/transactions"
+      ],
+      "range": "<=5.8.0",
+      "nodes": [
+        "node_modules/@ethersproject/signing-key"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@ethersproject/transactions": {
+      "name": "@ethersproject/transactions",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ethersproject/signing-key"
+      ],
+      "effects": [
+        "@ethersproject/abstract-provider"
+      ],
+      "range": "<=5.8.0",
+      "nodes": [
+        "node_modules/@ethersproject/transactions"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@layerzerolabs/lz-v2-utilities": {
+      "name": "@layerzerolabs/lz-v2-utilities",
+      "severity": "low",
+      "isDirect": true,
+      "via": [
+        "@ethersproject/abi"
+      ],
+      "effects": [
+        "@lombard.finance/sdk"
+      ],
+      "range": ">=2.1.7",
+      "nodes": [
+        "node_modules/@layerzerolabs/lz-v2-utilities"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    },
+    "@lombard.finance/sdk": {
+      "name": "@lombard.finance/sdk",
+      "severity": "low",
+      "isDirect": true,
+      "via": [
+        "@layerzerolabs/lz-v2-utilities"
+      ],
+      "effects": [],
+      "range": ">=3.2.0",
+      "nodes": [
+        "node_modules/@lombard.finance/sdk"
+      ],
+      "fixAvailable": {
+        "name": "@lombard.finance/sdk",
+        "version": "3.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "elliptic": {
+      "name": "elliptic",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1112030,
+          "name": "elliptic",
+          "dependency": "elliptic",
+          "title": "Elliptic Uses a Cryptographic Primitive with a Risky Implementation",
+          "url": "https://github.com/advisories/GHSA-848j-6mx2-7j84",
+          "severity": "low",
+          "cwe": [
+            "CWE-1240"
+          ],
+          "cvss": {
+            "score": 5.6,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L"
+          },
+          "range": "<=6.6.1"
+        }
+      ],
+      "effects": [
+        "@ethersproject/signing-key"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/elliptic"
+      ],
+      "fixAvailable": {
+        "name": "@layerzerolabs/lz-v2-utilities",
+        "version": "2.1.6",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 9,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 9
+    },
+    "dependencies": {
+      "prod": 123,
+      "dev": 73,
+      "optional": 27,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 195
+    }
+  }
+}

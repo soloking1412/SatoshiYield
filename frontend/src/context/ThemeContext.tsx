@@ -15,12 +15,12 @@ const ThemeContext = createContext<ThemeCtx>({ theme: "dark", toggle: () => {} }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"dark" | "light">(
-    () => (localStorage.getItem("sy-theme") as "dark" | "light") || "dark"
+    () => { try { return localStorage.getItem("sy-theme") === "light" ? "light" : "dark"; } catch { return "dark"; } }
   );
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("sy-theme", theme);
+    try { localStorage.setItem("sy-theme", theme); } catch { /* Storage may be disabled. */ }
   }, [theme]);
 
   const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));

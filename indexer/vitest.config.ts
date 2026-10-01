@@ -4,7 +4,8 @@ import { defineConfig } from "vitest/config";
 // load if STACKS_API_URL or DEPLOYER_ADDRESS are unset. Populate them here
 // before any source module evaluates.
 process.env["STACKS_API_URL"] = "https://api.hiro.so";
-process.env["DEPLOYER_ADDRESS"] = "SP000000000000000000002AMW42H";
+process.env["STACKS_NETWORK"] = "mainnet";
+process.env["DEPLOYER_ADDRESS"] = "SP000000000000000000002Q6VF78";
 
 export default defineConfig({
   test: {

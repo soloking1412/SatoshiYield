@@ -1,0 +1,8 @@
+[project]
+name = "satoshi-request-guard-unit"
+description = "Exact guard source, explicitly mocked upstreams for fee and callback negatives"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+[repl.settings]
+initial_epoch = "4.0"

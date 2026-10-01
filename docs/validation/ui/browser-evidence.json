@@ -1,0 +1,617 @@
+{
+  "started_at": "2026-09-30T20:23:41.166Z",
+  "scope": "Browser functional verification. Not an audit, real-wallet test, or transaction lifecycle test.",
+  "testnet_environment": {
+    "VITE_NETWORK": "testnet",
+    "VITE_DEPLOYER_TESTNET": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+    "VITE_VAULT_CONTRACT_NAME": "vault-v7",
+    "VITE_ENABLE_TESTNET_DEPOSITS": "true",
+    "VITE_ZEST_ADAPTER": "mock-sync-v7",
+    "VITE_HBTC_ADAPTER": "mock-async-v7"
+  },
+  "provider": {
+    "kind": "Mock Leather browser provider",
+    "allowed_methods": [
+      "getAddresses"
+    ],
+    "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+    "signing_implemented": false
+  },
+  "rpc": {
+    "mode": "Live public Hiro HTTP requests; no response interception or fabricated contract state",
+    "responses": [
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-tvl-cap",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x0100000000000000000000000002faf080"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-fee-balance",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x0100000000000000000000000000000000"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-position",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": [
+            "0x051a711d56d9c033d367ec27e0cb44bc47720a63422d",
+            "0x061a711d56d9c033d367ec27e0cb44bc47720a63422d0c6d6f636b2d73796e632d7637"
+          ]
+        },
+        "response": {
+          "okay": true,
+          "result": "0x09"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-total-deposited",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x0100000000000000000000000000000000"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/mock-sbtc/get-balance",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": [
+            "0x051a711d56d9c033d367ec27e0cb44bc47720a63422d"
+          ]
+        },
+        "response": {
+          "okay": true,
+          "result": "0x070100000000000000000000000000989680"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-sbtc-token",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x0a061a711d56d9c033d367ec27e0cb44bc47720a63422d096d6f636b2d73627463"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-fee-basis-points",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x01000000000000000000000000000001f4"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/is-global-paused",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x03"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-adapter-config",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": [
+            "0x061a711d56d9c033d367ec27e0cb44bc47720a63422d0c6d6f636b2d73796e632d7637"
+          ]
+        },
+        "response": {
+          "okay": true,
+          "result": "0x09"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-min-deposit",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": []
+        },
+        "response": {
+          "okay": true,
+          "result": "0x01000000000000000000000000000003e8"
+        }
+      },
+      {
+        "url": "https://api.testnet.hiro.so/v2/contracts/call-read/ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX/vault-v7/get-position",
+        "status": 200,
+        "request": {
+          "sender": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+          "arguments": [
+            "0x051a711d56d9c033d367ec27e0cb44bc47720a63422d",
+            "0x061a711d56d9c033d367ec27e0cb44bc47720a63422d0d6d6f636b2d6173796e632d7637"
+          ]
+        },
+        "response": {
+          "okay": true,
+          "result": "0x09"
+        }
+      }
+    ]
+  },
+  "viewports": [
+    {
+      "url": "http://127.0.0.1:5173/",
+      "width": 1440,
+      "scroll_width": 1440,
+      "heading": "Bitcoin capital.\nThe details\nin view."
+    },
+    {
+      "url": "http://127.0.0.1:5173/yields",
+      "width": 1440,
+      "scroll_width": 1440,
+      "heading": "Explore your next move."
+    },
+    {
+      "url": "http://127.0.0.1:5173/yields",
+      "width": 375,
+      "scroll_width": 375,
+      "network_label": "Mainnet"
+    },
+    {
+      "url": "http://127.0.0.1:5174/yields",
+      "width": 375,
+      "scroll_width": 375,
+      "network_label": "Testnet",
+      "dialog_bounds": {
+        "left": 16,
+        "right": 359,
+        "width": 343
+      }
+    }
+  ],
+  "browser_errors": [],
+  "network_failures": [
+    {
+      "url": "http://127.0.0.1:5173/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/yields",
+      "method": "GET",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mainnet-home-desktop.png",
+      "network": "mainnet",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/",
+      "captured_at": "2026-09-30T20:33:23.663Z",
+      "state": "All five live vault reads succeeded"
+    },
+    {
+      "path": "mainnet-yields-desktop.png",
+      "network": "mainnet",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/yields",
+      "captured_at": "2026-09-30T20:30:38.338Z"
+    },
+    {
+      "path": "testnet-paused-deposit-mobile.png",
+      "network": "testnet",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "route": "/yields",
+      "state": "Mock wallet connected; live vault pause blocks deposit"
+    }
+  ],
+  "limitations": [
+    "The injected provider supplies a public test address only; actual Leather/Xverse extension installation, signing, account switching, and approvals are not tested.",
+    "No faucet, broadcast, contract-call transaction, or mainnet mutation is attempted.",
+    "Read-only RPC state can change after observation; these reads are not pinned to one block.",
+    "Three selected screenshots capture two mainnet desktop pages and the testnet blocked-deposit mobile dialog. Mainnet mobile layout is also measured without a fourth screenshot.",
+    "Initial /api/yields requests were aborted during navigation. The recorded mainnet refresh subsequently received HTTP200 from the read-only local indexer and replaced both desktop screenshots with settled unavailable/stale states. A responding feed is not evidence of an approved integration."
+  ],
+  "testnet_result": {
+    "route": "/yields",
+    "vault_paused_message_visible": true,
+    "review_button_disabled": true,
+    "wallet_methods": [
+      "getAddresses"
+    ],
+    "signing_requests": 0,
+    "live_pause_response_verified": true,
+    "dialog_text": "Deposit to Zest\n\nTestnet simulation using mock assets and adapters. No real protocol yield is earned.\n\nThe testnet vault is paused. Deposits will be available after onboarding completes.\nDeposit amount\n0.1 available\ntest sBTC\nMAX\n\nUse up to 8 decimal places. Minimum 0.00001 sBTC.\n\nYield\nSimulation only\nWithdrawal model\nLiquidity dependent\nAsset\nMock sBTC on testnet\nCancel\nReview deposit"
+  },
+  "completed_at": "2026-09-30T20:23:47.357Z",
+  "result": "PASS",
+  "testnet_preview": {
+    "url": "http://127.0.0.1:5174/",
+    "env_files_modified": false,
+    "status": "Left running for local review; ephemeral process environment only"
+  },
+  "mainnet_refresh": {
+    "completed_at": "2026-09-30T20:30:38.368Z",
+    "source": "Read-only local indexer at localhost:3001 through Vite /api proxy; live observations, no fabricated rate responses",
+    "pages": [
+      {
+        "route": "/",
+        "screenshot": "mainnet-home-desktop.png",
+        "captured_at": "2026-09-30T20:30:37.894Z",
+        "http_status": 200,
+        "api_response": [
+          {
+            "protocol": "zest",
+            "apy_percent": 0,
+            "risk_level": "medium",
+            "lock_period_days": 0,
+            "reward_token": "sBTC",
+            "tvl_usd": 72263689.73613283,
+            "fetched_at": 1790800001829,
+            "last_updated_block": 8764855,
+            "apy_stale": true,
+            "is_live_integration": false,
+            "integration_status": "review-required",
+            "market_type": "sbtc-lending",
+            "withdrawal_type": "liquidity-dependent",
+            "risk_assessment": "unreviewed",
+            "risk_factors": [
+              "smart-contract",
+              "sbtc-peg",
+              "lending-liquidity",
+              "governance",
+              "rpc-and-oracle"
+            ],
+            "apy_source": "on-chain-share-price",
+            "native_apy_percent": null,
+            "data_status": "stale",
+            "tvl_scope": "protocol",
+            "tvl_available": true
+          }
+        ],
+        "viewport": {
+          "width": 1440,
+          "scroll_width": 1440
+        },
+        "visible_data_status": [
+          "2 registered sBTC strategies0 fresh rate feeds"
+        ]
+      },
+      {
+        "route": "/yields",
+        "screenshot": "mainnet-yields-desktop.png",
+        "captured_at": "2026-09-30T20:30:38.338Z",
+        "http_status": 200,
+        "api_response": [
+          {
+            "protocol": "zest",
+            "apy_percent": 0,
+            "risk_level": "medium",
+            "lock_period_days": 0,
+            "reward_token": "sBTC",
+            "tvl_usd": 72263689.73613283,
+            "fetched_at": 1790800001829,
+            "last_updated_block": 8764855,
+            "apy_stale": true,
+            "is_live_integration": false,
+            "integration_status": "review-required",
+            "market_type": "sbtc-lending",
+            "withdrawal_type": "liquidity-dependent",
+            "risk_assessment": "unreviewed",
+            "risk_factors": [
+              "smart-contract",
+              "sbtc-peg",
+              "lending-liquidity",
+              "governance",
+              "rpc-and-oracle"
+            ],
+            "apy_source": "on-chain-share-price",
+            "native_apy_percent": null,
+            "data_status": "stale",
+            "tvl_scope": "protocol",
+            "tvl_available": true
+          }
+        ],
+        "viewport": {
+          "width": 1440,
+          "scroll_width": 1440
+        },
+        "visible_data_status": [
+          "2 registered sBTC strategies0 fresh rate feeds"
+        ],
+        "mobile_viewport": {
+          "width": 375,
+          "scroll_width": 375
+        }
+      }
+    ]
+  },
+  "mainnet_vault_settled": {
+    "started_at": "2026-09-30T20:33:21.680Z",
+    "expected_contract": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V.vault-v6",
+    "url": "http://127.0.0.1:5173/",
+    "mode": "Live mainnet read-only browser requests. No mocked responses, wallet, or transactions.",
+    "responses": [
+      {
+        "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-basis-points",
+        "method": "POST",
+        "http_status": 200,
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        },
+        "cors_allow_origin": "http://127.0.0.1:5173",
+        "response": {
+          "okay": true,
+          "result": "0x01000000000000000000000000000001f4"
+        },
+        "decoded": {
+          "type": "uint",
+          "value": "500"
+        }
+      },
+      {
+        "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-tvl-cap",
+        "method": "POST",
+        "http_status": 200,
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        },
+        "cors_allow_origin": "http://127.0.0.1:5173",
+        "response": {
+          "okay": true,
+          "result": "0x01000000000000000000000000004c4b40"
+        },
+        "decoded": {
+          "type": "uint",
+          "value": "5000000"
+        }
+      },
+      {
+        "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-total-deposited",
+        "method": "POST",
+        "http_status": 200,
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        },
+        "cors_allow_origin": "http://127.0.0.1:5173",
+        "response": {
+          "okay": true,
+          "result": "0x0100000000000000000000000000003811"
+        },
+        "decoded": {
+          "type": "uint",
+          "value": "14353"
+        }
+      },
+      {
+        "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-min-deposit",
+        "method": "POST",
+        "http_status": 200,
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        },
+        "cors_allow_origin": "http://127.0.0.1:5173",
+        "response": {
+          "okay": true,
+          "result": "0x01000000000000000000000000000003e8"
+        },
+        "decoded": {
+          "type": "uint",
+          "value": "1000"
+        }
+      },
+      {
+        "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-balance",
+        "method": "POST",
+        "http_status": 200,
+        "request": {
+          "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+          "arguments": []
+        },
+        "cors_allow_origin": "http://127.0.0.1:5173",
+        "response": {
+          "okay": true,
+          "result": "0x0100000000000000000000000000000000"
+        },
+        "decoded": {
+          "type": "uint",
+          "value": "0"
+        }
+      }
+    ],
+    "failures": [],
+    "browser_errors": [],
+    "console_errors": [],
+    "settled": true,
+    "observed_contracts": [
+      "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6"
+    ],
+    "panel_text": "VAULT SNAPSHOT / V6\nMAINNET\n0.00014353 sBTC\n\nRecorded deposited principal\n\nDeposit access\nRelease review required\nRegistered routes\n2 sBTC strategies\nFresh rate feeds\n0 reporting\nSource\nStacks contract read\nView contracts & data",
+    "recorded_principal_display": "0.00014353 sBTC",
+    "five_reads": [
+      {
+        "function": "get-total-deposited",
+        "attempts": [
+          {
+            "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-total-deposited",
+            "method": "POST",
+            "http_status": 200,
+            "request": {
+              "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+              "arguments": []
+            },
+            "cors_allow_origin": "http://127.0.0.1:5173",
+            "response": {
+              "okay": true,
+              "result": "0x0100000000000000000000000000003811"
+            },
+            "decoded": {
+              "type": "uint",
+              "value": "14353"
+            }
+          }
+        ],
+        "failures": []
+      },
+      {
+        "function": "get-tvl-cap",
+        "attempts": [
+          {
+            "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-tvl-cap",
+            "method": "POST",
+            "http_status": 200,
+            "request": {
+              "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+              "arguments": []
+            },
+            "cors_allow_origin": "http://127.0.0.1:5173",
+            "response": {
+              "okay": true,
+              "result": "0x01000000000000000000000000004c4b40"
+            },
+            "decoded": {
+              "type": "uint",
+              "value": "5000000"
+            }
+          }
+        ],
+        "failures": []
+      },
+      {
+        "function": "get-fee-basis-points",
+        "attempts": [
+          {
+            "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-basis-points",
+            "method": "POST",
+            "http_status": 200,
+            "request": {
+              "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+              "arguments": []
+            },
+            "cors_allow_origin": "http://127.0.0.1:5173",
+            "response": {
+              "okay": true,
+              "result": "0x01000000000000000000000000000001f4"
+            },
+            "decoded": {
+              "type": "uint",
+              "value": "500"
+            }
+          }
+        ],
+        "failures": []
+      },
+      {
+        "function": "get-fee-balance",
+        "attempts": [
+          {
+            "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-fee-balance",
+            "method": "POST",
+            "http_status": 200,
+            "request": {
+              "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+              "arguments": []
+            },
+            "cors_allow_origin": "http://127.0.0.1:5173",
+            "response": {
+              "okay": true,
+              "result": "0x0100000000000000000000000000000000"
+            },
+            "decoded": {
+              "type": "uint",
+              "value": "0"
+            }
+          }
+        ],
+        "failures": []
+      },
+      {
+        "function": "get-min-deposit",
+        "attempts": [
+          {
+            "url": "https://api.mainnet.hiro.so/v2/contracts/call-read/SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V/vault-v6/get-min-deposit",
+            "method": "POST",
+            "http_status": 200,
+            "request": {
+              "sender": "SP31VHZWD3QMGHEEZ30GNK7NB9PF1F9FSEV00149V",
+              "arguments": []
+            },
+            "cors_allow_origin": "http://127.0.0.1:5173",
+            "response": {
+              "okay": true,
+              "result": "0x01000000000000000000000000000003e8"
+            },
+            "decoded": {
+              "type": "uint",
+              "value": "1000"
+            }
+          }
+        ],
+        "failures": []
+      }
+    ],
+    "all_five_successful": true,
+    "exact_expected_contract_only": true,
+    "completed_at": "2026-09-30T20:33:23.663Z"
+  }
+}

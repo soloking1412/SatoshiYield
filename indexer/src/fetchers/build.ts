@@ -31,10 +31,12 @@ export async function buildYield(
       ? tvlResult.value
       : 0;
 
-  const nativeApy =
+  const rawNativeApy =
     nativeResult.status === "fulfilled" ? nativeResult.value : null;
+  const nativeApy = rawNativeApy !== null && Number.isFinite(rawNativeApy) &&
+    rawNativeApy >= 0 && rawNativeApy <= 60 ? rawNativeApy : null;
 
-  const is_live_integration = entry.hasLiveApy && nativeApy !== null;
+  const hasFreshFeed = entry.hasLiveApy && nativeApy !== null;
 
   // Cross-source sanity guard: flag stale only when the on-chain (oracle-pushed)
   // APY MATERIALLY diverges from the live native feed. A percentage-only check
@@ -49,8 +51,10 @@ export async function buildYield(
   // `state.isStale` above and is unaffected.
   const MIN_MATERIAL_DEVIATION_BPS = 100;
 
-  let apy_stale = state.isStale;
-  if (!apy_stale && is_live_integration) {
+  let apy_stale = state.isStale || !hasFreshFeed;
+  let dataStatus: NormalizedYield["data_status"] = state.isStale ? "stale" :
+    hasFreshFeed ? "fresh" : "unavailable";
+  if (!apy_stale && hasFreshFeed) {
     const nativeBps = nativeApy! * 100;
     if (
       exceedsDeviation(state.apyBps, nativeBps, 50) &&
@@ -61,6 +65,7 @@ export async function buildYield(
           `native=${Math.round(nativeBps)}bps`
       );
       apy_stale = true;
+      dataStatus = "divergent";
     }
   }
 
@@ -74,6 +79,16 @@ export async function buildYield(
     fetched_at: Date.now(),
     last_updated_block: state.lastUpdatedBlock,
     apy_stale,
-    is_live_integration,
+    is_live_integration: entry.integrationStatus === "enabled" && !apy_stale,
+    integration_status: entry.integrationStatus,
+    market_type: entry.marketType,
+    withdrawal_type: entry.withdrawalType,
+    risk_assessment: "unreviewed",
+    risk_factors: [...entry.riskFactors],
+    apy_source: "on-chain-share-price",
+    native_apy_percent: nativeApy,
+    data_status: dataStatus,
+    tvl_scope: "protocol",
+    tvl_available: tvlResult.status === "fulfilled" && tvlResult.value !== null,
   };
 }

@@ -1,0 +1,103 @@
+{
+  "scope": "Source review and simnet candidate validation; not an independent external audit or production sign-off",
+  "candidate": "vault-v7",
+  "candidateSha256": "96d712ca4f75376280b6d22565eef9df0180c57287b3d9b57ef3f88dd1cdfdf3",
+  "liveVersionUnmodified": "vault-v6",
+  "findings": [
+    {
+      "id": "H-01",
+      "severity": "high",
+      "component": "hermetica-hbtc-adapter",
+      "status": "Legacy repository adapter unchanged and vulnerable; new v7 candidate implements recovery, passes local tests and funded real-source fork; not released",
+      "issue": "Permissionless upstream redemption deletes pooled claim attribution before adapter settlement. A stranger can redeem a funded claim, causing subsequent claim and cancel paths to fail.",
+      "evidence": "reports/hermetica-source-evidence.json",
+      "regression": "tests/legacy-security-regression.test.ts",
+      "proposedResolution": "Implemented one global outstanding upstream claim, no deposits while pending, permissionless settlement to durable user receipts, free balance excludes prior receipt liabilities and baseline donations. Exact upstream claim deletion paths reviewed. See reports/hermetica-v7/REVIEW.md.",
+      "candidateEvidence": [
+        "reports/hermetica-v7/local-validation.json",
+        "../integrations/hermetica/evidence/mainnet-fork.json"
+      ]
+    },
+    {
+      "id": "H-02",
+      "severity": "high",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Admin authorization based solely on tx-sender permits an untrusted intermediary called by the owner to exercise owner functions.",
+      "fix": "Authorize immediate contract-caller; require direct user calls. Wallet policy must restrict total token spend."
+    },
+    {
+      "id": "H-03",
+      "severity": "high",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Reported withdrawal amounts are accepted without verifying the actual tokens arriving in the vault; a buggy adapter could draw down booked fees or unrelated idle funds.",
+      "fix": "Require exact before/after token-balance delta to match adapter return value, then enforce user minimum net payout."
+    },
+    {
+      "id": "M-01",
+      "severity": "medium",
+      "component": "zest-earn-adapter",
+      "status": "removed from new Zest candidate; legacy source preserved",
+      "issue": "Production source sweeps the adapter entire token balance as a test-shim fallback. Unrelated donations and pool balances can move outside the redeemed claim.",
+      "fix": "New candidate redeems directly to vault; no fallback or sweep. Requires real external protocol validation."
+    },
+    {
+      "id": "M-02",
+      "severity": "medium",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Performance fees are read at exit, allowing an existing depositor fee to change after entry.",
+      "fix": "Store fee per position and require max fee consent at deposit."
+    },
+    {
+      "id": "M-03",
+      "severity": "medium",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Timelock uses Stacks block count, whose duration differs from Bitcoin burn block count.",
+      "fix": "Use 144 Bitcoin burn blocks, tested against 500 rapid Stacks blocks."
+    },
+    {
+      "id": "M-04",
+      "severity": "medium",
+      "component": "legacy adapters",
+      "status": "mitigated in new Zest candidate only",
+      "issue": "Oracle rotation retains prior reports; duplicate signer configuration and third-party updates can interfere with intended freshness assumptions. Uninitialized APY initially reports zero as valid.",
+      "fix": "Unique signer slots, invalidate reports on rotation, use oldest agreeing report timestamp, and fail closed before consensus. Do not synthesize rates to overcome deviation limits."
+    },
+    {
+      "id": "L-01",
+      "severity": "low",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Untrusted deposit addition can overflow before returning the cap error.",
+      "fix": "Check amount against available capacity using guarded subtraction."
+    },
+    {
+      "id": "L-02",
+      "severity": "low",
+      "component": "vault-v6",
+      "status": "mitigated in v7 candidate",
+      "issue": "Zero-recovery positions cannot settle if the token rejects zero transfers.",
+      "fix": "Explicit zero minimum can close a fully lost position without zero-value transfer."
+    }
+  ],
+  "trustBoundaries": [
+    "Approved adapters receive the original user tx-sender and can attempt arbitrary calls. Vault code alone does not confine an adapter to the declared deposit amount. Wallet transactions must enforce exact Deny postconditions and token identities.",
+    "Canonical token is selected once by deployment owner. An adversarial token that lies about balances remains outside the security model.",
+    "One owner principal controls pause, onboarding proposals, cap and future fees. Production deployment should use reviewed multisignature operational custody.",
+    "Strategy solvency, exploit risk, censorship, protocol governance, oracle data quality, redemption liquidity and cooldown remain external risks.",
+    "Global TVL cap can increase immediately; per-adapter cap increases require delayed approval. Revoking strategies blocks new deposits and leaves exits available.",
+    "Deposit/withdraw quotes are bounds, not guaranteed returns. Fee only applies to positive realized gross minus principal.",
+    "Existing v6 positions require explicit user exit and redeposit. v7 does not mutate or take over live v6 state."
+  ],
+  "productionGates": [
+    "No mainnet v7 release or external strategy activation is authorized by these test results.",
+    "Zest candidate requires exact currently supported contract/version selection and real funded fork tests across fees, losses, liquidity and upstream failure conditions.",
+    "Hermetica candidate redesign and one funded real-source H01 recovery lifecycle pass; deposits remain disabled upstream. Broader fork economics/governance scenarios and independent external review remain release gates.",
+    "Native BTC/PoX5, BTC staking and restaking strategies are outside this sBTC candidate and require distinct asset/lock/slashing/custody analyses.",
+    "Complete public testnet execution after 144 burn-block onboarding delay; record confirmed transaction receipts and chain state.",
+    "Independent external security audit, remediation and deployment source/hash review remain required."
+  ]
+}

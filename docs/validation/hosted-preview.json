@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-01T08:45:49.143425+00:00",
+  "reviewType": "Bounded independent hosted-preview smoke review",
+  "commit": "cd42a61f748678a3bb72b55b1c93e2a355aff9cf",
+  "previewUrl": "https://satoshi-yield-8v29-git-codex-secu-0ea039-soloking1412s-projects.vercel.app",
+  "verdict": "pass_with_documented_limits",
+  "scope": {
+    "browser": "Existing authenticated Arc session, controlled through native accessibility UI",
+    "routesVisited": [
+      "/integrations",
+      "/portfolio"
+    ],
+    "viewport": "Desktop browser window; exact CSS viewport dimensions not measured",
+    "walletConnectedByReviewer": false,
+    "signatureRequestedByReviewer": false,
+    "transactionBroadcastByReviewer": false,
+    "fundingPerformed": false,
+    "authenticationBypassed": false,
+    "screenshotsSaved": false
+  },
+  "observations": [
+    {
+      "check": "Unauthenticated HTTP protection",
+      "status": "expected_protection_boundary",
+      "route": "/integrations",
+      "httpStatus": 302,
+      "redirectHost": "vercel.com",
+      "redirectPath": "/sso-api",
+      "details": "Vercel preview protection prevented unauthenticated application-header inspection. No token or protection bypass was created. Redirect query parameters and cookies are deliberately omitted."
+    },
+    {
+      "check": "Authenticated integrations page",
+      "status": "pass",
+      "route": "/integrations",
+      "details": "The application rendered its Protocol connections page on mainnet, with Zest and StackingDAO route choices, deposit/withdraw controls, and Connect to inspect your route. The notice stated: Vault release under review. New vault deposits are disabled. No wallet was connected."
+    },
+    {
+      "check": "Authenticated portfolio page",
+      "status": "pass",
+      "route": "/portfolio",
+      "details": "Navigation rendered Your portfolio with the disconnected-wallet state: A wallet brings your positions into view. The page explained that connecting does not authorize any transaction. It did not display invented balances or position outcomes."
+    },
+    {
+      "check": "Desktop presentation",
+      "status": "pass",
+      "details": "Both visited pages displayed the expected copper/charcoal interface and readable typography. No blank application page or visibly broken layout was observed in the desktop window."
+    },
+    {
+      "check": "Console and CSP",
+      "status": "nonblocking_warning",
+      "details": "The browser console recorded a CSP violation blocking https://vercel.live/_next-live/feedback/feedback.js under the application script-src policy. This is the Vercel preview feedback toolbar; the application pages remained functional. Existing injected wallet extensions also logged initialization conflicts, including competing provider-property definitions. These extension errors are not evidence that the reviewer connected or signed with a wallet. No Google-font CSP violation was visible in the inspected console. This review does not claim an error-free console.",
+      "recommendation": "Retain the restrictive application script policy unless preview feedback is an explicit requirement; do not broaden it solely to silence the optional toolbar warning."
+    }
+  ],
+  "fontAndDeploymentConfigurationReview": {
+    "status": "no_high_or_medium_issue_found_in_reviewed_scope",
+    "scope": "Read-only review for the Vercel/Linux Node 24 deployment; no dependency installation or node_modules mutation during this review.",
+    "files": [
+      "frontend/scripts/install-workspace.mjs",
+      "frontend/vercel.json",
+      "frontend/package.json",
+      "frontend/package-lock.json"
+    ],
+    "findings": [
+      "The installer resolves the repository from its own file URL and checks all four required package manifests, lockfiles, and entrypoints before starting npm.",
+      "The static package list covers frontend, integrations/stacks, integrations/bitcoin, and integrations/pox5. Package and lockfile root dependency metadata agree.",
+      "The installer enforces Node 24, installs sequentially from lockfiles with lifecycle scripts disabled and development build dependencies included, then explicitly builds the Bitcoin package.",
+      "Process spawn errors, signals, and unsuccessful exit codes fail the installer. The inspected Bitcoin build uses TypeScript and has no prebuild or postbuild lifecycle script.",
+      "Vercel uses the workspace installer and frontend build command. Frontend package and lockfile engine metadata both specify Node 24.",
+      "The configured font-related CSP additions are limited to https://fonts.googleapis.com in style-src and https://fonts.gstatic.com in font-src."
+    ],
+    "limits": [
+      "Successful build and install results were provided by the implementation agent; this reviewer did not rerun dependency installation.",
+      "Actual authenticated response headers and successful Google-font network responses were not independently captured. Visual rendering and the source CSP configuration do not substitute for that network evidence."
+    ]
+  },
+  "unverifiedInHostedPreview": [
+    "375px hosted mobile viewport and tablet viewport",
+    "Authenticated HTTP response CSP headers and font response status",
+    "Bitcoin and native PoX-5 hosted panels and their funding flags",
+    "Connected-wallet holdings, quotes, wallet handoff, signing, and broadcast",
+    "Other application routes, full keyboard sweep, and full console/network-error inventory"
+  ],
+  "relatedLocalReview": {
+    "report": "docs/validation/ui-rebuild-review.md",
+    "details": "Earlier independent local review covered seven views at 1440px, 768px and 375px, keyboard navigation, consent controls, RPC failure handling, public read-only balances, and native funding gates. Those local results are not represented as hosted mobile or hosted integration results."
+  },
+  "releaseLimits": "This bounded smoke review confirms rendering of two authenticated preview routes and the observed vault deposit release gate. It does not certify production safety, wallet transaction completion, every direct-protocol gate, or approval to enable funding."
+}

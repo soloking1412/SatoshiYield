@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-09-30T20:35:41.917Z",
+  "network": "testnet",
+  "address": "ST1RHTNPSR0SX6SZC4ZGCPH5W8XS0MRT25NW98QDX",
+  "credentialStoredOutsideRepository": true,
+  "credentialFileMode": "0600",
+  "funding": {
+    "txid": "0xd49cefa9bad4cbac5813abd22387db8a919d82d67cf1eeba5f242243e035dc7e",
+    "status": "success",
+    "canonical": true,
+    "blockHeight": 589139,
+    "amountMicroStx": "500000000",
+    "amountStx": 500
+  },
+  "account": {
+    "balanceMicroStx": "486000000",
+    "nonce": 14
+  },
+  "currentBurnBlock": 22422
+}

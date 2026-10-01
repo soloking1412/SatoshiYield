@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "network": "mainnet-fork-only",
+  "mainnetWrites": false,
+  "initialHeight": 9101400,
+  "holder": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+  "funding": "Existing canonical sBTC balance; no mint or balance override",
+  "sdk": "@stacks/clarinet-sdk 3.24.1",
+  "postconditions": "Native SDK deny-mode enforcement plus independent event-policy assertions",
+  "startedAt": "2026-10-01T07:56:35.938Z",
+  "steps": [
+    {
+      "label": "zest:deposit",
+      "result": "(ok u99940)",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "100000"
+        },
+        {
+          "asset": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "21",
+            "asset_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+            "recipient": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.dao-treasury"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "100000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "99940",
+            "asset_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        }
+      ]
+    },
+    {
+      "label": "zest:missing-burn-guard-rejected",
+      "passed": true,
+      "rollbackVerified": true
+    },
+    {
+      "label": "zest:redeem",
+      "result": "(ok u99999)",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "99940"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc",
+          "condition": "gte",
+          "amount": "99499"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "5",
+            "asset_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+            "recipient": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.dao-treasury"
+          }
+        },
+        {
+          "event": "ft_burn_event",
+          "data": {
+            "amount": "99940",
+            "asset_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc::zft",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "sender": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-vault-sbtc"
+          }
+        }
+      ]
+    },
+    {
+      "label": "stackingdao:deposit",
+      "result": "(ok u99790)",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "100000"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+          "condition": "lte",
+          "amount": "45092163"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "7185",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "12238",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-tracking-v2",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "17935",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP19E4PBQXGKY8C3977BA828HVGW2C8YH9KK9Y8AJ",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "100000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "99790",
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        }
+      ]
+    },
+    {
+      "label": "stackingdao:withdraw-idle",
+      "result": "(ok (tuple (sbtc-fee u999) (sbtc-user u99000)))",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "99790"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+          "condition": "gte",
+          "amount": "98505"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+          "condition": "lte",
+          "amount": "45054805"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_burn_event",
+          "data": {
+            "amount": "99790",
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve"
+          }
+        }
+      ]
+    },
+    {
+      "label": "stackingdao:deposit-for-queue",
+      "result": "(ok u99790)",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "100000"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+          "condition": "lte",
+          "amount": "45054805"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "100000",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        },
+        {
+          "event": "ft_mint_event",
+          "data": {
+            "amount": "99790",
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        }
+      ]
+    },
+    {
+      "label": "guard:minimum-entitlement-rejected",
+      "result": "(err u9004)",
+      "rollbackVerified": true
+    },
+    {
+      "label": "guard:request",
+      "result": "(ok (tuple (claim-id u2) (sbtc-entitlement u99999) (unlock-burn-height u973610)))",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "99790"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.rewards-pox5-v1",
+          "condition": "lte",
+          "amount": "45054805"
+        }
+      ],
+      "events": [
+        {
+          "event": "nft_mint_event",
+          "data": {
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-withdraw-nft::withdraw-nft",
+            "raw_value": "0x0100000000000000000000000000000002",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          }
+        },
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99790",
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "recipient": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-stbtc-v1",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2"
+          }
+        }
+      ]
+    },
+    {
+      "label": "stackingdao:claim",
+      "result": "(ok (tuple (sbtc-fee u0) (sbtc-user u99999)))",
+      "nativeDenyPostconditionsPassed": true,
+      "rules": [
+        {
+          "asset": "STX",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "eq",
+          "amount": "0"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-stbtc-v1",
+          "condition": "eq",
+          "amount": "99790"
+        },
+        {
+          "asset": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+          "principal": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve",
+          "condition": "eq",
+          "amount": "99999"
+        },
+        {
+          "asset": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-withdraw-nft::withdraw-nft",
+          "principal": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+          "condition": "sent",
+          "tokenId": "2"
+        }
+      ],
+      "events": [
+        {
+          "event": "ft_transfer_event",
+          "data": {
+            "amount": "99999",
+            "asset_identifier": "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token",
+            "recipient": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-reserve"
+          }
+        },
+        {
+          "event": "ft_burn_event",
+          "data": {
+            "amount": "99790",
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-token::stbtc",
+            "sender": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-stbtc-v1"
+          }
+        },
+        {
+          "event": "nft_burn_event",
+          "data": {
+            "asset_identifier": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stbtc-withdraw-nft::withdraw-nft",
+            "raw_value": "0x0100000000000000000000000000000002",
+            "sender": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "guard:forwarded-caller-rejected",
+      "result": "(err u9001)"
+    }
+  ],
+  "guard": {
+    "contract": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2.sy-stbtc-request-guard-v1",
+    "scope": "Candidate deployed only in the local fork",
+    "sha256": "6fad1c8b024cba4d0f7b304de3071ced87bb1493deccecc088ed9fed7557b598"
+  },
+  "initialSbtc": "4085359507",
+  "zest": {
+    "deposited": "100000",
+    "shares": "99940",
+    "returned": "99999",
+    "roundingLoss": "1"
+  },
+  "stackingIdle": {
+    "deposited": "100000",
+    "shares": "99790",
+    "returned": "99000",
+    "fee": "999"
+  },
+  "queue": {
+    "claimId": "2",
+    "requestedShares": "99790",
+    "entitlement": "99999",
+    "returned": "99999",
+    "localBurnBlocksWaited": "4200",
+    "guardFinalSbtc": "0",
+    "guardFinalShares": "0",
+    "nftBurned": true
+  },
+  "finalSbtc": "4085358505",
+  "passed": true,
+  "finishedAt": "2026-10-01T07:57:33.379Z"
+}

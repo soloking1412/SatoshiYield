@@ -1,125 +1,66 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { YieldTable } from "../../src/components/yields/YieldTable.js";
 import type { NormalizedYield } from "../../src/types/yield.js";
-
-vi.mock("../../src/hooks/useYields.js", () => ({
-  useYields: vi.fn(),
-}));
-
-vi.mock("../../src/hooks/useDeposit.js", () => ({
-  useDeposit: () => ({ mutate: vi.fn(), isPending: false }),
-}));
-
-vi.mock("../../src/context/WalletContext.js", () => ({
-  useWallet: () => ({
-    isConnected: false,
-    address: null,
-    connect: vi.fn(),
-    disconnect: vi.fn(),
-    callContract: vi.fn(),
-  }),
-}));
-
+vi.mock("../../src/hooks/useYields.js", () => ({ MAX_YIELD_AGE_MS: 600_000, useYields: vi.fn() }));
+vi.mock("../../src/context/WalletContext.js", () => ({ useWallet: () => ({ isConnected: false, address: null }) }));
 import { useYields } from "../../src/hooks/useYields.js";
-
-const mockUseYields = vi.mocked(useYields);
-
-const FIXTURES: NormalizedYield[] = [
-  {
-    protocol: "zest",
-    apy_percent: 3.4,
-    risk_level: "low",
-    lock_period_days: 0,
-    reward_token: "sBTC",
-    tvl_usd: 83_000_000,
-    fetched_at: Date.now(),
-  },
-];
-
+const fixture: NormalizedYield = { protocol: "zest", apy_percent: 3.4, risk_level: "medium", lock_period_days: 0, reward_token: "sBTC", tvl_usd: 83_000_000, fetched_at: Date.now(), last_updated_block: 1234, apy_stale: false, is_live_integration: true };
 function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+  return <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><MemoryRouter>{children}</MemoryRouter></QueryClientProvider>;
 }
-
+function mockQuery(data: NormalizedYield[] | undefined = [fixture], flags = {}) {
+  vi.mocked(useYields).mockReturnValue({ data, isLoading: false, isError: false, ...flags } as ReturnType<typeof useYields>);
+}
 describe("YieldTable", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders Zest live tile and coming-soon tiles (Hermetica hBTC, Dual Stacking)", () => {
-    mockUseYields.mockReturnValue({
-      data: FIXTURES,
-      isLoading: false,
-      isError: false,
-    } as ReturnType<typeof useYields>);
-
+  beforeEach(() => { vi.clearAllMocks(); mockQuery(); });
+  it("keeps every registered route visible with new deposits blocked on mainnet", () => {
     render(<YieldTable />, { wrapper });
-
-    expect(screen.getAllByText("Zest").length).toBeGreaterThanOrEqual(1);
-    // Removed protocols must NOT appear as live tiles.
-    expect(screen.queryByText("ALEX Lab")).toBeNull();
-    expect(screen.queryByText("Velar")).toBeNull();
-    expect(screen.queryByText("Bitflow")).toBeNull();
-    // hBTC and Dual Stacking are coming-soon tiles.
-    expect(screen.getByText("Hermetica hBTC")).toBeInTheDocument();
-    expect(screen.getByText("Dual Stacking (PoX)")).toBeInTheDocument();
+    expect(screen.getByText("Zest")).toBeVisible();
+    expect(screen.getByText("Hermetica hBTC")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "View Zest details" }));
+    expect(screen.getByRole("button", { name: "Deposits unavailable" })).toBeDisabled();
+    expect(screen.queryByText(/principal-protected|locked in audited/i)).not.toBeInTheDocument();
   });
-
-  it("renders protocols in APY descending order", () => {
-    mockUseYields.mockReturnValue({
-      data: FIXTURES,
-      isLoading: false,
-      isError: false,
-    } as ReturnType<typeof useYields>);
-
+  it("displays a fresh rate while keeping authorization independent from the feed", () => {
     render(<YieldTable />, { wrapper });
-
-    const apyValues = screen
-      .getAllByText(/^\d+\.\d+%$/)
-      .map((el) => parseFloat(el.textContent!));
-
-    for (let i = 0; i < apyValues.length - 1; i++) {
-      expect(apyValues[i]).toBeGreaterThanOrEqual(apyValues[i + 1]!);
-    }
+    expect(screen.getByText("3.4%")).toBeVisible();
+    expect(screen.getByText(/New deposits are disabled/)).toBeVisible();
   });
-
-  it("renders the loading state while fetching", () => {
-    mockUseYields.mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      isError: false,
-    } as ReturnType<typeof useYields>);
-
-    const { container } = render(<YieldTable />, { wrapper });
-
-    expect(container.textContent).toMatch(/finding the best rates/i);
-  });
-
-  it("renders error state when fetch fails", () => {
-    mockUseYields.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: true,
-    } as ReturnType<typeof useYields>);
-
+  it("hides stale rates instead of presenting them as current", () => {
+    mockQuery([{ ...fixture, fetched_at: Date.now() - 600_001 }]);
     render(<YieldTable />, { wrapper });
-
-    expect(screen.getByText(/indexer unreachable/i)).toBeInTheDocument();
+    expect(screen.queryByText("3.4%")).not.toBeInTheDocument();
+    expect(screen.getByText("Stale · unavailable")).toBeVisible();
   });
-
-  it("renders empty state when data is an empty array", () => {
-    mockUseYields.mockReturnValue({
-      data: [],
-      isLoading: false,
-      isError: false,
-    } as ReturnType<typeof useYields>);
-
+  it("filters by category and searches the protocol register", () => {
     render(<YieldTable />, { wrapper });
-
-    expect(
-      screen.getByText(/no yield data available/i)
-    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Managed" }));
+    expect(screen.queryByText("Zest")).not.toBeInTheDocument();
+    expect(screen.getByText("Hermetica hBTC")).toBeVisible();
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "missing protocol" } });
+    expect(screen.getByText("No matching strategies")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(screen.getByText("Zest")).toBeVisible();
+  });
+  it("keeps the register useful when the rate service fails", () => {
+    mockQuery(undefined, { isError: true });
+    render(<YieldTable />, { wrapper });
+    expect(screen.getByText("Rate data unavailable.")).toBeVisible();
+    expect(screen.getByText("Zest")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Retry" })).toBeVisible();
+  });
+  it("distinguishes loading and missing rate data", () => {
+    mockQuery(undefined, { isLoading: true });
+    const view = render(<YieldTable />, { wrapper });
+    expect(screen.getByText("Checking rate sources…")).toBeVisible();
+    expect(screen.getByLabelText("Listed yield strategies")).toHaveAttribute("aria-busy", "true");
+    view.unmount();
+    mockQuery([]);
+    render(<YieldTable />, { wrapper });
+    expect(screen.getByText("No yield data available")).toBeVisible();
+    expect(within(screen.getByLabelText("Listed yield strategies")).getByText("Zest")).toBeVisible();
   });
 });

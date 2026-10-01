@@ -1,0 +1,48 @@
+[project]
+name = "satoshi-yield-v7-simnet"
+description = "Isolated v7 candidate tests; mock assets and strategies only"
+authors = []
+telemetry = false
+cache_dir = "./.cache-v7"
+
+[contracts.sip-010-trait]
+path = "contracts/traits/sip-010-trait.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.yield-source-v2]
+path = "contracts/traits/yield-source-v2.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.yield-source-async-v1]
+path = "contracts/traits/yield-source-async-v1.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.vault-v7]
+path = "contracts/vault-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.mock-sbtc]
+path = "contracts/token/mock-sbtc.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.mock-sync-v7]
+path = "tests/v7/fixtures/mock-sync-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.mock-async-v7]
+path = "tests/v7/fixtures/mock-async-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.forwarder-v7]
+path = "tests/v7/fixtures/forwarder-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+
+[contracts.false-token-v7]
+path = "tests/v7/fixtures/false-token-v7.clar"
+clarity_version = 3
+epoch = "3.2"
+[contracts.callback-sync-v7]
+path = "tests/v7/fixtures/callback-sync-v7.clar"
+clarity_version = 3
+epoch = "3.2"

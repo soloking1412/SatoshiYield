@@ -57,6 +57,11 @@ describe("fetchZestNativeApy (on-chain share-price growth)", () => {
     );
     expect(await fetchZestNativeApy()).toBeNull();
   });
+  it("rejects an anomalous rate above the cap instead of clamping it into valid-looking data", async () => {
+    __setHistory([{ t: Date.now() - 2 * 24 * 60 * 60 * 1000, p: 1.0 }]);
+    server.use(convertToAssets(2));
+    expect(await fetchZestNativeApy()).toBeNull();
+  });
 });
 
 describe("fetchHbtcNativeApy", () => {

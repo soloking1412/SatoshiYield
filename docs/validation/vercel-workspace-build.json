@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-01T08:35:06.858Z",
+  "node": "v24.7.0",
+  "scope": "Fresh temporary checkout of frontend and its three sibling integration packages; no reused node_modules or Bitcoin dist. Production-mode install invoked outside frontend to verify cwd independence.",
+  "installCommand": "node frontend/scripts/install-workspace.mjs",
+  "nodeEnvDuringInstall": "production",
+  "lockedPackages": [
+    {
+      "folder": "frontend",
+      "sha256": "37289a5a05451c6eae0c603a2f5205832df71fcefdc9856b9bc5760ed54c2935",
+      "unchangedByInstall": true
+    },
+    {
+      "folder": "integrations/stacks",
+      "sha256": "297dfd4f6c566b3d5174156442a09229a835b86685f2f3933c67ca1d96309c13",
+      "unchangedByInstall": true
+    },
+    {
+      "folder": "integrations/bitcoin",
+      "sha256": "b645337b7203b58c41e610ed987bd598057048e46cddca45812c3ea1fac0cc32",
+      "unchangedByInstall": true
+    },
+    {
+      "folder": "integrations/pox5",
+      "sha256": "d09f4753f5efcff3df5bf60ab26d65632fc95d7f8de31bf72cb4592cec2cf5e2",
+      "unchangedByInstall": true
+    }
+  ],
+  "bitcoinBuildPassed": true,
+  "frontendMainnetProductionBuildPassed": true,
+  "missingSiblingPreflight": {
+    "node": "v24.7.0",
+    "missingSiblingPreflightPassed": true,
+    "dependenciesUntouched": true,
+    "cwdIndependent": true,
+    "fontOrigins": [
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com"
+    ],
+    "error": "[workspace-install] Incomplete frontend workspace: integrations/stacks/package.json, integrations/stacks/package-lock.json, integrations/stacks/src/index.mjs, integrations/bitcoin/package.json, integrations/bitcoin/package-lock.json, integrations/bitcoin/src/index.ts, integrations/pox5/package.json, integrations/pox5/package-lock.json, integrations/pox5/src/index.mjs. This build requires frontend/ and sibling integrations/{stacks,bitcoin,pox5}/ in the same repository checkout. Ensure the hosting root-directory configuration includes files outside frontend/. No dependencies have been installed."
+  },
+  "installLogSha256": "18a64284ee8f3c6f62f3b95ca664bb0d6ab41f2384266b2ff99e5b60f5dd1fcb",
+  "buildLogSha256": "60d49abe4c750923b31969d4b1398f69390f442d6c98d5b823e8c0b8b1f7bce4",
+  "warnings": [
+    "Existing lazily loaded Bitcoin SDK chunks exceed the default Vite size warning."
+  ],
+  "workingNodeModulesTouched": false,
+  "hostingSettingsChanged": false,
+  "productionPublished": false,
+  "vercelConfigSha256": "e0f56e06320879b940fa1cf419fce733557297f709e87dc8155ec5204b161e66"
+}

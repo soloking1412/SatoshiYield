@@ -1,0 +1,209 @@
+{
+  "functions": [
+    {
+      "name": "get-sbtc",
+      "access": "public",
+      "args": [
+        {
+          "name": "requested-sbtc",
+          "type": "uint128"
+        },
+        {
+          "name": "receiver",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "lock-sbtc-for-withdrawal",
+      "access": "public",
+      "args": [
+        {
+          "name": "sbtc-amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "pay-sbtc-from-idle",
+      "access": "public",
+      "args": [
+        {
+          "name": "sbtc-amount",
+          "type": "uint128"
+        },
+        {
+          "name": "receiver",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "request-sbtc-for-withdrawal",
+      "access": "public",
+      "args": [
+        {
+          "name": "requested-sbtc",
+          "type": "uint128"
+        },
+        {
+          "name": "receiver",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "request-sbtc-to-stack",
+      "access": "public",
+      "args": [
+        {
+          "name": "requested-sbtc",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "return-sbtc-from-stacking",
+      "access": "public",
+      "args": [
+        {
+          "name": "sbtc-amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "unlock-sbtc-from-withdrawal",
+      "access": "public",
+      "args": [
+        {
+          "name": "sbtc-amount",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "uint128",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-sbtc-available",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-balance",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-for-withdrawals",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-sbtc-staking",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-total-sbtc",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "ERR_RESERVED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "sbtc-for-withdrawals",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "sbtc-staking",
+      "type": "uint128",
+      "access": "variable"
+    }
+  ],
+  "maps": [],
+  "fungible_tokens": [],
+  "non_fungible_tokens": [],
+  "epoch": "Epoch40",
+  "clarity_version": "Clarity6"
+}

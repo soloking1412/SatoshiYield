@@ -1,0 +1,19 @@
+{
+  "createdAt": "2026-10-01T07:51:31.381Z",
+  "purpose": "New isolated testnet-only identities",
+  "bitcoin": {
+    "network": "signet",
+    "address": "tb1qmsyv7j7lwdnk4my0sge706n52szyew8jxeccmc",
+    "publicKey": "0388716ad8ec3ede6b7856c1ba2dfdab26ba1fa6807b5db399bb1fc271154c9457",
+    "taprootAddress": "tb1p6en2xhazq6l4hmdcjs6pvm8gqcnwjl325fyg8h8defdtgal9wershwrfs7"
+  },
+  "babylon": {
+    "chainId": "bbn-test-6",
+    "address": "bbn18lc48gsl8cdlughwlnhdscs8zendluu3g7guqc"
+  },
+  "ethereum": {
+    "chainId": 11155111,
+    "address": "0x0c0E45ca58bBB200A2Ca4f605615e00b2B06264B",
+    "additionalTestAddress": "0xF38699B59ACAB779641cD07c56a2e8e10516d3D0"
+  }
+}

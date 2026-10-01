@@ -1,0 +1,6 @@
+{
+ "name":"@satoshiyields/hermetica-fork","version":"0.1.0","private":true,"type":"module",
+ "scripts":{"test:fork":"node scripts/fork.mjs"},
+ "devDependencies":{"@stacks/clarinet-sdk":"3.24.1","@stacks/transactions":"7.4.0"},
+ "engines":{"node":">=22"}
+}

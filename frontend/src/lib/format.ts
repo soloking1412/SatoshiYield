@@ -25,7 +25,9 @@ export function apyDecimals(apy: number): number {
  *   3.4    -> "3.4"
  */
 export function formatApy(apy: number): string {
-  if (!Number.isFinite(apy) || apy <= 0) return "0";
+  if (!Number.isFinite(apy)) return "—";
+  if (apy === 0) return "0";
+  if (apy < 0) return `−${formatApy(-apy)}`;
   if (apy < 0.01) return "<0.01";
   return apy.toFixed(apyDecimals(apy));
 }

@@ -1,0 +1,119 @@
+{
+  "capturedAt": "2026-10-01T08:14:44.593Z",
+  "publicObserverAddress": "SP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2",
+  "evidence": [
+    {
+      "check": "first keyboard target",
+      "value": {
+        "text": "Skip to content",
+        "outline": "rgb(238, 160, 99) solid 2px"
+      }
+    },
+    {
+      "check": "skip link destination",
+      "value": "main-content"
+    },
+    {
+      "check": "modal tab containment",
+      "value": [
+        {
+          "text": "XXverseBitcoin & Stacks walletInstall ↗",
+          "label": null,
+          "inDialog": true
+        },
+        {
+          "text": "LLeatherBitcoin & Stacks walletInstall ↗",
+          "label": null,
+          "inDialog": true
+        },
+        {
+          "text": "",
+          "label": "Close dialog",
+          "inDialog": true
+        },
+        {
+          "text": "XXverseBitcoin & Stacks walletInstall ↗",
+          "label": null,
+          "inDialog": true
+        },
+        {
+          "text": "LLeatherBitcoin & Stacks walletInstall ↗",
+          "label": null,
+          "inDialog": true
+        },
+        {
+          "text": "",
+          "label": "Close dialog",
+          "inDialog": true
+        },
+        {
+          "text": "XXverseBitcoin & Stacks walletInstall ↗",
+          "label": null,
+          "inDialog": true
+        }
+      ]
+    },
+    {
+      "check": "escape close and return focus",
+      "value": {
+        "dialogs": 0,
+        "active": "\n    Skip to contentSatoshiYieldExploreConnect protocolsPortfolioTransparencyRisk & releasemainnetGet sBTCConnect walletmainnetVault release under review.New vault deposits are disabled.View release requirements ↗Protocol connectionsOne place. Clear routes.Review the asset, network and withdrawal path before acting. Each connection shows what can be executed and what is still preparation only.Stacks protocols Live checks · mainnetBitcoin staking Preparation & eligibilityZZestsBTC → zsBTCSStackingDAOsBTC → stBTCDirect protocol positionsReceipts belong to your wallet. These routes do not deposit into the SatoshiYield vault.Contract code and current permissions are checked before each review. Protocol governance, liquidity and loss risks still apply.Read risk & release notes Stacks mainnet · sBTCZestVerify before useSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.DepositWithdrawConnect to inspect your route.Read balances and current protocol availability before reviewing an action.Connect Stacks walletSatoshiYieldBitcoin yield routes on Stacks. Understand the asset, the strategy, and the way back out.Risk & releaseContracts & dataSource code ↗Stacks docs ↗© 2026 SatoshiYieldVariable returns. Capital at risk. No guarantee of principal or yield.ExploreProtocolsPortfolioTransparencyRisk & release\n    \n  \n\n"
+      }
+    },
+    {
+      "check": "keyboard Bitcoin panel",
+      "value": true
+    },
+    {
+      "check": "Babylon live network result",
+      "value": "01 / NATIVE BITCOIN\n\nBabylon staking\n\nYour BTC is held in a Bitcoin script with a timelock. Provider misconduct can slash part of it. Rewards are separate from BTC principal.\n\nSignet · unsigned preparation\nRead network & prepare\nRegister on Babylon\nConfirm BTC stake\nUnbond & recover\n\nThis workspace covers step one. An unsigned plan is not an active stake. Registration, covenant approval and recovery still need end-to-end testnet evidence.\n\nOfficial Babylon test app ↗\nPrepare a test stake\nRefresh network\nBitcoin / Babylon height\n324,471 / 324,471\nMinimum stake\n0.00050000 test BTC\nCommittee\n6 of 9\nConnect a Signet payment account\nPublic key and test inputs come from your wallet.\nConnect Bitcoin\nFinality provider\nChoose an active provider\nZellic · 5.0% commission\nCoinage x DAIC Finality Provider · 10.0% commission\nstakefish-testnet-5 · 10.0% commission\nStakecito · 5.0% commission\nBlockdaemon · 10.0% commission\nXangle · 10.0% commission\nDSRV · 5.0% commission\nHostDeFi · 5.0% commission\nKeplr · 5.0% commission\nRockXFinalityProvider · 5.0% commission\nColossus · 5.0% commission\nBabylon Labs 0 · 12.0% commission\nBabylon Labs 2 · 14.0% commission\nBabylon Labs 1 · 10.0% commission\nContributionDAO · 10.0% commission\nokx-babylon-genesis-fp-testnet-6 · 10.0% commission\nAmount in test BTC\nLock duration in blocks\nNetwork fee limits\nReview unsigned plan"
+    },
+    {
+      "check": "Bitcoin unavailable wallet",
+      "value": [
+        "no wallet provider was found"
+      ]
+    },
+    {
+      "check": "Ethereum unavailable wallet",
+      "value": [
+        "no wallet provider was found",
+        "Install an Ethereum-compatible wallet and select Sepolia to try this test route."
+      ]
+    },
+    {
+      "check": "public-address live holdings",
+      "value": "Direct protocol holdings\n\nWallet receipts outside the SatoshiYield vault. Redemption estimates are not cost basis or profit.\n\nRefresh holdings\nZest\nzsBTC wallet receipt\n0 zsBTC\n\nNo receipt tokens in this wallet\n\nReview withdrawal\nStackingDAO\nstBTC wallet receipt\n0 stBTC\n\nNo receipt tokens in this wallet\n\nReview withdrawal\n\nLast checked 10/1/2026, 1:44:37 PM. Every wallet action rechecks the protocol. Queued StackingDAO withdrawals hold an NFT instead of a receipt balance. Check an NFT by its ID. NFT holdings are not automatically enumerated here."
+    },
+    {
+      "check": "holdings claim link",
+      "value": {
+        "url": "http://localhost:5173/integrations?protocol=stackingdao-stbtc&action=claim",
+        "button": true
+      }
+    },
+    {
+      "check": "queue gate copy",
+      "value": [
+        "New queue requests require our reviewed atomic guard to be deployed. Quotes show the entitlement and current wait, but request signing remains disabled until that deployment is configured."
+      ]
+    },
+    {
+      "check": "RPC outage blocks quote",
+      "value": {
+        "error": "Failed to fetch",
+        "walletButtons": 0
+      }
+    },
+    {
+      "check": "RPC outage portfolio",
+      "value": "YOUR CAPITAL, ACCOUNTED FOR\n\nYour portfolio.\n\nReview recorded principal and withdrawal status for the configured vault. Transaction submission and on-chain confirmation are separate steps.\n\nRefresh\nSP2C7BCAP2NH3EYWCCVHJ6K0DMZBXDFKQ56KR7QN2\nGet sBTC\nPositions could not be verified.\n\nA failed contract read does not mean your balance is zero. Retry or inspect the vault directly.\n\nRetry contract read\nInspect the vault\n\nThis view reads v6 positions for the configured adapters. It does not aggregate balances across other vault versions or unrelated protocols. Verify configured contracts\n\nDirect Zest and StackingDAO receipts stay in your wallet. Check protocol balances and withdrawal routes.\nDirect protocol holdings\n\nWallet receipts outside the SatoshiYield vault. Redemption estimates are not cost basis or profit.\n\nRefresh holdings\nZest\nzsBTC wallet receipt\nUnavailable\n\nRedemption estimate unavailable\n\nFailed to fetch\n\nReview withdrawal\nStackingDAO\nstBTC wallet receipt\nUnavailable\n\nRedemption estimate unavailable\n\nFailed to fetch\n\nReview withdrawal\n\nLast checked 10/1/2026, 1:44:43 PM. Every wallet action rechecks the protocol. Queued StackingDAO withdrawals hold an NFT instead of a receipt balance. Check an NFT by its ID. NFT holdings are not automatically enumerated here.\n\nTransaction activity\n\nCalls submitted from this browser and connected wallet. Confirmations are checked against the submitted action.\n\nNo recorded submissions for this wallet on this network."
+    },
+    {
+      "check": "testnet mainnet route gate",
+      "value": "STACKS MAINNET · SBTC\n\nZest\nVerify before use\n\nSupply sBTC to the current Zest lending vault. Your receipt stays in your wallet; redemption depends on available lending liquidity.\n\nDeposit\nWithdraw\nCurrent official deployments are on mainnet. This app is configured for testnet; these wallet actions are unavailable here. Mainnet fork tests do not constitute public testnet deployment."
+    }
+  ],
+  "errors": [],
+  "transactionSigningPerformed": false
+}
